@@ -1,6 +1,8 @@
 package com.openclassrooms.realestatemanager;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 
 import java.text.DateFormat;
@@ -23,6 +25,15 @@ public class Utils {
     public static int convertDollarToEuro(int dollars) {
         return (int) Math.round(dollars * 0.812);
     }
+    /**
+     * Conversion d'un prix d'un bien immobilier (Euros vers Dolars)
+     *
+     * @param euros
+     * @return
+     */
+    public static int convertEuroToDollar(int euros) {
+        return (int) Math.round(euros / 0.812);
+    }
 
     /**
      * Conversion de la date d'aujourd'hui en un format plus approprié
@@ -43,7 +54,7 @@ public class Utils {
      * @return
      */
     public static Boolean isInternetAvailable(Context context) {
-        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         return wifi.isWifiEnabled();
     }
 }

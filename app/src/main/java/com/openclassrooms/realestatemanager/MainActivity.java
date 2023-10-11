@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
 
         configureTextViewMain();
         configureTextViewQuantity();
+
+        System.out.println("the network is available: " + Utils.isInternetAvailable(this));
     }
 
     private void configureTextViewMain(){
