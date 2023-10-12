@@ -11,6 +11,7 @@ data class Property(
     val id:Long = 0,
     val type:PropertyType,
     val price:Double,
+    val surfaceArea:Int,
     val numRooms:Int,
     val description:String,
     val isSold:Boolean,

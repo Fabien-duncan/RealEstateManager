@@ -15,8 +15,9 @@ import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
         )
     ]
 )
-data class NearbyPlaces(
+data class PropertyNearbyPlaces(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
+    val propertyId:Long,
     val placeName: NearbyPlacesType
 )
