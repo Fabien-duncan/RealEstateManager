@@ -8,6 +8,7 @@ import androidx.room.Update
 import com.openclassrooms.realestatemanager.data.local.model.PropertyAddress
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
 import com.openclassrooms.realestatemanager.data.local.model.Property
+import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +41,7 @@ interface PropertyDao {
     fun getPropertyAddress(propertyId: Long):Flow<PropertyAddress>
 
     @Query("SELECT * FROM PropertyNearbyPlaces WHERE propertyId = :propertyId")
-    fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyPhotos>>
+    fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>
 
     @Query("SELECT Property.*, COUNT(PropertyPhotos.propertyId) AS numPhotos FROM Property " +
             "LEFT JOIN PropertyPhotos ON Property.id = PropertyPhotos.propertyId " +
