@@ -43,8 +43,8 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getPropertyPhotos(propertyId)
     }
 
-    override fun getPropertyAddress(propertyId: Long): Flow<PropertyAddress> {
-        return propertyDao.getPropertyAddress(propertyId)
+    override fun getPropertyAddress(addressId: Long): Flow<PropertyAddress> {
+        return propertyDao.getPropertyAddress(addressId)
     }
 
     override fun getPropertyNearbyPlaces(propertyId: Long): Flow<List<PropertyNearbyPlaces>> {

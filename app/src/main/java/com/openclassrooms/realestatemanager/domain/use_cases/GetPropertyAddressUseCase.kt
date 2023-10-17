@@ -8,5 +8,5 @@ import javax.inject.Inject
 class GetPropertyAddressUseCase @Inject constructor(
     private val repository: Respository
 ) {
-    operator fun invoke(propertyId: Long):Flow<PropertyAddress> = repository.getPropertyAddress(propertyId)
+    operator fun invoke(addressId: Long):Flow<PropertyAddress> = repository.getPropertyAddress(addressId)
 }

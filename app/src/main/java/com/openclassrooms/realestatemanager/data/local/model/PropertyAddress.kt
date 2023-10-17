@@ -5,21 +5,10 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = Property::class,
-            parentColumns = ["id"],
-            childColumns = ["propertyId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ],
-    indices = [Index(value = ["propertyId"])]
-)
+@Entity
 data class PropertyAddress(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val propertyId: Long,
     val street: String,
     val city: String,
     val state: String,

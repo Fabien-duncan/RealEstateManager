@@ -37,8 +37,8 @@ interface PropertyDao {
     @Query("SELECT * FROM PropertyPhotos WHERE propertyId = :propertyId")
     fun getPropertyPhotos(propertyId: Long):Flow<List<PropertyPhotos>>
 
-    @Query("SELECT * FROM PropertyAddress WHERE propertyId = :propertyId")
-    fun getPropertyAddress(propertyId: Long):Flow<PropertyAddress>
+    @Query("SELECT * FROM PropertyAddress WHERE id = :addressId")
+    fun getPropertyAddress(addressId: Long):Flow<PropertyAddress>
 
     @Query("SELECT * FROM PropertyNearbyPlaces WHERE propertyId = :propertyId")
     fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>

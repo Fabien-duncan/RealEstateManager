@@ -17,7 +17,7 @@ interface Respository {
     fun getSoldProperties(): Flow<List<Property>>
     fun getAllProperties(): Flow<List<Property>>
     fun getPropertyPhotos(propertyId: Long):Flow<List<PropertyPhotos>>
-    fun getPropertyAddress(propertyId: Long):Flow<PropertyAddress>
+    fun getPropertyAddress(addressId: Long):Flow<PropertyAddress>
     fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>
     fun getFilteredProperties(
         propertyType: PropertyType?=null,
