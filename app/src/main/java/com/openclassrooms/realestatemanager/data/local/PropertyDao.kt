@@ -19,6 +19,9 @@ interface PropertyDao {
     @Insert(onConflict =  OnConflictStrategy.REPLACE)
     fun insert(property: Property): Long
 
+    @Insert(onConflict =  OnConflictStrategy.REPLACE)
+    fun Insert(address: PropertyAddress):Long
+
     @Update(onConflict =  OnConflictStrategy.REPLACE)
     fun update(property: Property)
 

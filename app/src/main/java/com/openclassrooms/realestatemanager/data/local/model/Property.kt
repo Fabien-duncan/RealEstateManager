@@ -27,8 +27,8 @@ data class Property(
     val surfaceArea:Int,
     val numRooms:Int,
     val description:String,
-    val isSold:Boolean,
-    val createdDate: Date,
-    val soldData: Date?,
+    val isSold:Boolean = false,
+    val createdDate: Date = Date(),
+    val soldData: Date? = null,
     val agentName: String
 )

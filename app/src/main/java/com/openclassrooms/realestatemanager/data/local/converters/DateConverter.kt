@@ -9,8 +9,7 @@ class DateConverter {
         return date?.let { Date(it) }
     }
     @TypeConverter
-    fun fromDate(date: Date): Long?{
-        return date?.time
+    fun fromDate(date: Date?): Long?{
+        return date?.time ?: -1
     }
-
 }
