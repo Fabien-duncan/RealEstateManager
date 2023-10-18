@@ -1,0 +1,102 @@
+package com.openclassrooms.realestatemanager.presentation.home
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.openclassrooms.realestatemanager.common.ScreenViewState
+import com.openclassrooms.realestatemanager.data.local.model.Property
+
+@Composable
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    state: HomeState,
+    onPropertyClicked: (Long) -> Unit
+){
+    when(state.properties){
+        is ScreenViewState.Loading -> {
+            CircularProgressIndicator()
+        }
+
+        is ScreenViewState.Success -> {
+            val properties = state.properties.data
+
+            HomePropertyList(properties = properties, modifier = modifier, onPropertyClicked = onPropertyClicked)
+
+        }
+
+        is ScreenViewState.Error -> {
+            Text(
+                text = state.properties.message ?: "Unknown Error",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomePropertyList(
+    properties: List<Property>,
+    modifier: Modifier,
+    onPropertyClicked:(Long) -> Unit
+){
+    LazyColumn(contentPadding = PaddingValues(top = 16.dp), modifier = modifier){
+
+        itemsIndexed(properties){ index, property ->
+            PropertyItem(property = property, onPropertyClicked = onPropertyClicked)
+        }
+
+    }
+}
+
+@Composable
+private fun PropertyItem(
+    property: Property,
+    onPropertyClicked:(Long) -> Unit
+){
+    Surface (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                onPropertyClicked.invoke(property.id)
+            },
+    ) {
+        Column(
+        ) {
+            Text(
+                text = property.type.toString(),
+                modifier = Modifier
+                    .padding(1.dp)
+            )
+            Text(
+                text = "an Address",
+                color = Color.LightGray,
+                modifier = Modifier
+                    .padding(1.dp)
+            )
+            Text(
+                text = "\$${property.price}",
+                color = Color(0xFFFE4080),
+                modifier = Modifier
+                    .padding(1.dp)
+            )
+        }
+    }
+
+}

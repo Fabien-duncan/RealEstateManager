@@ -61,7 +61,7 @@ interface PropertyDao {
             "AND (:maxCreationDate IS NULL OR createdDate <= :maxCreationDate) " +
             "AND (:isSold IS NULL OR isSold = :isSold) " +
             "AND (:minSoldDate IS NULL OR createdDate >= :minCreationDate) " +
-            "AND (:maxSoldDate IS NULL OR soldData <= :maxSoldDate) " +
+            "AND (:maxSoldDate IS NULL OR soldDate <= :maxSoldDate) " +
             "GROUP BY Property.id " +
             "HAVING (:minNumPictures IS NULL OR numPhotos >= :minNumPictures) " +
             "AND (:nearbyPlaceTypes IS NULL OR PropertyNearbyPlaces.placeName IN (:nearbyPlaceTypes)) " +

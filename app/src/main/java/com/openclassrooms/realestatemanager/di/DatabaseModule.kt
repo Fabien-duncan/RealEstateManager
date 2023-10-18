@@ -18,13 +18,13 @@ import javax.inject.Singleton
 object DatabaseModule {
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context, propertyDao: PropertyDao): RealEstateDataBase {
-        return Room.databaseBuilder(
-            context.applicationContext,
-            RealEstateDataBase::class.java,
-            "real_estate_db"
-        ).addCallback(DatabaseCallBack(propertyDao)).build()
-    }
+    fun provideDatabase(
+        @ApplicationContext context: Context,
+    ):RealEstateDataBase = Room.databaseBuilder(
+        context.applicationContext,
+        RealEstateDataBase::class.java,
+        "real_estate_db"
+    ).build()
 
     @Provides
     @Singleton

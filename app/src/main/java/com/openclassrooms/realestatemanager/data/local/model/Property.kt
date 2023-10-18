@@ -29,6 +29,6 @@ data class Property(
     val description:String,
     val isSold:Boolean = false,
     val createdDate: Date = Date(),
-    val soldData: Date? = null,
+    val soldDate: Date? = null,
     val agentName: String
 )

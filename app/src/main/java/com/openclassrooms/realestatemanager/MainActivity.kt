@@ -34,8 +34,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.presentation.create_property.CreatePropertyViewModel
+import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 import com.openclassrooms.realestatemanager.ui.theme.RealEstateManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,11 +53,23 @@ class MainActivity : ComponentActivity() {
             RealEstateManagerTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    TopBar()
+                    //TopBar()
+                    RealEstateApp()
                 }
             }
         }
     }
+}
+
+@Composable
+fun RealEstateApp(){
+    val homeViewModel: HomeViewModel = viewModel()
+    val createPropertyViewModel: CreatePropertyViewModel = viewModel()
+    val navController = rememberNavController()
+    val state by homeViewModel.state.collectAsState()
+
+    HomeScreen(state = state, onPropertyClicked = { println("element $it has been clicked") })
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
