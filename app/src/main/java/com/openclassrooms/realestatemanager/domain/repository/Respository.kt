@@ -1,9 +1,10 @@
 package com.openclassrooms.realestatemanager.domain.repository
 
 import com.openclassrooms.realestatemanager.data.local.model.Property
-import com.openclassrooms.realestatemanager.data.local.model.PropertyAddress
+import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
+import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import kotlinx.coroutines.flow.Flow
@@ -15,9 +16,9 @@ interface Respository {
     fun getPropertyById(propertyId: Long): Flow<Property>
     fun getAvailableProperties(): Flow<List<Property>>
     fun getSoldProperties(): Flow<List<Property>>
-    fun getAllProperties(): Flow<List<Property>>
+    fun getAllProperties(): Flow<List<PropertyWithAllDetails>>
     fun getPropertyPhotos(propertyId: Long):Flow<List<PropertyPhotos>>
-    fun getPropertyAddress(addressId: Long):Flow<PropertyAddress>
+    fun getPropertyAddress(addressId: Long):Flow<Address>
     fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>
     fun getFilteredProperties(
         propertyType: PropertyType?=null,

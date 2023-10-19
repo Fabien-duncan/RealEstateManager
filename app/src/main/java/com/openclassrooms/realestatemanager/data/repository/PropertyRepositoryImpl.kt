@@ -2,9 +2,10 @@ package com.openclassrooms.realestatemanager.data.repository
 
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.model.Property
-import com.openclassrooms.realestatemanager.data.local.model.PropertyAddress
+import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
+import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.repository.Respository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
@@ -35,7 +36,7 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getSoldProperties()
     }
 
-    override fun getAllProperties(): Flow<List<Property>> {
+    override fun getAllProperties(): Flow<List<PropertyWithAllDetails>> {
         return propertyDao.getAllProperties()
     }
 
@@ -43,7 +44,7 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getPropertyPhotos(propertyId)
     }
 
-    override fun getPropertyAddress(addressId: Long): Flow<PropertyAddress> {
+    override fun getPropertyAddress(addressId: Long): Flow<Address> {
         return propertyDao.getPropertyAddress(addressId)
     }
 

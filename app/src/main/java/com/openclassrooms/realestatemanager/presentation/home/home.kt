@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.data.local.model.Property
+import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 
 @Composable
 fun HomeScreen(
@@ -30,28 +31,32 @@ fun HomeScreen(
 ){
     when(state.properties){
         is ScreenViewState.Loading -> {
+            println("data loading")
             CircularProgressIndicator()
         }
 
         is ScreenViewState.Success -> {
             val properties = state.properties.data
-
+            println("got data")
             HomePropertyList(properties = properties, modifier = modifier, onPropertyClicked = onPropertyClicked)
 
         }
 
         is ScreenViewState.Error -> {
+            println("error: $state.properties.message")
             Text(
                 text = state.properties.message ?: "Unknown Error",
                 color = MaterialTheme.colorScheme.error
             )
         }
+
+        else -> {}
     }
 }
 
 @Composable
 private fun HomePropertyList(
-    properties: List<Property>,
+    properties: List<PropertyWithAllDetails>,
     modifier: Modifier,
     onPropertyClicked:(Long) -> Unit
 ){
@@ -66,7 +71,7 @@ private fun HomePropertyList(
 
 @Composable
 private fun PropertyItem(
-    property: Property,
+    property: PropertyWithAllDetails,
     onPropertyClicked:(Long) -> Unit
 ){
     Surface (
@@ -74,24 +79,24 @@ private fun PropertyItem(
             .fillMaxWidth()
             .padding(8.dp)
             .clickable {
-                onPropertyClicked.invoke(property.id)
+                onPropertyClicked.invoke(property.property.id)
             },
     ) {
         Column(
         ) {
             Text(
-                text = property.type.toString(),
+                text = property.property.type.toString(),
                 modifier = Modifier
                     .padding(1.dp)
             )
             Text(
-                text = "an Address",
+                text = property.address.street,
                 color = Color.LightGray,
                 modifier = Modifier
                     .padding(1.dp)
             )
             Text(
-                text = "\$${property.price}",
+                text = "\$${property.property.price}",
                 color = Color(0xFFFE4080),
                 modifier = Modifier
                     .padding(1.dp)

@@ -7,13 +7,14 @@ import com.openclassrooms.realestatemanager.data.local.converters.DateConverter
 import com.openclassrooms.realestatemanager.data.local.converters.NearbyPlacesTypeConverter
 import com.openclassrooms.realestatemanager.data.local.converters.PropertyTypeConverter
 import com.openclassrooms.realestatemanager.data.local.model.Property
-import com.openclassrooms.realestatemanager.data.local.model.PropertyAddress
+import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
+import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 
 @TypeConverters(NearbyPlacesTypeConverter::class, PropertyTypeConverter::class, DateConverter::class)
 @Database(
-    entities = [Property::class, PropertyAddress::class, PropertyNearbyPlaces::class, PropertyPhotos::class],
+    entities = [Property::class, Address::class, PropertyNearbyPlaces::class, PropertyPhotos::class],
     version = 1,
     exportSchema = false
 )

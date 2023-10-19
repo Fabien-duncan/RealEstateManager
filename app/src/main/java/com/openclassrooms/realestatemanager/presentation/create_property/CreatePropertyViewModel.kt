@@ -22,15 +22,15 @@ class CreatePropertyViewModel @Inject constructor(
         }*/
     }
     private suspend fun initialise(){
-        val tesProperties = getAllProperties()
+        /*val tesProperties = getAllProperties()
         withContext(Dispatchers.IO) {
             tesProperties.forEach{ property ->
                 addPropertyUseCase(property)
             }
-        }
+        }*/
 
     }
-    private fun getAllProperties(): List<Property>{
+    /*private fun getAllProperties(): List<Property>{
         return listOf(
             Property(
                 id = 1,
@@ -73,6 +73,6 @@ class CreatePropertyViewModel @Inject constructor(
                 agentName = "Fabien Duncan"
             ),
         )
-    }
+    }*/
 
 }

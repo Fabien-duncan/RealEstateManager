@@ -11,7 +11,7 @@ import javax.inject.Inject
 class DatabaseCallBack @Inject constructor(
     private val propertyDao: PropertyDao
 ) : RoomDatabase.Callback(){
-    override fun onCreate(db: SupportSQLiteDatabase) {
+    /*override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
 
         GlobalScope.launch {
@@ -20,9 +20,10 @@ class DatabaseCallBack @Inject constructor(
                 propertyDao.insert(property)
             }
         }
-    }
+    }*/
 }
 
+/*
 private fun getAllProperties(): List<Property>{
     return listOf(
         Property(
@@ -66,4 +67,4 @@ private fun getAllProperties(): List<Property>{
             agentName = "Fabien Duncan"
         ),
     )
-}
+}*/
