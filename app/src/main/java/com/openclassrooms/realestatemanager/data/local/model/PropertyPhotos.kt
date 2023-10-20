@@ -12,6 +12,7 @@ data class PropertyPhotos(
     val id: Long = 0,
     @ColumnInfo(name = "property_id", index = true)
     val propertyId: Long,
+    @ColumnInfo(name = "photo_path")
     val photoPath: String,
     val caption: String?
 

@@ -13,5 +13,5 @@ data class PropertyNearbyPlaces(
     val id: Long = 0,
     @ColumnInfo(name = "property_id", index = true)
     val propertyId:Long,
-    val placeName: NearbyPlacesType
+    val type: NearbyPlacesType
 )
