@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import com.openclassrooms.realestatemanager.data.local.DatabaseCallBack
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
+import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,6 +30,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePropertyDao(database: RealEstateDataBase): PropertyDao = database.propertyDao
+
+    @Provides
+    @Singleton
+    fun providePropertyMapper() = PropertyMapper()
 
     /*@Provides
     @Singleton

@@ -67,7 +67,7 @@ interface PropertyDao {
             "AND (:maxSoldDate IS NULL OR sold_date <= :maxSoldDate) " +
             "GROUP BY Property.id " +
             "HAVING (:minNumPictures IS NULL OR numPhotos >= :minNumPictures) " +
-            "AND (:nearbyPlaceTypes IS NULL OR PropertyNearbyPlaces.type IN (:nearbyPlaceTypes)) " +
+            "AND (:nearbyPlaceTypes IS NULL OR PropertyNearbyPlaces.nearby_type IN (:nearbyPlaceTypes)) " +
             "ORDER BY created_date"
             )
     fun getFilteredProperties(

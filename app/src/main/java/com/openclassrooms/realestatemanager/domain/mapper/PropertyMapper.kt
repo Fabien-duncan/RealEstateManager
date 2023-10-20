@@ -8,8 +8,9 @@ import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDeta
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
+import javax.inject.Inject
 
-class PropertyMapper {
+class PropertyMapper{
     fun mapToRoomEntity(property: PropertyModel) = PropertyWithAllDetails(
         property = propertyModelToRomm(property),
         address = addressModelToRoom(property.address),
@@ -39,7 +40,7 @@ class PropertyMapper {
     private fun copyNearbyPlacesList(nearbyPlaces: List<PropertyNearbyPlaces>):List<NearbyPlacesType>{
         var nearbyPlacesType = mutableListOf<NearbyPlacesType>()
         nearbyPlaces.forEach{nearbyPlace ->
-            nearbyPlacesType.add(nearbyPlace.type)}
+            nearbyPlacesType.add(nearbyPlace.nearbyType)}
         return nearbyPlacesType
     }
     private fun addressRoomToModel(address: Address) = AddressModel(

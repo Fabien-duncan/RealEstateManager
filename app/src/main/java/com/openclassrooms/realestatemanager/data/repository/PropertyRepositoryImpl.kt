@@ -6,6 +6,7 @@ import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
+import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
 import com.openclassrooms.realestatemanager.domain.repository.Respository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
@@ -14,7 +15,8 @@ import java.util.Date
 import javax.inject.Inject
 
 class PropertyRepositoryImpl @Inject constructor(
-    private val propertyDao: PropertyDao
+    private val propertyDao: PropertyDao,
+    private val propertyMapper: PropertyMapper
 ): Respository{
     override suspend fun insert(property: Property) {
         propertyDao.insert(property)
