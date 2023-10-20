@@ -7,10 +7,13 @@ import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlace
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
+import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.repository.Respository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import java.util.Date
 import javax.inject.Inject
 
@@ -38,8 +41,12 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getSoldProperties()
     }
 
-    override fun getAllProperties(): Flow<List<PropertyWithAllDetails>> {
-        return propertyDao.getAllProperties()
+    override fun getAllProperties(): Flow<List<PropertyModel>> {
+        return propertyDao.getAllProperties().map {
+            propertyWithAllDetails -> propertyWithAllDetails.mapNotNull { propertyWithAllDetail ->
+                propertyMapper.mapToDomainModel(propertyWithAllDetail)
+            }
+        }
     }
 
     override fun getPropertyPhotos(propertyId: Long): Flow<List<PropertyPhotos>> {

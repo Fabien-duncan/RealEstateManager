@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
+import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllAvailablePropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
@@ -45,6 +46,6 @@ class HomeViewModel @Inject constructor(
 }
 
 data class HomeState(
-    val properties: ScreenViewState<List<PropertyWithAllDetails>> = ScreenViewState.Loading,
+    val properties: ScreenViewState<List<PropertyModel>> = ScreenViewState.Loading,
 )
 

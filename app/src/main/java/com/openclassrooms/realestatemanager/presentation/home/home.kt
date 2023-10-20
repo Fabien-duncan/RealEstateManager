@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
+import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 
 @Composable
 fun HomeScreen(
@@ -56,7 +57,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomePropertyList(
-    properties: List<PropertyWithAllDetails>,
+    properties: List<PropertyModel>,
     modifier: Modifier,
     onPropertyClicked:(Long) -> Unit
 ){
@@ -71,7 +72,7 @@ private fun HomePropertyList(
 
 @Composable
 private fun PropertyItem(
-    property: PropertyWithAllDetails,
+    property: PropertyModel,
     onPropertyClicked:(Long) -> Unit
 ){
     Surface (
@@ -79,13 +80,13 @@ private fun PropertyItem(
             .fillMaxWidth()
             .padding(8.dp)
             .clickable {
-                onPropertyClicked.invoke(property.property.id)
+                onPropertyClicked.invoke(property.id)
             },
     ) {
         Column(
         ) {
             Text(
-                text = property.property.type.toString(),
+                text = property.type.toString(),
                 modifier = Modifier
                     .padding(1.dp)
             )
@@ -96,7 +97,7 @@ private fun PropertyItem(
                     .padding(1.dp)
             )
             Text(
-                text = "\$${property.property.price}",
+                text = "\$${property.price}",
                 color = Color(0xFFFE4080),
                 modifier = Modifier
                     .padding(1.dp)
