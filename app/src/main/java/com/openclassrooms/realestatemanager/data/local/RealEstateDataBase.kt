@@ -57,13 +57,10 @@ abstract class RealEstateDataBase:RoomDatabase() {
         private fun populateDatabase(db: RealEstateDataBase) {
             val noteDao = db.propertyDao
             GlobalScope.launch {
-                val testProperties = getAllProperties()
+                val testProperties = getAllPropertiesWithAllDetails()
                 testProperties.forEach{ property ->
-                    db.propertyDao.insert(property)
-                }
-                val testAddress = getAllAddresses()
-                testAddress.forEach{ address ->
-                    db.propertyDao.insert(address)
+                    db.propertyDao.insert(property.property)
+                    db.propertyDao.insert(property.address)
                 }
             }
         }
@@ -102,6 +99,15 @@ abstract class RealEstateDataBase:RoomDatabase() {
                 Address(propertyId = 2, street = "1 Mallard Court", city = "Sacramento", state = "California", country = "United States", postalCode = "95828")
 
             )
+        }
+        private fun getAllPropertiesWithAllDetails():List<PropertyWithAllDetails>{
+            val testProperties = getAllProperties()
+            val testAddress = getAllAddresses()
+            return listOf(
+                PropertyWithAllDetails(property = testProperties.get(0), address = testAddress.get(0),photos = null, nearbyPlaces = null),
+                PropertyWithAllDetails(property = testProperties.get(1), address = testAddress.get(1),photos = null, nearbyPlaces = null)
+            )
+
         }
     }
 }
