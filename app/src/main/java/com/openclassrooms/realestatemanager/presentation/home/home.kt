@@ -28,9 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.common.ScreenViewState
+import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
@@ -121,7 +124,8 @@ private fun PropertyItem(
 
                     ) {
                     Text(
-                        text = property.type.toString(),
+                        text = TextUtils.capitaliseFirstLetter(property.type.toString()),
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
