@@ -1,9 +1,6 @@
 package com.openclassrooms.realestatemanager.di
 
 import android.content.Context
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import com.openclassrooms.realestatemanager.data.local.DatabaseCallBack
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
@@ -21,11 +18,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(
         @ApplicationContext context: Context,
-    ):RealEstateDataBase = Room.databaseBuilder(
-        context.applicationContext,
-        RealEstateDataBase::class.java,
-        "real_estate_db"
-    ).build()
+    ):RealEstateDataBase = RealEstateDataBase.getInstance(context)
 
     @Provides
     @Singleton

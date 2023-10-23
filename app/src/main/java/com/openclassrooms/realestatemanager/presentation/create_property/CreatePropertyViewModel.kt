@@ -1,16 +1,8 @@
 package com.openclassrooms.realestatemanager.presentation.create_property
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.openclassrooms.realestatemanager.data.local.DatabaseCallBack
-import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.domain.use_cases.AddPropertyUseCase
-import com.openclassrooms.realestatemanager.enums.PropertyType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @HiltViewModel
 class CreatePropertyViewModel @Inject constructor(

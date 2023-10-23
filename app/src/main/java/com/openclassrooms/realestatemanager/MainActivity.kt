@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.openclassrooms.realestatemanager.data.local.model.Property
+import com.openclassrooms.realestatemanager.presentation.common.rememberWindowSize
 import com.openclassrooms.realestatemanager.presentation.create_property.CreatePropertyViewModel
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             RealEstateManagerTheme {
                 // A surface container using the 'background' color from the theme
+                val windowSize = rememberWindowSize()
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     TopBar()
                     //RealEstateApp()

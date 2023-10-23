@@ -16,6 +16,6 @@ data class Address(
     val country: String,
     @ColumnInfo(name = "postal_code")
     val postalCode: String,
-    val latitude: Double?,
-    val longitude: Double?
+    val latitude: Double?=null,
+    val longitude: Double?=null
 )
