@@ -36,19 +36,22 @@ import com.openclassrooms.realestatemanager.enums.WindowSizeType
 import com.openclassrooms.realestatemanager.presentation.common.rememberWindowSize
 import com.openclassrooms.realestatemanager.presentation.common.rememberWindowSizeClass
 import com.openclassrooms.realestatemanager.presentation.create_property.CreatePropertyViewModel
+import com.openclassrooms.realestatemanager.presentation.detail.DetailAssistedFactory
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 import com.openclassrooms.realestatemanager.presentation.navigation.Navigation
 import com.openclassrooms.realestatemanager.ui.theme.RealEstateManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var assistedFactory: DetailAssistedFactory
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val quantity = Utils.convertDollarToEuro(100)
-
         setContent {
             RealEstateManagerTheme {
                 // A surface container using the 'background' color from the theme
@@ -64,28 +67,30 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    @Composable
+    fun RealEstateApp(modifier: Modifier = Modifier, windowSize:WindowSizeType){
+        val homeViewModel: HomeViewModel = viewModel()
+        val createPropertyViewModel: CreatePropertyViewModel = viewModel()
+        val navController = rememberNavController()
+        val state by homeViewModel.state.collectAsState()
+
+
+
+        //HomeScreen(modifier = modifier ,state = state, onPropertyClicked = { println("element $it has been clicked") })
+
+        Navigation(
+            windowSize = windowSize,
+            homeViewModel = homeViewModel,
+            createPropertyViewModel = createPropertyViewModel,
+            state = state,
+            modifier = modifier,
+            assistedFactory = assistedFactory
+        )
+
+    }
 }
 
-@Composable
-fun RealEstateApp(modifier: Modifier = Modifier, windowSize:WindowSizeType){
-    val homeViewModel: HomeViewModel = viewModel()
-    val createPropertyViewModel: CreatePropertyViewModel = viewModel()
-    val navController = rememberNavController()
-    val state by homeViewModel.state.collectAsState()
 
-
-
-    //HomeScreen(modifier = modifier ,state = state, onPropertyClicked = { println("element $it has been clicked") })
-
-    Navigation(
-        windowSize = windowSize,
-        homeViewModel = homeViewModel,
-        createPropertyViewModel = createPropertyViewModel,
-        state = state,
-        modifier = modifier
-    )
-
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

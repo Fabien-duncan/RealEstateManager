@@ -1,14 +1,20 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
 import com.openclassrooms.realestatemanager.presentation.create_property.CreatePropertyViewModel
+import com.openclassrooms.realestatemanager.presentation.detail.DetailAssistedFactory
+import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeState
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
@@ -19,7 +25,8 @@ fun Navigation(
     homeViewModel: HomeViewModel,
     createPropertyViewModel: CreatePropertyViewModel,
     state: HomeState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    assistedFactory: DetailAssistedFactory,
 ) {
     val isExpanded = windowSize == WindowSizeType.Expanded
 
@@ -42,6 +49,29 @@ fun Navigation(
         }
         ScreenType.Detail -> {
             println("go to detail")
+            when(state.properties){
+                is ScreenViewState.Loading -> {
+                    println("data loading")
+                    CircularProgressIndicator()
+                }
+
+                is ScreenViewState.Success -> {
+                    val properties = state.properties.data
+                    println("go to data")
+                    DetailScreen(propertyId = properties[index].id , assistedFactory = assistedFactory, modifier = modifier)
+
+                }
+
+                is ScreenViewState.Error -> {
+                    println("error: $state.properties.message")
+                    Text(
+                        text = state.properties.message ?: "Unknown Error",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                else -> {}
+            }
         }
         ScreenType.ListWithDetail -> {
             println("tablet mode")
