@@ -30,6 +30,9 @@ interface PropertyDao {
     @Query("SELECT * FROM Property WHERE id = :propertyId")
     fun getPropertyById(propertyId: Long): Flow<Property>
 
+    @Query("SELECT * FROM Property WHERE id = :propertyId")
+    fun getPropertyWithDetailsById(propertyId: Long): Flow<PropertyWithAllDetails>
+
     @Query("SELECT * FROM Property WHERE is_sold = 0 ORDER BY created_date")
     fun getAvailableProperties(): Flow<List<Property>>
 

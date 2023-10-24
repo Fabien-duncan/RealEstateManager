@@ -14,6 +14,7 @@ import com.openclassrooms.realestatemanager.enums.PropertyType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import java.util.Date
 import javax.inject.Inject
 
@@ -29,8 +30,9 @@ class PropertyRepositoryImpl @Inject constructor(
         propertyDao.update(property)
     }
 
-    override fun getPropertyById(propertyId: Long): Flow<Property> {
-        return propertyDao.getPropertyById(propertyId)
+    override fun getPropertyWithDetailsById(propertyId: Long): Flow<PropertyModel> {
+        return propertyDao.getPropertyWithDetailsById(propertyId).mapNotNull { propertyWithAllDetails ->
+            propertyMapper.mapToDomainModel(propertyWithAllDetails) }
     }
 
     override fun getAvailableProperties(): Flow<List<Property>> {
@@ -43,8 +45,8 @@ class PropertyRepositoryImpl @Inject constructor(
 
     override fun getAllProperties(): Flow<List<PropertyModel>> {
         return propertyDao.getAllProperties().map {
-            propertyWithAllDetails -> propertyWithAllDetails.mapNotNull { propertyWithAllDetail ->
-                propertyMapper.mapToDomainModel(propertyWithAllDetail)
+            propertiesWithAllDetails -> propertiesWithAllDetails.mapNotNull { propertyWithAllDetails ->
+                propertyMapper.mapToDomainModel(propertyWithAllDetails)
             }
         }
     }
