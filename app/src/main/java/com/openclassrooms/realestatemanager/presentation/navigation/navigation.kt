@@ -38,17 +38,23 @@ fun Navigation(
 
     when(homeScreenType){
         ScreenType.List -> {
+            println("go to List and index is $index")
             HomeScreen(
                 state = state,
                 onPropertyClicked = {
                     println("element $it has been clicked")
                     isItemOpened = true
                 },
-                modifier = modifier
+                modifier = modifier,
+                onItemClicked = {
+                    println("index is set to $it")
+                    index = it
+                    isItemOpened = true
+                }
             )
         }
         ScreenType.Detail -> {
-            println("go to detail")
+            println("go to detail and index is $index")
             when(state.properties){
                 is ScreenViewState.Loading -> {
                     println("data loading")
@@ -57,8 +63,8 @@ fun Navigation(
 
                 is ScreenViewState.Success -> {
                     val properties = state.properties.data
-                    println("go to data")
-                    DetailScreen(propertyId = properties[index].id , assistedFactory = assistedFactory, modifier = modifier)
+                    println("go to data and index is $index")
+                    DetailScreen(propertyId = properties[index].id , assistedFactory = assistedFactory, modifier = modifier){isItemOpened = false}
 
                 }
 

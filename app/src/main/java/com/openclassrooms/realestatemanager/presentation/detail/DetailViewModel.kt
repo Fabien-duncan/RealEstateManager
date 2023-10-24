@@ -29,6 +29,11 @@ class DetailViewModel @AssistedInject constructor(
             state = state.copy(property = property)
         }
     }
+    fun updatePropertyById(id:Long) = viewModelScope.launch {
+        getPropertyByIdUseCase(id).collectLatest {property ->
+            state = state.copy(property = property)
+        }
+    }
 }
 
 data class DetailSate(

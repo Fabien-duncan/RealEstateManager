@@ -42,7 +42,8 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeState,
-    onPropertyClicked: (Long) -> Unit
+    onPropertyClicked: (Long) -> Unit,
+    onItemClicked:(index:Int) -> Unit
 ){
     when(state.properties){
         is ScreenViewState.Loading -> {
@@ -53,7 +54,7 @@ fun HomeScreen(
         is ScreenViewState.Success -> {
             val properties = state.properties.data
             println("got data")
-            HomePropertyList(properties = properties, modifier = modifier, onPropertyClicked = onPropertyClicked)
+            HomePropertyList(properties = properties, modifier = modifier, onPropertyClicked = onPropertyClicked, onItemClicked = onItemClicked)
 
         }
 
@@ -73,12 +74,15 @@ fun HomeScreen(
 private fun HomePropertyList(
     properties: List<PropertyModel>,
     modifier: Modifier,
-    onPropertyClicked:(Long) -> Unit
+    onPropertyClicked:(Long) -> Unit,
+    onItemClicked:(index:Int)-> Unit
 ){
     LazyColumn(contentPadding = PaddingValues(top = 0.dp), modifier = modifier){
 
         itemsIndexed(properties){ index, property ->
-            PropertyItem(property = property, onPropertyClicked = onPropertyClicked)
+            PropertyItem(property = property, onPropertyClicked = onPropertyClicked){
+                onItemClicked.invoke(index)
+            }
         }
 
     }
@@ -87,7 +91,8 @@ private fun HomePropertyList(
 @Composable
 private fun PropertyItem(
     property: PropertyModel,
-    onPropertyClicked:(Long) -> Unit
+    onPropertyClicked:(Long) -> Unit,
+    onItemClicked: () -> Unit,
 ){
     //val imagePath = Environment.getExternalStorageDirectory().path + "media/external/images/media/IMG_20231020_143821/jpg"
     val imagePath = "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -99,6 +104,7 @@ private fun PropertyItem(
             .height(120.dp)
             .clickable {
                 onPropertyClicked.invoke(property.id)
+                onItemClicked.invoke()
             },
     ) {
             Row() {
