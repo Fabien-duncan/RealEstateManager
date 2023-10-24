@@ -5,14 +5,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.openclassrooms.realestatemanager.enums.ScreenType
-import com.openclassrooms.realestatemanager.enums.WindowSize
+import com.openclassrooms.realestatemanager.enums.WindowSizeType
+import com.openclassrooms.realestatemanager.presentation.create_property.CreatePropertyViewModel
+import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
+import com.openclassrooms.realestatemanager.presentation.home.HomeState
+import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 
 @Composable
-fun navigation(
-    windowSize: WindowSize
+fun Navigation(
+    windowSize: WindowSizeType,
+    homeViewModel: HomeViewModel,
+    createPropertyViewModel: CreatePropertyViewModel,
+    state: HomeState,
+    modifier: Modifier = Modifier
 ) {
-    val isExpanded = windowSize == WindowSize.Expanded
+    val isExpanded = windowSize == WindowSizeType.Expanded
 
     var index by remember{ mutableStateOf(0) }
 
@@ -22,16 +31,22 @@ fun navigation(
 
     when(homeScreenType){
         ScreenType.List -> {
-
+            HomeScreen(
+                state = state,
+                onPropertyClicked = {
+                    println("element $it has been clicked")
+                    isItemOpened = true
+                },
+                modifier = modifier
+            )
         }
         ScreenType.Detail -> {
-
+            println("go to detail")
         }
         ScreenType.ListWithDetail -> {
-
+            println("tablet mode")
         }
     }
-
 }
 
 @Composable

@@ -10,10 +10,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.window.layout.WindowMetricsCalculator
-import com.openclassrooms.realestatemanager.enums.WindowSize
+import com.openclassrooms.realestatemanager.enums.WindowSizeType
 
 @Composable
-fun Activity.rememberWindowSizeClass(): WindowSize {
+fun Activity.rememberWindowSizeClass(): WindowSizeType {
 
     val windowSize = rememberWindowSize()
 
@@ -41,12 +41,12 @@ fun getWindowSizeClass(windowSizeDpSize: DpSize) = when{
         throw IllegalArgumentException("Dp values can not be null!!!!")
     }
     windowSizeDpSize.width < 600.dp -> {
-        WindowSize.Compact
+        WindowSizeType.Compact
     }
     windowSizeDpSize.width < 840.dp -> {
-        WindowSize.Medium
+        WindowSizeType.Medium
     }
     else -> {
-        WindowSize.Expanded
+        WindowSizeType.Expanded
     }
 }

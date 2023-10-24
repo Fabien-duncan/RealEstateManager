@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.enums
 
-enum class WindowSize {
+enum class WindowSizeType {
     Compact,
     Medium,
     Expanded
