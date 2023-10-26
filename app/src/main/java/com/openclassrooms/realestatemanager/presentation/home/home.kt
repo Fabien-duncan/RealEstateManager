@@ -42,7 +42,6 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeState,
-    onPropertyClicked: (Long) -> Unit,
     onItemClicked:(index:Int) -> Unit
 ){
     when(state.properties){
@@ -54,7 +53,7 @@ fun HomeScreen(
         is ScreenViewState.Success -> {
             val properties = state.properties.data
             println("got data")
-            HomePropertyList(properties = properties, modifier = modifier, onPropertyClicked = onPropertyClicked, onItemClicked = onItemClicked)
+            HomePropertyList(properties = properties, modifier = modifier, onItemClicked = onItemClicked)
 
         }
 
@@ -74,13 +73,12 @@ fun HomeScreen(
 private fun HomePropertyList(
     properties: List<PropertyModel>,
     modifier: Modifier,
-    onPropertyClicked:(Long) -> Unit,
     onItemClicked:(index:Int)-> Unit
 ){
     LazyColumn(contentPadding = PaddingValues(top = 0.dp), modifier = modifier){
 
         itemsIndexed(properties){ index, property ->
-            PropertyItem(property = property, onPropertyClicked = onPropertyClicked){
+            PropertyItem(property = property){
                 onItemClicked.invoke(index)
             }
         }
@@ -91,7 +89,6 @@ private fun HomePropertyList(
 @Composable
 private fun PropertyItem(
     property: PropertyModel,
-    onPropertyClicked:(Long) -> Unit,
     onItemClicked: () -> Unit,
 ){
     //val imagePath = Environment.getExternalStorageDirectory().path + "media/external/images/media/IMG_20231020_143821/jpg"
@@ -103,7 +100,6 @@ private fun PropertyItem(
             .fillMaxWidth()
             .height(120.dp)
             .clickable {
-                onPropertyClicked.invoke(property.id)
                 onItemClicked.invoke()
             },
     ) {
@@ -148,7 +144,7 @@ private fun PropertyItem(
             }
         }
     Divider(
-        color = Color.LightGray,
+        color = Color.Gray,
         thickness = 1.dp,
         modifier = Modifier.fillMaxWidth()
     )

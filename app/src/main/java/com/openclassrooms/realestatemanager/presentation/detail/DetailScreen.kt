@@ -146,7 +146,7 @@ private fun DetailScreenView(
 }
 
 @Composable
-fun PhotoItem(
+private fun PhotoItem(
     modifier: Modifier = Modifier,
     photo: PropertyPhotosModel
 ){
@@ -191,7 +191,7 @@ fun PhotoItem(
     }
 }
 @Composable
-fun EmptyPhotoList(){
+private fun EmptyPhotoList(){
     Box(
         modifier = Modifier
             .padding(4.dp)
@@ -220,7 +220,7 @@ fun EmptyPhotoList(){
     }
 }
 @Composable
-fun HouseDetails(
+private fun HouseDetails(
     state: DetailSate,
     modifier: Modifier = Modifier,
     isLargeView:Boolean
@@ -301,7 +301,7 @@ fun HouseDetails(
     }
 }
 @Composable
-fun HouseDetailCard(
+private fun HouseDetailCard(
     painter: Painter,
     title:String,
     value:String,
@@ -323,7 +323,7 @@ fun HouseDetailCard(
     }
 }
 @Composable
-fun AddressDetail(
+private fun AddressDetail(
     modifier: Modifier = Modifier,
     address: AddressModel
 ){
