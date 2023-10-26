@@ -63,7 +63,8 @@ fun Navigation(
                 state = state,
                 modifier = modifier,
                 assistedFactory = assistedFactory,
-                index = index
+                index = index,
+                isLargeView = false
             ) {
                 isItemOpened = false
             }
@@ -94,7 +95,7 @@ private fun ListAndDetailScreen(
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
-        HomeScreen(state = state, onItemClicked = onItemClicked, modifier = modifier.width(300.dp))
+        HomeScreen(state = state, onItemClicked = onItemClicked, modifier = modifier.width(350.dp), selectedIndex = index)
         Divider(
             color = Color.Gray,
             modifier = Modifier.fillMaxHeight().width(1.dp)
@@ -103,7 +104,8 @@ private fun ListAndDetailScreen(
             state = state,
             modifier = modifier,
             assistedFactory = assistedFactory,
-            index = index
+            index = index,
+            isLargeView = true
         ) {
 
         }
@@ -133,6 +135,7 @@ fun LaunchDetailScreenFromState(
     modifier: Modifier,
     assistedFactory: DetailAssistedFactory,
     index: Int,
+    isLargeView:Boolean,
     onBackPressed:() -> Unit
 ){
     when(state.properties){
@@ -144,7 +147,13 @@ fun LaunchDetailScreenFromState(
         is ScreenViewState.Success -> {
             val properties = state.properties.data
             //println("go to data and index is $index")
-            DetailScreen(propertyId = properties[index].id , assistedFactory = assistedFactory, modifier = modifier, onBackPressed = onBackPressed)
+            DetailScreen(
+                propertyId = properties[index].id,
+                assistedFactory = assistedFactory,
+                modifier = modifier,
+                isLargeView = isLargeView,
+                onBackPressed = onBackPressed
+            )
 
         }
 

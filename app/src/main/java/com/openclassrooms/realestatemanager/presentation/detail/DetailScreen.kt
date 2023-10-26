@@ -53,6 +53,7 @@ fun DetailScreen(
     modifier: Modifier = Modifier,
     propertyId: Long,
     assistedFactory: DetailAssistedFactory,
+    isLargeView:Boolean,
     onBackPressed:() -> Unit
 ) {
     println("in Detail Screen and the property id is $propertyId")
@@ -68,7 +69,7 @@ fun DetailScreen(
 
     println("property id is ${state.property?.id}")
 
-    DetailScreenView(modifier = modifier, state = state)
+    DetailScreenView(modifier = modifier, state = state, isLargeView = isLargeView)
 
     BackHandler {
 
@@ -81,6 +82,7 @@ fun DetailScreen(
 private fun DetailScreenView(
     modifier: Modifier,
     state: DetailSate,
+    isLargeView:Boolean
 ){
     var photos = listOf<PropertyPhotosModel>(
         PropertyPhotosModel("https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", "view"),
@@ -125,22 +127,46 @@ private fun DetailScreenView(
                 color = Color.DarkGray
             )
         }
+        if (isLargeView){
+            Row{
+                HouseDetails(
+                    state = state,
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(8.dp),
+                    isLargeView = true
+                )
 
-        HouseDetails(state = state,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            isLargeView = false
-        )
-
-        state.property?.let {
-            AddressDetail(
-                address = it.address,
+                state.property?.let {
+                    AddressDetail(
+                        address = it.address,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .weight(1f),
+                        isLargeView = true
+                    )
+                }
+            }
+        }
+        else{
+            HouseDetails(
+                state = state,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
-                    .weight(1f),
+                    .padding(8.dp),
+                isLargeView = false
             )
+
+            state.property?.let {
+                AddressDetail(
+                    address = it.address,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .weight(1f),
+                    isLargeView = false
+                )
+            }
         }
     }
 }
@@ -325,8 +351,10 @@ private fun HouseDetailCard(
 @Composable
 private fun AddressDetail(
     modifier: Modifier = Modifier,
-    address: AddressModel
+    address: AddressModel,
+    isLargeView:Boolean
 ){
+    val padding = if(isLargeView) 32.dp else 8.dp
     Row(modifier = modifier) {
         Column {
             Row {
@@ -349,7 +377,7 @@ private fun AddressDetail(
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(horizontal = padding, vertical = 8.dp)
                     .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
             )
         }
