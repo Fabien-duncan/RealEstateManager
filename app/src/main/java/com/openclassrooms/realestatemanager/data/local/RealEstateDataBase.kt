@@ -14,6 +14,7 @@ import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
+import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
@@ -61,6 +62,9 @@ abstract class RealEstateDataBase:RoomDatabase() {
                 testProperties.forEach{ property ->
                     db.propertyDao.insert(property.property)
                     db.propertyDao.insert(property.address)
+                    property.photos?.let {
+                            db.propertyDao.insert(it)
+                    }
                 }
             }
         }
@@ -100,14 +104,33 @@ abstract class RealEstateDataBase:RoomDatabase() {
 
             )
         }
+
+        private fun getAllPhotos(): List<PropertyPhotos>{
+            return listOf(
+                PropertyPhotos(propertyId = 2, photoPath = "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", caption = "view"),
+                PropertyPhotos(propertyId = 2, photoPath = "https://www.mydomaine.com/thmb/CaWdFGvTH4-h1VvG6tukpKuU2lM=/3409x0/filters:no_upscale():strip_icc()/binary-4--583f06853df78c6f6a9e0b7a.jpeg", caption = "Facade"),
+                PropertyPhotos(propertyId = 2, photoPath = "https://designingidea.com/wp-content/uploads/2022/01/modern-home-types-of-room-living-space-dining-area-kitchen-glass-door-floor-rug-loft-pendant-light-ss.jpg", caption = null),
+                PropertyPhotos(propertyId = 2, photoPath = "https://foyr.com/learn/wp-content/uploads/2022/05/foyer-or-entry-hall-types-of-rooms-in-a-house-1024x819.jpg", caption = "entrance"),
+
+                PropertyPhotos(propertyId = 1, photoPath = "https://www.indexsante.ca/chroniques/images/appartement-residence.jpg", caption = "facade"),
+                PropertyPhotos(propertyId = 1, photoPath = "https://media.lesechos.com/api/v1/images/view/634e807253fc0b2c225abf6a/1280x720/0702580327940-web-tete.jpg", caption = "lounge"),
+                PropertyPhotos(propertyId = 1, photoPath = "https://www.bhg.com/thmb/MaQDVndcD-FF3qtf9e50rmfVml4=/4000x0/filters:no_upscale():strip_icc()/bhg-modern-kitchen-8RbSHoA8aKT9tEG-DcYr56-039892da05774ea78f8682b3f693bb5d.jpg", caption = "kitchen"),
+
+                PropertyPhotos(propertyId = 1, photoPath = "https://foyr.com/learn/wp-content/uploads/2022/05/foyer-or-entry-hall-types-of-rooms-in-a-house-1024x819.jpg", caption = "entrance")
+
+            )
+
+        }
+
         private fun getAllPropertiesWithAllDetails():List<PropertyWithAllDetails>{
             val testProperties = getAllProperties()
             val testAddress = getAllAddresses()
-            return listOf(
-                PropertyWithAllDetails(property = testProperties.get(0), address = testAddress.get(0),photos = null, nearbyPlaces = null),
-                PropertyWithAllDetails(property = testProperties.get(1), address = testAddress.get(1),photos = null, nearbyPlaces = null)
-            )
+            val testPhotos = getAllPhotos()
 
+            return listOf(
+                PropertyWithAllDetails(property = testProperties[0], address = testAddress[0],photos = testPhotos.filter { it.propertyId == 1.toLong() }, nearbyPlaces = null),
+                PropertyWithAllDetails(property = testProperties[1], address = testAddress[1],photos = testPhotos.filter { it.propertyId == 2.toLong() }, nearbyPlaces = null)
+            )
         }
     }
 }

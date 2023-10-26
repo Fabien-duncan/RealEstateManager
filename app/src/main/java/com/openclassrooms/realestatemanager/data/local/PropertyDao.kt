@@ -23,6 +23,8 @@ interface PropertyDao {
 
     @Insert(onConflict =  OnConflictStrategy.REPLACE)
     fun insert(address: Address):Long
+    @Insert(onConflict =  OnConflictStrategy.REPLACE)
+    fun insert(photos: List<PropertyPhotos>)
 
     @Update(onConflict =  OnConflictStrategy.REPLACE)
     fun update(property: Property)
@@ -30,6 +32,7 @@ interface PropertyDao {
     @Query("SELECT * FROM Property WHERE id = :propertyId")
     fun getPropertyById(propertyId: Long): Flow<Property>
 
+    @Transaction
     @Query("SELECT * FROM Property WHERE id = :propertyId")
     fun getPropertyWithDetailsById(propertyId: Long): Flow<PropertyWithAllDetails>
 
