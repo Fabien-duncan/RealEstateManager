@@ -84,13 +84,13 @@ private fun DetailScreenView(
     state: DetailSate,
     isLargeView:Boolean
 ){
-    var photos = listOf<PropertyPhotosModel>(
-        PropertyPhotosModel("https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", "view"),
-        PropertyPhotosModel("https://www.mydomaine.com/thmb/CaWdFGvTH4-h1VvG6tukpKuU2lM=/3409x0/filters:no_upscale():strip_icc()/binary-4--583f06853df78c6f6a9e0b7a.jpeg", "Facade"),
-        PropertyPhotosModel("https://designingidea.com/wp-content/uploads/2022/01/modern-home-types-of-room-living-space-dining-area-kitchen-glass-door-floor-rug-loft-pendant-light-ss.jpg", null),
-        PropertyPhotosModel("https://foyr.com/learn/wp-content/uploads/2022/05/foyer-or-entry-hall-types-of-rooms-in-a-house-1024x819.jpg", "entrance")
-        )
-    //var photos = listOf<PropertyPhotosModel>()
+    /*var photos = listOf<PropertyPhotosModel>(
+        PropertyPhotosModel(1,"https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", "view"),
+        PropertyPhotosModel(2,"https://www.mydomaine.com/thmb/CaWdFGvTH4-h1VvG6tukpKuU2lM=/3409x0/filters:no_upscale():strip_icc()/binary-4--583f06853df78c6f6a9e0b7a.jpeg", "Facade"),
+        PropertyPhotosModel(3,"https://designingidea.com/wp-content/uploads/2022/01/modern-home-types-of-room-living-space-dining-area-kitchen-glass-door-floor-rug-loft-pendant-light-ss.jpg", null),
+        PropertyPhotosModel(4,"https://foyr.com/learn/wp-content/uploads/2022/05/foyer-or-entry-hall-types-of-rooms-in-a-house-1024x819.jpg", "entrance")
+        )*/
+    var photos = state.property?.photos
     Column(modifier = modifier.fillMaxSize()) {
 
         Text(
@@ -100,14 +100,16 @@ private fun DetailScreenView(
             color = Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
-        if(!photos.isEmpty()) {
-            LazyRow(modifier = Modifier.padding(4.dp)) {
-                itemsIndexed(photos) { index, photo ->
-                    PhotoItem(photo = photo)
+        if (photos != null) {
+            if(!photos.isEmpty()) {
+                LazyRow(modifier = Modifier.padding(4.dp)) {
+                    itemsIndexed(photos) { index, photo ->
+                        PhotoItem(photo = photo)
+                    }
                 }
+            }else{
+                EmptyPhotoList()
             }
-        }else{
-            EmptyPhotoList()
         }
 
         Text(

@@ -1,18 +1,18 @@
 package com.openclassrooms.realestatemanager.domain.mapper
 
-import androidx.room.ColumnInfo
 import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
+import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
-import javax.inject.Inject
 
 class PropertyMapper{
     fun mapToRoomEntity(property: PropertyModel) = PropertyWithAllDetails(
-        property = propertyModelToRomm(property),
+        property = propertyModelToRoom(property),
         address = addressModelToRoom(property.address),
         nearbyPlaces = null,
         photos = null,
@@ -33,8 +33,7 @@ class PropertyMapper{
         agentName = property.property.agentName,
         address = addressRoomToModel(property.address),
         nearbyPlaces = property.nearbyPlaces?.let { copyNearbyPlacesList(it) },
-        photos = null,
-
+        photos = property.photos?.let { listOfpropertyPhotosRoomtoModel(it) }
     )
 
     private fun copyNearbyPlacesList(nearbyPlaces: List<PropertyNearbyPlaces>):List<NearbyPlacesType>{
@@ -65,7 +64,7 @@ class PropertyMapper{
         latitude = address.latitude,
         longitude = address.longitude
     )
-    private fun propertyModelToRomm(property: PropertyModel) = Property(
+    private fun propertyModelToRoom(property: PropertyModel) = Property(
         id = property.id,
         type = property.type,
         price = property.price,
@@ -78,6 +77,20 @@ class PropertyMapper{
         createdDate = property.createdDate,
         soldDate = property.soldDate,
         agentName = property.agentName,
+    )
+
+    private fun listOfpropertyPhotosRoomtoModel(propertyPhotos: List<PropertyPhotos>):List<PropertyPhotosModel>? {
+        var photos = mutableListOf<PropertyPhotosModel>()
+
+        propertyPhotos.forEach{
+            photos.add(propertyPhotoRoomToModel(it))
+        }
+        return photos
+    }
+    private fun propertyPhotoRoomToModel(propertyPhotos: PropertyPhotos) = PropertyPhotosModel(
+        id =  propertyPhotos.id,
+        photoPath = propertyPhotos.photoPath,
+        caption = propertyPhotos.caption
     )
 
 }
