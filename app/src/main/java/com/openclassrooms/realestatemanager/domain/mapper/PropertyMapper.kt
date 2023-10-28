@@ -46,6 +46,7 @@ class PropertyMapper{
             id = address.id,
             propertyId = address.propertyId,
             street = address.street,
+            extra = address.extra,
             city = address.city,
             state = address.state,
             country = address.country,

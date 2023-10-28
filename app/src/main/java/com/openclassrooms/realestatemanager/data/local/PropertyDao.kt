@@ -29,35 +29,35 @@ interface PropertyDao {
     @Update(onConflict =  OnConflictStrategy.REPLACE)
     fun update(property: Property)
 
-    @Query("SELECT * FROM Property WHERE id = :propertyId")
+    @Query("SELECT * FROM properties WHERE id = :propertyId")
     fun getPropertyById(propertyId: Long): Flow<Property>
 
     @Transaction
-    @Query("SELECT * FROM Property WHERE id = :propertyId")
+    @Query("SELECT * FROM properties WHERE id = :propertyId")
     fun getPropertyWithDetailsById(propertyId: Long): Flow<PropertyWithAllDetails>
 
-    @Query("SELECT * FROM Property WHERE is_sold = 0 ORDER BY created_date")
+    @Query("SELECT * FROM properties WHERE is_sold = 0 ORDER BY created_date")
     fun getAvailableProperties(): Flow<List<Property>>
 
-    @Query("SELECT * FROM Property WHERE is_sold = 1 ORDER BY created_date")
+    @Query("SELECT * FROM properties WHERE is_sold = 1 ORDER BY created_date")
     fun getSoldProperties(): Flow<List<Property>>
 
     @Transaction
-    @Query("SELECT * FROM Property")
+    @Query("SELECT * FROM properties")
     fun getAllProperties(): Flow<List<PropertyWithAllDetails>>
 
-    @Query("SELECT * FROM PropertyPhotos WHERE property_id = :propertyId")
+    @Query("SELECT * FROM property_photos WHERE property_id = :propertyId")
     fun getPropertyPhotos(propertyId: Long):Flow<List<PropertyPhotos>>
 
-    @Query("SELECT * FROM Address WHERE id = :addressId")
+    @Query("SELECT * FROM addresses WHERE id = :addressId")
     fun getPropertyAddress(addressId: Long):Flow<Address>
 
-    @Query("SELECT * FROM PropertyNearbyPlaces WHERE property_id = :propertyId")
+    @Query("SELECT * FROM property_nearby_places WHERE property_id = :propertyId")
     fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>
 
-    @Query("SELECT Property.*, COUNT(PropertyPhotos.property_id) AS numPhotos FROM Property " +
-            "LEFT JOIN PropertyPhotos ON Property.id = PropertyPhotos.property_id " +
-            "LEFT JOIN PropertyNearbyPlaces ON Property.id = PropertyNearbyPlaces.property_id " +
+    @Query("SELECT properties.*, COUNT(property_photos.property_id) AS numPhotos FROM properties " +
+            "LEFT JOIN property_photos ON properties.id = property_photos.property_id " +
+            "LEFT JOIN property_nearby_places ON properties.id = property_nearby_places.property_id " +
             "WHERE " +
             "(:propertyType IS NULL OR type = :propertyType) " +
             "AND (:minPrice IS NULL OR price >= :minPrice) " +
@@ -71,9 +71,9 @@ interface PropertyDao {
             "AND (:isSold IS NULL OR is_sold = :isSold) " +
             "AND (:minSoldDate IS NULL OR created_date >= :minCreationDate) " +
             "AND (:maxSoldDate IS NULL OR sold_date <= :maxSoldDate) " +
-            "GROUP BY Property.id " +
+            "GROUP BY properties.id " +
             "HAVING (:minNumPictures IS NULL OR numPhotos >= :minNumPictures) " +
-            "AND (:nearbyPlaceTypes IS NULL OR PropertyNearbyPlaces.nearby_type IN (:nearbyPlaceTypes)) " +
+            "AND (:nearbyPlaceTypes IS NULL OR property_nearby_places.nearby_type IN (:nearbyPlaceTypes)) " +
             "ORDER BY created_date"
             )
     fun getFilteredProperties(

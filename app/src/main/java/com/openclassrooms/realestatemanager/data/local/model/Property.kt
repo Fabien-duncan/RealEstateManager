@@ -9,7 +9,8 @@ import com.openclassrooms.realestatemanager.enums.PropertyType
 import java.util.Date
 
 @Entity(
-    indices = [Index(value = ["id"], unique = true)]
+    indices = [Index(value = ["id"], unique = true)],
+    tableName = "properties"
 )
 data class Property(
     @PrimaryKey(autoGenerate = true)

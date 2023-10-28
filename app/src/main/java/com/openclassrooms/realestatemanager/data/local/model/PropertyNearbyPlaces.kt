@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 
-@Entity
+@Entity(tableName = "property_nearby_places")
 data class PropertyNearbyPlaces(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

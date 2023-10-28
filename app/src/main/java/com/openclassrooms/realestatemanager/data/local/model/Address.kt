@@ -4,13 +4,14 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "addresses")
 data class Address(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     @ColumnInfo(name = "property_id", index = true)
     val propertyId: Long,
     val street: String,
+    val extra: String? = null, //flat number or any extra detail
     val city: String,
     val state: String,
     val country: String,

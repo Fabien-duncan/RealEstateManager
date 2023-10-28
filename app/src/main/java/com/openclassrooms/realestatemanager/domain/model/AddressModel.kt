@@ -4,6 +4,7 @@ data class AddressModel(
     val id: Long = 0,
     val propertyId: Long,
     val street: String,
+    val extra: String?, //flat number or any extra detail
     val city: String,
     val state: String,
     val country: String,

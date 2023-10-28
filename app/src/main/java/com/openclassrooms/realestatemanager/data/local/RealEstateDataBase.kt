@@ -94,14 +94,39 @@ abstract class RealEstateDataBase:RoomDatabase() {
                     isSold = false,
                     soldDate = Date(),
                     agentName = "John Do"
+                ),
+                Property(
+                    type = PropertyType.APARTMENT,
+                    price = 482515.33,
+                    area = 227,
+                    rooms = 2,
+                    bedrooms = 1,
+                    bathrooms = 1,
+                    description = "Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui. Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam. Suspendisse potenti.",
+                    isSold = false,
+                    soldDate = Date(),
+                    agentName = "Fabien Duncan"
+                ),
+                Property(
+                    type = PropertyType.CONDO,
+                    price = 4078847.7,
+                    area = 547,
+                    rooms = 15,
+                    bedrooms = 8,
+                    bathrooms = 7,
+                    description = "Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus. Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis.",
+                    isSold = false,
+                    soldDate = Date(),
+                    agentName = "Fabien Duncan"
                 )
             )
         }
         private fun getAllAddresses(): List<Address> {
             return listOf(
-                Address(propertyId = 1, street = "73486 Sachs Center", city = "Jeffersonville", state = "Indiana", country = "United States", postalCode = "47134"),
-                Address(propertyId = 2, street = "1 Mallard Court", city = "Sacramento", state = "California", country = "United States", postalCode = "95828")
-
+                Address(propertyId = 1, street = "73486 Sachs Center", extra = "apt 7B", city = "Jeffersonville", state = "Indiana", country = "United States", postalCode = "47134"),
+                Address(propertyId = 2, street = "1 Mallard Court", city = "Sacramento", state = "California", country = "United States", postalCode = "95828"),
+                Address(propertyId = 3, street = "26 Clove Hill", extra = "231", city = "San Jose", state = "California", country = "United States", postalCode = "95194"),
+                Address(propertyId = 4, street = "9943 Warbler Circle", city = "Richmond", state = "Virginia", country = "United States", postalCode = "23220"),
             )
         }
 
@@ -116,7 +141,7 @@ abstract class RealEstateDataBase:RoomDatabase() {
                 PropertyPhotos(propertyId = 1, photoPath = "https://media.lesechos.com/api/v1/images/view/634e807253fc0b2c225abf6a/1280x720/0702580327940-web-tete.jpg", caption = "lounge"),
                 PropertyPhotos(propertyId = 1, photoPath = "https://www.bhg.com/thmb/MaQDVndcD-FF3qtf9e50rmfVml4=/4000x0/filters:no_upscale():strip_icc()/bhg-modern-kitchen-8RbSHoA8aKT9tEG-DcYr56-039892da05774ea78f8682b3f693bb5d.jpg", caption = "kitchen"),
 
-                PropertyPhotos(propertyId = 3, photoPath = "https://foyr.com/learn/wp-content/uploads/2022/05/foyer-or-entry-hall-types-of-rooms-in-a-house-1024x819.jpg", caption = "entrance")
+                PropertyPhotos(propertyId = 4, photoPath = "https://www.edinarealty.com/media/3678/difference-between-condo.jpg?mode=crop&width=800&height=540", caption = "facade")
 
             )
 
@@ -129,7 +154,9 @@ abstract class RealEstateDataBase:RoomDatabase() {
 
             return listOf(
                 PropertyWithAllDetails(property = testProperties[0], address = testAddress[0],photos = testPhotos.filter { it.propertyId == 1.toLong() }, nearbyPlaces = null),
-                PropertyWithAllDetails(property = testProperties[1], address = testAddress[1],photos = testPhotos.filter { it.propertyId == 2.toLong() }, nearbyPlaces = null)
+                PropertyWithAllDetails(property = testProperties[1], address = testAddress[1],photos = testPhotos.filter { it.propertyId == 2.toLong() }, nearbyPlaces = null),
+                PropertyWithAllDetails(property = testProperties[2], address = testAddress[2],photos = null, nearbyPlaces = null),
+                PropertyWithAllDetails(property = testProperties[3], address = testAddress[3],photos = testPhotos.filter { it.propertyId == 4.toLong() }, nearbyPlaces = null)
             )
         }
     }

@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.presentation.home
 
 import android.net.Uri
 import android.os.Environment
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,15 +30,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 
 @Composable
 fun HomeScreen(
@@ -97,8 +101,11 @@ private fun PropertyItem(
 
 ){
     //val imagePath = Environment.getExternalStorageDirectory().path + "media/external/images/media/IMG_20231020_143821/jpg"
-    val imagePath = "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-    val imageUri = Uri.parse(imagePath)
+    /*val imagePath = "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+    val imageUri = Uri.parse(imagePath)*/
+    val listOfPhotos = property.photos
+    val imageUri = if (!listOfPhotos.isNullOrEmpty()) Uri.parse(listOfPhotos[0].photoPath) else null
+
     val selectedModifier: Modifier
     val moneyColor :Color
     if(isSelected){
@@ -128,11 +135,20 @@ private fun PropertyItem(
                 ) {
 
                     //Text(text = "Some Txt")
-                    AsyncImage(
-                        model = imageUri,
-                        contentDescription = "A photo",
-                        contentScale = ContentScale.FillHeight
-                    )
+                    if (imageUri != null) {
+                        AsyncImage(
+                            model = imageUri,
+                            contentDescription = "A photo of the property",
+                            contentScale = ContentScale.FillHeight
+                        )
+                    }else{
+                        Image(
+                            painter = painterResource(id = R.drawable.missing_image),
+                            contentDescription = "No Image",
+                            contentScale = ContentScale.FillHeight,
+                            modifier = Modifier.background(MaterialTheme.colorScheme.secondary).fillMaxSize(),
+                        )
+                    }
                 }
                 Column(
                     modifier = Modifier

@@ -5,6 +5,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +16,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -24,6 +30,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +45,7 @@ import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,12 +96,7 @@ private fun DetailScreenView(
     state: DetailSate,
     isLargeView:Boolean
 ){
-    /*var photos = listOf<PropertyPhotosModel>(
-        PropertyPhotosModel(1,"https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", "view"),
-        PropertyPhotosModel(2,"https://www.mydomaine.com/thmb/CaWdFGvTH4-h1VvG6tukpKuU2lM=/3409x0/filters:no_upscale():strip_icc()/binary-4--583f06853df78c6f6a9e0b7a.jpeg", "Facade"),
-        PropertyPhotosModel(3,"https://designingidea.com/wp-content/uploads/2022/01/modern-home-types-of-room-living-space-dining-area-kitchen-glass-door-floor-rug-loft-pendant-light-ss.jpg", null),
-        PropertyPhotosModel(4,"https://foyr.com/learn/wp-content/uploads/2022/05/foyer-or-entry-hall-types-of-rooms-in-a-house-1024x819.jpg", "entrance")
-        )*/
+    val scrollState = rememberScrollState()
     var photos = state.property?.photos
     Column(modifier = modifier.fillMaxSize()) {
 
@@ -120,13 +127,16 @@ private fun DetailScreenView(
             modifier = Modifier.padding(8.dp)
         )
 
+
         state.property?.let {
             Text(
                 text = it.description,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                color = Color.DarkGray
+                    .heightIn(max = 150.dp)
+                    .padding(8.dp)
+                    .verticalScroll(scrollState),
+                color = Color.DarkGray,
             )
         }
         if (isLargeView){
@@ -231,7 +241,7 @@ private fun EmptyPhotoList(){
         Column() {
             Image(
                 painter = painterResource(id = R.drawable.missing_image),
-                contentDescription = null, // Set content description if needed
+                contentDescription = "No Image",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp)
@@ -356,7 +366,7 @@ private fun AddressDetail(
     address: AddressModel,
     isLargeView:Boolean
 ){
-    val padding = if(isLargeView) 32.dp else 8.dp
+    val padding = if(isLargeView) 40.dp else 8.dp
     Row(modifier = modifier) {
         Column {
             Row {
@@ -365,7 +375,7 @@ private fun AddressDetail(
             }
             Column(Modifier.padding(start = 24.dp)) {
                 Text(text = address.street, fontSize = 16.sp, color = Color.DarkGray)
-                Text(text = "apt 6", fontSize = 16.sp, color = Color.DarkGray)
+                if (address.extra != null )Text(text = address.extra, fontSize = 16.sp, color = Color.DarkGray)
                 Text(text = address.city, fontSize = 16.sp, color = Color.DarkGray)
                 Text(text = address.state, fontSize = 16.sp, color = Color.DarkGray)
                 Text(text = address.postalCode, fontSize = 16.sp, color = Color.DarkGray)
@@ -376,8 +386,12 @@ private fun AddressDetail(
             AsyncImage(
                 model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
                 contentDescription = "map view",
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier
+                contentScale = if (isLargeView )ContentScale.FillHeight else ContentScale.FillWidth,
+                modifier = if (isLargeView)Modifier
+                    .heightIn(max = 280.dp)
+                    .padding(horizontal = padding, vertical = 8.dp)
+                    .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
+                else Modifier
                     .fillMaxWidth()
                     .padding(horizontal = padding, vertical = 8.dp)
                     .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
