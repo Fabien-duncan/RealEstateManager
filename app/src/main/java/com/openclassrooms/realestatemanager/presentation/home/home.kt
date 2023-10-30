@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,12 +29,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
@@ -132,6 +138,7 @@ private fun PropertyItem(
                     modifier = Modifier
                         .fillMaxWidth(1f / 3f)
                         .fillMaxHeight(),
+                    contentAlignment = Alignment.Center
                 ) {
 
                     //Text(text = "Some Txt")
@@ -146,7 +153,27 @@ private fun PropertyItem(
                             painter = painterResource(id = R.drawable.missing_image),
                             contentDescription = "No Image",
                             contentScale = ContentScale.FillHeight,
-                            modifier = Modifier.background(MaterialTheme.colorScheme.secondary).fillMaxSize(),
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.secondary)
+                                .fillMaxSize(),
+                        )
+                    }
+
+                    if (property.soldDate != null){
+                        Text(
+                            text = "Sold!",
+                            color = Color.White,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .rotate(-45f)
+                                .background(
+                                    color = Color.Red.copy(alpha = 0.7f),
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                                .width(500.dp)
+
                         )
                     }
                 }

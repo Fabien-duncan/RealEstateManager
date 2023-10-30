@@ -92,7 +92,6 @@ abstract class RealEstateDataBase:RoomDatabase() {
                     bathrooms = 2,
                     description = "Mauris ullamcorper purus sit amet nulla. Quisque arcu libero, rutrum ac, lobortis vel, dapibus at, diam. Nam tristique tortor eu pede.",
                     isSold = false,
-                    soldDate = Date(),
                     agentName = "John Do"
                 ),
                 Property(
@@ -104,7 +103,6 @@ abstract class RealEstateDataBase:RoomDatabase() {
                     bathrooms = 1,
                     description = "Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui. Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam. Suspendisse potenti.",
                     isSold = false,
-                    soldDate = Date(),
                     agentName = "Fabien Duncan"
                 ),
                 Property(
@@ -116,7 +114,6 @@ abstract class RealEstateDataBase:RoomDatabase() {
                     bathrooms = 7,
                     description = "Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus. Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis.",
                     isSold = false,
-                    soldDate = Date(),
                     agentName = "Fabien Duncan"
                 )
             )

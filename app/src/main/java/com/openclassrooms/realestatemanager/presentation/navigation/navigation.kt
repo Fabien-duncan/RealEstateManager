@@ -4,11 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
-import com.openclassrooms.realestatemanager.presentation.create_property.CreatePropertyViewModel
 import com.openclassrooms.realestatemanager.presentation.detail.DetailAssistedFactory
 import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
@@ -46,7 +45,6 @@ import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 fun Navigation(
     windowSize: WindowSizeType,
     homeViewModel: HomeViewModel,
-    createPropertyViewModel: CreatePropertyViewModel,
     state: HomeState,
     modifier: Modifier = Modifier,
     assistedFactory: DetailAssistedFactory,
@@ -59,15 +57,13 @@ fun Navigation(
 
     val homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened)
 
-    Scaffold(topBar = { TopBar()}) {
+    Scaffold(topBar = { TopBar(screenType = homeScreenType, onBackArrowPressed = {isItemOpened = false})}) {
         when (homeScreenType) {
             ScreenType.List -> {
-                //println("go to List and index is $index")
                 HomeScreen(
                     state = state,
                     modifier = modifier.padding(it),
                     onItemClicked = {
-                        //println("index is set to $it")
                         index = it
                         isItemOpened = true
                     }
@@ -75,7 +71,6 @@ fun Navigation(
             }
 
             ScreenType.Detail -> {
-                //println("go to detail and index is $index")
                 LaunchDetailScreenFromState(
                     state = state,
                     modifier = modifier.padding(it),
@@ -117,7 +112,9 @@ private fun ListAndDetailScreen(
         HomeScreen(state = state, onItemClicked = onItemClicked, modifier = modifier.width(350.dp), selectedIndex = index)
         Divider(
             color = Color.Gray,
-            modifier = Modifier.fillMaxHeight().width(1.dp)
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp)
         )
         LaunchDetailScreenFromState(
             state = state,
@@ -189,22 +186,39 @@ fun LaunchDetailScreenFromState(
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar() {
+fun TopBar(
+    screenType: ScreenType,
+    onBackArrowPressed: () -> Unit
+) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
     TopAppBar(
         title = {
             Text(text = "Real Estate Manager", color = Color.White, fontSize = 20.sp)
         },
         navigationIcon = {
-            IconButton(
-                onClick = { /*TODO*/ },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Go Back",
-                    tint = Color.White
-                )
+            if (screenType != ScreenType.Detail) {
+                IconButton(
+                    onClick = { println("menu pressed") },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Menu",
+                        tint = Color.White
+                    )
 
+                }
+            } else {
+                IconButton(
+                    onClick = { onBackArrowPressed.invoke() },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "go back",
+                        tint = Color.White
+                    )
+
+                }
             }
         },
         actions = {

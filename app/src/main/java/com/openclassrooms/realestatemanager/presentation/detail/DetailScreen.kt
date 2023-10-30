@@ -97,7 +97,7 @@ private fun DetailScreenView(
 ){
     val scrollState = rememberScrollState()
     var photos = state.property?.photos
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.padding(bottom = 0.dp).fillMaxHeight().verticalScroll(scrollState)) {
 
         Text(
             text = "Media",
@@ -132,9 +132,9 @@ private fun DetailScreenView(
                 text = it.description,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 150.dp)
+                    //.heightIn(max = 150.dp)
                     .padding(8.dp)
-                    .verticalScroll(scrollState),
+                    /*.verticalScroll(scrollState)*/,
                 color = Color.DarkGray,
             )
         }
@@ -172,9 +172,8 @@ private fun DetailScreenView(
                 AddressDetail(
                     address = it.address,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(8.dp)
-                        .weight(1f),
+                        .background(Color.Green),
                     isLargeView = false
                 )
             }
@@ -366,8 +365,8 @@ private fun AddressDetail(
     isLargeView:Boolean
 ){
     val padding = if(isLargeView) 40.dp else 8.dp
-    Row(modifier = modifier) {
-        Column {
+    Row() {
+        Column() {
             Row {
                 Image(painter = painterResource(id = R.drawable.address_image), contentDescription = "address")
                 Text(text = "Location")
@@ -381,7 +380,7 @@ private fun AddressDetail(
                 Text(text = address.country, fontSize = 16.sp, color = Color.DarkGray)
             }
         }
-        Column {
+        Column() {
             AsyncImage(
                 model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
                 contentDescription = "map view",
