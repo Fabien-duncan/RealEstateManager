@@ -84,7 +84,6 @@ fun DetailScreen(
     DetailScreenView(modifier = modifier, state = state, isLargeView = isLargeView)
 
     BackHandler {
-
         onBackPressed.invoke()
     }
 

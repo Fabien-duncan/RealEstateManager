@@ -1,14 +1,27 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
@@ -27,6 +41,7 @@ import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeState
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Navigation(
     windowSize: WindowSizeType,
@@ -44,42 +59,46 @@ fun Navigation(
 
     val homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened)
 
-    when(homeScreenType){
-        ScreenType.List -> {
-            //println("go to List and index is $index")
-            HomeScreen(
-                state = state,
-                modifier = modifier,
-                onItemClicked = {
-                    //println("index is set to $it")
-                    index = it
-                    isItemOpened = true
-                }
-            )
-        }
-        ScreenType.Detail -> {
-            //println("go to detail and index is $index")
-            LaunchDetailScreenFromState(
-                state = state,
-                modifier = modifier,
-                assistedFactory = assistedFactory,
-                index = index,
-                isLargeView = false
-            ) {
-                isItemOpened = false
+    Scaffold(topBar = { TopBar()}) {
+        when (homeScreenType) {
+            ScreenType.List -> {
+                //println("go to List and index is $index")
+                HomeScreen(
+                    state = state,
+                    modifier = modifier.padding(it),
+                    onItemClicked = {
+                        //println("index is set to $it")
+                        index = it
+                        isItemOpened = true
+                    }
+                )
             }
-        }
-        ScreenType.ListWithDetail -> {
-            println("tablet mode")
-            ListAndDetailScreen(
-                state = state,
-                onItemClicked = {
-                    index = it
-                },
-                assistedFactory = assistedFactory,
-                modifier = modifier,
-                index = index
-            )
+
+            ScreenType.Detail -> {
+                //println("go to detail and index is $index")
+                LaunchDetailScreenFromState(
+                    state = state,
+                    modifier = modifier.padding(it),
+                    assistedFactory = assistedFactory,
+                    index = index,
+                    isLargeView = false
+                ) {
+                    isItemOpened = false
+                }
+            }
+
+            ScreenType.ListWithDetail -> {
+                println("tablet mode")
+                ListAndDetailScreen(
+                    state = state,
+                    onItemClicked = {
+                        index = it
+                    },
+                    assistedFactory = assistedFactory,
+                    modifier = modifier.padding(it),
+                    index = index
+                )
+            }
         }
     }
 }
@@ -167,5 +186,59 @@ fun LaunchDetailScreenFromState(
 
         else -> {}
     }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar() {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    TopAppBar(
+        title = {
+            Text(text = "Real Estate Manager", color = Color.White, fontSize = 20.sp)
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = { /*TODO*/ },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Go Back",
+                    tint = Color.White
+                )
 
+            }
+        },
+        actions = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy((-8).dp),
+                modifier = Modifier.padding(0.dp)
+            ) {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Create Property",
+                        tint = Color.White
+                    )
+
+                }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Property",
+                        tint = Color.White
+                    )
+
+                }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = Color.White
+                    )
+
+                }
+            }
+        },
+        scrollBehavior = scrollBehavior,
+        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = MaterialTheme.colorScheme.secondary),
+    )
 }

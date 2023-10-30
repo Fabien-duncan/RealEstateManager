@@ -56,9 +56,8 @@ class MainActivity : ComponentActivity() {
             RealEstateManagerTheme {
                 // A surface container using the 'background' color from the theme
                 val windowSize = rememberWindowSizeClass()
-                Scaffold(topBar = { TopBar()}) {
-                    RealEstateApp(modifier = Modifier.padding(it), windowSize = windowSize)
-                }
+
+                RealEstateApp(windowSize = windowSize)
 
                 /*Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     TopBar()
@@ -92,7 +91,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+/*@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -102,7 +101,7 @@ fun TopBar() {
         },
         navigationIcon = {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { *//*TODO*//* },
             ) {
                 Icon(
                     imageVector = Icons.Default.Menu,
@@ -117,7 +116,7 @@ fun TopBar() {
                 horizontalArrangement = Arrangement.spacedBy((-8).dp),
                 modifier = Modifier.padding(0.dp)
             ) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { *//*TODO*//* }) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Create Property",
@@ -125,7 +124,7 @@ fun TopBar() {
                     )
 
                 }
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { *//*TODO*//* }) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit Property",
@@ -133,7 +132,7 @@ fun TopBar() {
                     )
 
                 }
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { *//*TODO*//* }) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
@@ -146,7 +145,7 @@ fun TopBar() {
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = MaterialTheme.colorScheme.secondary),
     )
-}
+}*/
 @Composable
 fun MainText(
     modifier: Modifier
