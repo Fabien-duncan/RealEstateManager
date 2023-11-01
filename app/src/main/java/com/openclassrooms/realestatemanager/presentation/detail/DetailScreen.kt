@@ -20,12 +20,17 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,6 +64,8 @@ import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
+import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
+import java.text.SimpleDateFormat
 
 @Composable
 fun DetailScreen(
@@ -97,7 +104,10 @@ private fun DetailScreenView(
 ){
     val scrollState = rememberScrollState()
     var photos = state.property?.photos
-    Column(modifier = modifier.padding(bottom = 0.dp).fillMaxHeight().verticalScroll(scrollState)) {
+    Column(modifier = modifier
+        .padding(bottom = 0.dp)
+        .fillMaxHeight()
+        .verticalScroll(scrollState)) {
 
         Text(
             text = "Media",
@@ -178,6 +188,11 @@ private fun DetailScreenView(
                 )
             }
         }
+        ExtraDetails(
+            state = state,
+            modifier = Modifier,
+            isLargeView = false,
+        )
     }
 }
 
@@ -365,7 +380,7 @@ private fun AddressDetail(
     isLargeView:Boolean
 ){
     val padding = if(isLargeView) 40.dp else 8.dp
-    Row() {
+    Row(modifier = Modifier.padding(top = 16.dp, start = 8.dp, end = 8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         Column() {
             Row {
                 Image(painter = painterResource(id = R.drawable.address_image), contentDescription = "address")
@@ -385,8 +400,8 @@ private fun AddressDetail(
                 model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
                 contentDescription = "map view",
                 contentScale = if (isLargeView )ContentScale.FillHeight else ContentScale.FillWidth,
-                modifier = if (isLargeView)Modifier
-                    .heightIn(max = 280.dp)
+                modifier = if (isLargeView) Modifier
+                    .heightIn(max = 250.dp)
                     .padding(horizontal = padding, vertical = 8.dp)
                     .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
                 else Modifier
@@ -396,5 +411,53 @@ private fun AddressDetail(
             )
         }
     }
+}
+@Composable
+private fun ExtraDetails(
+    modifier: Modifier = Modifier,
+    state: DetailSate,
+    isLargeView:Boolean
+) {
+    val listOfPlaces = listOf<NearbyPlacesType>(NearbyPlacesType.BEACH,NearbyPlacesType.SCHOOL, NearbyPlacesType.SUPERMARKET, NearbyPlacesType.NATIONAL_PARC,NearbyPlacesType.PLAYGROUND)
+    val dateFormat = SimpleDateFormat("dd/MM/yy")
 
+    Text(
+        text = "Nearby Amenities",
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.DarkGray,
+        modifier = Modifier.padding(8.dp)
+    )
+
+    LazyVerticalGrid(
+        modifier = Modifier
+            .heightIn(min = 50.dp, max = 250.dp)
+            .padding(8.dp),
+        columns = GridCells.Fixed(3),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        items(listOfPlaces.size) { index ->
+            NearbyPlacesCells(TextUtils.capitaliseFirstLetter(listOfPlaces[index].name))
+        }
+    }
+    Divider(
+        color = Color.Gray,
+        thickness = 1.dp,
+        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+    )
+    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row {
+            Icon(painter = painterResource(id = R.drawable.agent_24), contentDescription = "Name of Agent")
+            state.property?.let { Text(text = it.agentName) }
+        }
+        Row() {
+            Icon(imageVector = Icons.Default.DateRange, contentDescription = "Name of Agent")
+            Text(text = "Creation: ", fontWeight = FontWeight.Bold )
+            state.property?.let { Text(text = dateFormat.format(it.createdDate)) }
+        }
+    }
+}
+@Composable
+fun NearbyPlacesCells(text: String) {
+    Text(text = text)
 }

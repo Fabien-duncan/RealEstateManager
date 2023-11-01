@@ -6,7 +6,7 @@ enum class NearbyPlacesType {
     SUPERMARKET,
     SHOP,
     BEACH,
-    NOTIONAL_PARC,
+    NATIONAL_PARC,
     PLAYGROUND,
     HOSPITAL,
     LIBRARY,
