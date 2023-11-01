@@ -107,7 +107,8 @@ private fun DetailScreenView(
     Column(modifier = modifier
         .padding(bottom = 0.dp)
         .fillMaxHeight()
-        .verticalScroll(scrollState)) {
+        .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.SpaceBetween) {
 
         Text(
             text = "Media",
@@ -191,7 +192,7 @@ private fun DetailScreenView(
         ExtraDetails(
             state = state,
             modifier = Modifier,
-            isLargeView = false,
+            isLargeView = isLargeView,
         )
     }
 }
@@ -380,7 +381,9 @@ private fun AddressDetail(
     isLargeView:Boolean
 ){
     val padding = if(isLargeView) 40.dp else 8.dp
-    Row(modifier = Modifier.padding(top = 16.dp, start = 8.dp, end = 8.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+    Row(modifier = Modifier
+        .padding(top = 16.dp, start = 8.dp, end = 8.dp)
+        .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         Column() {
             Row {
                 Image(painter = painterResource(id = R.drawable.address_image), contentDescription = "address")
@@ -440,20 +443,52 @@ private fun ExtraDetails(
             NearbyPlacesCells(TextUtils.capitaliseFirstLetter(listOfPlaces[index].name))
         }
     }
-    Divider(
-        color = Color.Gray,
-        thickness = 1.dp,
-        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-    )
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Row {
-            Icon(painter = painterResource(id = R.drawable.agent_24), contentDescription = "Name of Agent")
-            state.property?.let { Text(text = it.agentName) }
-        }
-        Row() {
-            Icon(imageVector = Icons.Default.DateRange, contentDescription = "Name of Agent")
-            Text(text = "Creation: ", fontWeight = FontWeight.Bold )
-            state.property?.let { Text(text = dateFormat.format(it.createdDate)) }
+
+    Column(modifier = Modifier.background(color = Color.LightGray)) {
+        Divider(
+            color = Color.Gray,
+            thickness = 1.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Row {
+                Icon(
+                    painter = painterResource(id = R.drawable.agent_24),
+                    contentDescription = "Name of Agent"
+                )
+                state.property?.let { Text(text = it.agentName) }
+            }
+            Row() {
+                Icon(imageVector = Icons.Default.DateRange, contentDescription = "Name of Agent")
+                if (isLargeView) {
+                    Text(text = " Creation: ", fontWeight = FontWeight.Bold)
+                    state.property?.let { Text(text = dateFormat.format(it.createdDate)) }
+                    state.property?.soldDate?.let {
+                        Text(text = " Sold: ", fontWeight = FontWeight.Bold)
+                        Text(text = dateFormat.format(it) )
+                    }
+                }else{
+                    Column {
+                        Row {
+                            Text(text = " Creation: ", fontWeight = FontWeight.Bold)
+                            state.property?.let { Text(text = dateFormat.format(it.createdDate)) }
+                        }
+                        Row {
+                            state.property?.soldDate?.let {
+                                Text(text = " Sold: ", fontWeight = FontWeight.Bold)
+                                Text(text = dateFormat.format(it) )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
