@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.presentation.detail
 
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -46,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -104,6 +106,9 @@ private fun DetailScreenView(
 ){
     val scrollState = rememberScrollState()
     var photos = state.property?.photos
+    val configuration = LocalConfiguration.current
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     Column(modifier = modifier
         .padding(bottom = 0.dp)
         .fillMaxHeight()
@@ -149,7 +154,7 @@ private fun DetailScreenView(
                 color = Color.DarkGray,
             )
         }
-        if (isLargeView){
+        if (isLargeView && !isPortrait){
             Row{
                 HouseDetails(
                     state = state,
