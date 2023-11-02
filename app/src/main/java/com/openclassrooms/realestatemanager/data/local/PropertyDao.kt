@@ -26,6 +26,9 @@ interface PropertyDao {
     @Insert(onConflict =  OnConflictStrategy.REPLACE)
     fun insert(photos: List<PropertyPhotos>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertNearbyPlaces(nearbyPlaces: List<PropertyNearbyPlaces>)
+
     @Update(onConflict =  OnConflictStrategy.REPLACE)
     fun update(property: Property)
 

@@ -36,11 +36,16 @@ class PropertyMapper{
         photos = property.photos?.let { listOfpropertyPhotosRoomtoModel(it) }
     )
 
-    private fun copyNearbyPlacesList(nearbyPlaces: List<PropertyNearbyPlaces>):List<NearbyPlacesType>{
+    private fun copyNearbyPlacesList(nearbyPlaces: List<PropertyNearbyPlaces>):List<NearbyPlacesType>?{
         var nearbyPlacesType = mutableListOf<NearbyPlacesType>()
         nearbyPlaces.forEach{nearbyPlace ->
             nearbyPlacesType.add(nearbyPlace.nearbyType)}
-        return nearbyPlacesType
+
+        return if (nearbyPlaces.isEmpty()) {
+            null
+        } else {
+            nearbyPlacesType
+        }
     }
     private fun addressRoomToModel(address: Address) = AddressModel(
             id = address.id,

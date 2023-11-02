@@ -15,6 +15,7 @@ import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlace
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
+import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
@@ -64,6 +65,9 @@ abstract class RealEstateDataBase:RoomDatabase() {
                     db.propertyDao.insert(property.address)
                     property.photos?.let {
                             db.propertyDao.insert(it)
+                    }
+                    property.nearbyPlaces?.let {
+                        db.propertyDao.insertNearbyPlaces(it)
                     }
                 }
             }
@@ -141,6 +145,31 @@ abstract class RealEstateDataBase:RoomDatabase() {
                 PropertyPhotos(propertyId = 4, photoPath = "https://www.edinarealty.com/media/3678/difference-between-condo.jpg?mode=crop&width=800&height=540", caption = "facade")
 
             )
+        }
+
+        private fun getAllPropertyNearbyPlaces():List<PropertyNearbyPlaces>{
+            return listOf(
+                PropertyNearbyPlaces(propertyId = 1, nearbyType = NearbyPlacesType.PLAYGROUND),
+                PropertyNearbyPlaces(propertyId = 1, nearbyType = NearbyPlacesType.SCHOOL),
+                PropertyNearbyPlaces(propertyId = 1, nearbyType = NearbyPlacesType.HOSPITAL),
+                PropertyNearbyPlaces(propertyId = 1, nearbyType = NearbyPlacesType.NATIONAL_PARC),
+                PropertyNearbyPlaces(propertyId = 1, nearbyType = NearbyPlacesType.PHARMACY),
+
+                PropertyNearbyPlaces(propertyId = 2, nearbyType = NearbyPlacesType.SUPERMARKET),
+                PropertyNearbyPlaces(propertyId = 2, nearbyType = NearbyPlacesType.PARC),
+                PropertyNearbyPlaces(propertyId = 2, nearbyType = NearbyPlacesType.PHARMACY),
+
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.PHARMACY),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.PARC),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.PLAYGROUND),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.SCHOOL),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.SUPERMARKET),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.NATIONAL_PARC),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.HOSPITAL),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.BEACH),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.LIBRARY),
+                PropertyNearbyPlaces(propertyId = 3, nearbyType = NearbyPlacesType.SHOP),
+            )
 
         }
 
@@ -148,11 +177,12 @@ abstract class RealEstateDataBase:RoomDatabase() {
             val testProperties = getAllProperties()
             val testAddress = getAllAddresses()
             val testPhotos = getAllPhotos()
+            val testNearbyPlaces = getAllPropertyNearbyPlaces()
 
             return listOf(
-                PropertyWithAllDetails(property = testProperties[0], address = testAddress[0],photos = testPhotos.filter { it.propertyId == 1.toLong() }, nearbyPlaces = null),
-                PropertyWithAllDetails(property = testProperties[1], address = testAddress[1],photos = testPhotos.filter { it.propertyId == 2.toLong() }, nearbyPlaces = null),
-                PropertyWithAllDetails(property = testProperties[2], address = testAddress[2],photos = null, nearbyPlaces = null),
+                PropertyWithAllDetails(property = testProperties[0], address = testAddress[0],photos = testPhotos.filter { it.propertyId == 1.toLong() }, nearbyPlaces = testNearbyPlaces.filter { it.propertyId == 1.toLong() }),
+                PropertyWithAllDetails(property = testProperties[1], address = testAddress[1],photos = testPhotos.filter { it.propertyId == 2.toLong() }, nearbyPlaces = testNearbyPlaces.filter { it.propertyId == 2.toLong() }),
+                PropertyWithAllDetails(property = testProperties[2], address = testAddress[2],photos = null, nearbyPlaces = testNearbyPlaces.filter { it.propertyId == 3.toLong()}),
                 PropertyWithAllDetails(property = testProperties[3], address = testAddress[3],photos = testPhotos.filter { it.propertyId == 4.toLong() }, nearbyPlaces = null)
             )
         }

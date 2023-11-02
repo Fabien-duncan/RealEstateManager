@@ -50,8 +50,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -198,6 +200,7 @@ private fun DetailScreenView(
             state = state,
             modifier = Modifier,
             isLargeView = isLargeView,
+            isPortrait = isPortrait
         )
     }
 }
@@ -424,10 +427,12 @@ private fun AddressDetail(
 private fun ExtraDetails(
     modifier: Modifier = Modifier,
     state: DetailSate,
-    isLargeView:Boolean
+    isLargeView:Boolean,
+    isPortrait: Boolean = false
 ) {
-    val listOfPlaces = listOf<NearbyPlacesType>(NearbyPlacesType.BEACH,NearbyPlacesType.SCHOOL, NearbyPlacesType.SUPERMARKET, NearbyPlacesType.NATIONAL_PARC,NearbyPlacesType.PLAYGROUND)
+    //val listOfPlaces = listOf<NearbyPlacesType>(NearbyPlacesType.BEACH,NearbyPlacesType.SCHOOL, NearbyPlacesType.SUPERMARKET, NearbyPlacesType.NATIONAL_PARC,NearbyPlacesType.PLAYGROUND)
     val dateFormat = SimpleDateFormat("dd/MM/yy")
+    val numberOfColumns = if (isLargeView && !isPortrait) 5 else 3
 
     Text(
         text = "Nearby Amenities",
@@ -437,16 +442,26 @@ private fun ExtraDetails(
         modifier = Modifier.padding(8.dp)
     )
 
-    LazyVerticalGrid(
-        modifier = Modifier
-            .heightIn(min = 50.dp, max = 250.dp)
-            .padding(8.dp),
-        columns = GridCells.Fixed(3),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        items(listOfPlaces.size) { index ->
-            NearbyPlacesCells(TextUtils.capitaliseFirstLetter(listOfPlaces[index].name))
+    if (state.property?.nearbyPlaces != null) {
+        LazyVerticalGrid(
+            modifier = Modifier
+                .heightIn(min = 50.dp, max = 250.dp)
+                .padding(8.dp),
+            columns = GridCells.Fixed(numberOfColumns),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            items(state.property.nearbyPlaces.size) { index ->
+                NearbyPlacesCells(TextUtils.capitaliseFirstLetter(state.property.nearbyPlaces[index].name))
+            }
         }
+    }else{
+        Text(
+            text = "There are no Amenities added to this property yet!!",
+            color = Color.Red,
+            fontStyle = FontStyle.Italic,
+            modifier = Modifier.padding(8.dp),
+            textAlign = TextAlign.Center
+        )
     }
 
     Column(modifier = Modifier.background(color = Color.LightGray)) {
