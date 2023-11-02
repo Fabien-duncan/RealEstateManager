@@ -22,8 +22,14 @@ class PropertyRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao,
     private val propertyMapper: PropertyMapper
 ): Respository{
-    override suspend fun insert(property: Property) {
-        propertyDao.insert(property)
+    override suspend fun insert(property: PropertyModel) {
+        val propertyRoomEntity = propertyMapper.propertyModelToRoom(property)
+        val propertyId = propertyDao.insert(propertyRoomEntity)
+
+        val addressRoomEntity = propertyMapper.addressModelToRoom(property.address, propertyId)
+
+        propertyDao.insert(propertyRoomEntity)
+        propertyDao.insert(addressRoomEntity)
     }
 
     override suspend fun update(property: Property) {

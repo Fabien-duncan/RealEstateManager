@@ -136,16 +136,14 @@ private fun DetailScreenView(
             }
         }
 
-        Text(
-            text = "Description",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.DarkGray,
-            modifier = Modifier.padding(8.dp)
-        )
-
-
         state.property?.let {
+            Text(
+                text = "${TextUtils.capitaliseFirstLetter(state.property.type.name)} Description",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray,
+                modifier = Modifier.padding(8.dp)
+            )
             Text(
                 text = it.description,
                 modifier = Modifier
@@ -156,7 +154,7 @@ private fun DetailScreenView(
                 color = Color.DarkGray,
             )
         }
-        if (isLargeView && !isPortrait){
+        if (!isPortrait){
             Row{
                 HouseDetails(
                     state = state,
@@ -430,7 +428,6 @@ private fun ExtraDetails(
     isLargeView:Boolean,
     isPortrait: Boolean = false
 ) {
-    //val listOfPlaces = listOf<NearbyPlacesType>(NearbyPlacesType.BEACH,NearbyPlacesType.SCHOOL, NearbyPlacesType.SUPERMARKET, NearbyPlacesType.NATIONAL_PARC,NearbyPlacesType.PLAYGROUND)
     val dateFormat = SimpleDateFormat("dd/MM/yy")
     val numberOfColumns = if (isLargeView && !isPortrait) 5 else 3
 

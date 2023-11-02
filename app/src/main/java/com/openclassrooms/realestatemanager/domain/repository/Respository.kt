@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface Respository {
-    suspend fun insert(property: Property)
+    suspend fun insert(property: PropertyModel)
     suspend fun update(property: Property)
     fun getPropertyWithDetailsById(propertyId: Long): Flow<PropertyModel>
     fun getAvailableProperties(): Flow<List<Property>>

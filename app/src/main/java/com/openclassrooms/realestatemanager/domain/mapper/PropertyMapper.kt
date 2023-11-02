@@ -13,7 +13,7 @@ import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 class PropertyMapper{
     fun mapToRoomEntity(property: PropertyModel) = PropertyWithAllDetails(
         property = propertyModelToRoom(property),
-        address = addressModelToRoom(property.address),
+        address = addressModelToRoom(property.address, 0),
         nearbyPlaces = null,
         photos = null,
     )
@@ -59,9 +59,8 @@ class PropertyMapper{
             latitude = address.latitude,
             longitude = address.longitude
     )
-    private fun addressModelToRoom(address: AddressModel) = Address(
-        id = address.id,
-        propertyId = address.propertyId,
+    fun addressModelToRoom(address: AddressModel, propertyId:Long) = Address(
+        propertyId = propertyId,
         street = address.street,
         city = address.city,
         state = address.state,
@@ -70,8 +69,7 @@ class PropertyMapper{
         latitude = address.latitude,
         longitude = address.longitude
     )
-    private fun propertyModelToRoom(property: PropertyModel) = Property(
-        id = property.id,
+    fun propertyModelToRoom(property: PropertyModel) = Property(
         type = property.type,
         price = property.price,
         area = property.area,
