@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
+import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditScreen
 import com.openclassrooms.realestatemanager.presentation.detail.DetailAssistedFactory
 import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
@@ -55,9 +56,25 @@ fun Navigation(
 
     var isItemOpened by remember { mutableStateOf(false) }
 
-    val homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened)
+    var isAddOpened by remember { mutableStateOf(false) }
 
-    Scaffold(topBar = { TopBar(screenType = homeScreenType, onBackArrowPressed = {isItemOpened = false})}) {
+    var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened, isAddOpened = isAddOpened)
+
+    Scaffold(
+        topBar = {
+            TopBar(
+                screenType = homeScreenType,
+                onBackArrowPressed = {
+                    isItemOpened = false
+                    isAddOpened = false
+                },
+                onAddPressed = {
+                    isAddOpened = true
+                    isItemOpened = false
+                }
+            )
+        }
+    ) {
         when (homeScreenType) {
             ScreenType.List -> {
                 HomeScreen(
@@ -93,6 +110,13 @@ fun Navigation(
                     modifier = modifier.padding(it),
                     index = index
                 )
+            }
+
+            ScreenType.AddEdit ->{
+                println("AddEditPage")
+                AddEditScreen(isLargeView = isExpanded, modifier = modifier.padding(it)) {
+                    isAddOpened = false
+                }
             }
         }
     }
@@ -133,16 +157,25 @@ private fun ListAndDetailScreen(
 @Composable
 fun getScreenType(
     isExpanded:Boolean,
-    isDetailOpened:Boolean
+    isDetailOpened:Boolean,
+    isAddOpened:Boolean
 ): ScreenType = when(isExpanded){
     false -> {
         if(isDetailOpened){
             ScreenType.Detail
+        }else if(isAddOpened){
+            ScreenType.AddEdit
         }else{
             ScreenType.List
         }
     }
-    true -> ScreenType.ListWithDetail
+    true -> {
+        if (isAddOpened){
+            ScreenType.AddEdit
+        }else{
+            ScreenType.ListWithDetail
+        }
+    }
 }
 
 @Composable
@@ -188,7 +221,8 @@ fun LaunchDetailScreenFromState(
 @Composable
 fun TopBar(
     screenType: ScreenType,
-    onBackArrowPressed: () -> Unit
+    onBackArrowPressed: () -> Unit,
+    onAddPressed:() -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -226,7 +260,7 @@ fun TopBar(
                 horizontalArrangement = Arrangement.spacedBy((-8).dp),
                 modifier = Modifier.padding(0.dp)
             ) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { onAddPressed.invoke() }) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Create Property",
