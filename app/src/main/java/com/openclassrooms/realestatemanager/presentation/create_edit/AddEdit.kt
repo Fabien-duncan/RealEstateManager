@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.presentation.create_edit
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,12 +19,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -35,10 +44,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,11 +58,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
+import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
+import com.openclassrooms.realestatemanager.presentation.detail.NearbyPlacesCells
 
 @Composable
 fun AddEditScreen(
@@ -84,7 +99,12 @@ private fun AddEditView(
 
     var isTypePickerExpanded by remember { mutableStateOf(false) }
     var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
+    var textfieldSize by remember { mutableStateOf(Size.Zero)}
 
+    val icon = if (isTypePickerExpanded)
+        Icons.Filled.KeyboardArrowUp
+    else
+        Icons.Filled.KeyboardArrowDown
     Column(
         modifier = modifier
             .padding(bottom = 0.dp)
@@ -119,36 +139,48 @@ private fun AddEditView(
             modifier = Modifier
                 .padding(8.dp)
         )
-        DropdownMenu(
-            expanded = isTypePickerExpanded,
-            onDismissRequest = { isTypePickerExpanded = false }
-        ) {
-            PropertyType.values().forEach { type ->
-                DropdownMenuItem(
-                    onClick = {
-                        onTypeSelected = type
-                        isTypePickerExpanded = false
-                    },
-                    text = {Text(text = type.name)}
-
-                )
-            }
-        }
-
-        OutlinedTextField(
-            value = TextFieldValue(onTypeSelected.name),
-            onValueChange = {},
-            enabled = false,
-            singleLine = true,
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(
-                    onClick = {
-                        println("clicked on type")
-                        isTypePickerExpanded = true
-                    }
-                )
-        )
+                .padding(8.dp),
+        ) {
+            OutlinedTextField(
+                value = onTypeSelected.name,
+                onValueChange = {},
+                readOnly = true,
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        textfieldSize = coordinates.size.toSize()
+                    },
+                trailingIcon = {
+                    Icon(
+                        icon, "contentDescription",
+                        Modifier.clickable { isTypePickerExpanded = !isTypePickerExpanded },
+                    )
+                }
+            )
+            DropdownMenu(
+                expanded = isTypePickerExpanded,
+                onDismissRequest = { isTypePickerExpanded = false },
+                modifier = Modifier
+                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+                    /*.border(border = BorderStroke(width = 1.dp, color = Color.DarkGray))*/
+                    .background(Color.LightGray)
+            ) {
+                PropertyType.values().forEach { type ->
+                    DropdownMenuItem(
+                        onClick = {
+                            onTypeSelected = type
+                            isTypePickerExpanded = false
+                        },
+                        text = {Text(text = type.name)}
+
+                    )
+                }
+            }
+        }
 
         OutlinedTextField(
             value = description,
@@ -203,12 +235,15 @@ private fun AddEditView(
                 isLargeView = false
             )
         }
-        /*ExtraDetails(
-            state = state,
-            modifier = Modifier,
-            isLargeView = isLargeView,
-            isPortrait = isPortrait
-        )*/
+
+        Text(
+            text = "Nearby Amenities",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.DarkGray,
+            modifier = Modifier.padding(8.dp)
+        )
+        NearbyAmenities(isLargeView = isLargeView, isPortrait = isPortrait)
     }
 }
 @Composable
@@ -476,4 +511,37 @@ private fun AddressDetail(
             .padding(horizontal = padding, vertical = 8.dp)
             .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
     )
+}
+@Composable
+private fun NearbyAmenities(
+    isLargeView:Boolean,
+    isPortrait: Boolean = false
+){
+    val numberOfColumns = if (isLargeView && !isPortrait) 5 else 2
+    LazyVerticalGrid(
+        modifier = Modifier
+            .heightIn(min = 50.dp, max = 250.dp)
+            .padding(8.dp),
+        columns = GridCells.Fixed(numberOfColumns),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        items(NearbyPlacesType.values()){ nearbyType ->
+            NearbyCheckBox(nearbyPlacesType = nearbyType)
+        }
+    }
+}
+@Composable
+private fun NearbyCheckBox(
+    nearbyPlacesType: NearbyPlacesType
+){
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = false,
+            onCheckedChange = {
+            }
+        )
+        Text(text = TextUtils.capitaliseFirstLetter(nearbyPlacesType.displayText))
+    }
 }
