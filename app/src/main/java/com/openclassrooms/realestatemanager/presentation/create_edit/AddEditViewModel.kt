@@ -79,12 +79,12 @@ class AddEditViewModel @Inject constructor(
 
     fun onBathroomsChange(bathrooms: Int) {
         state = state.copy(bathrooms = bathrooms)
-        println("These are all the values $state")
+
     }
 
     fun onDescriptionChange(description: String) {
         state = state.copy(description = description)
-        println("you have changed the description to ${state.description} and the type is ${state.type}")
+        //println("you have changed the description to ${state.description} and the type is ${state.type}")
     }
 
     fun onIsSoldChange(isSold: Boolean) {
@@ -125,6 +125,7 @@ class AddEditViewModel @Inject constructor(
 
     fun onPostalCodeChange(postCode: String) {
         state = state.copy(postalCode = postCode)
+        println("These are all the values $state")
     }
 
     fun onLatitudeChange(latitude: Double) {
@@ -134,8 +135,19 @@ class AddEditViewModel @Inject constructor(
     fun onLongitudeChange(longitude: Double) {
         state = state.copy(longitude = longitude)
     }
-    fun onNearbyPlacesChanged(nearbyPlaces: List<NearbyPlacesType>){
+    fun onNearbyPlacesChanged(nearbyPlace: NearbyPlacesType){
+        var nearbyPlaces = mutableListOf<NearbyPlacesType>()
+        state.copy().nearbyPlaces?.map {
+            nearbyPlaces.add(it)
+        }
+        if (nearbyPlaces != null && nearbyPlaces.contains(nearbyPlace)){
+            nearbyPlaces.remove(nearbyPlace)
+        }else{
+            nearbyPlaces.add(nearbyPlace)
+        }
         state = state.copy(nearbyPlaces = nearbyPlaces)
+
+        println("These are all the values $state")
     }
     /*fun onPhotosChanged(photos: List<>){
         state = state.copy(nearbyPlaces = nearbyPlaces)

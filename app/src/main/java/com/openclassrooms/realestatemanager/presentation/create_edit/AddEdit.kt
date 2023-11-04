@@ -216,7 +216,13 @@ private fun AddEditView(
                     modifier = Modifier
                         .padding(8.dp)
                         .weight(1f),
-                    isLargeView = true
+                    isLargeView = true,
+                    onStreetChanged = addEditViewModel::onStreetChange,
+                    onExtraChanged = addEditViewModel::onExtraChange,
+                    onCityChanged = addEditViewModel::onCityChange,
+                    onStateChanged = addEditViewModel::onStateChange,
+                    onCountryChanged = addEditViewModel::onCountryChange,
+                    onPostCodeChanged = addEditViewModel::onPostalCodeChange,
                 )
             }
         }
@@ -246,7 +252,13 @@ private fun AddEditView(
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Green),
-                isLargeView = false
+                isLargeView = false,
+                onStreetChanged = addEditViewModel::onStreetChange,
+                onExtraChanged = addEditViewModel::onExtraChange,
+                onCityChanged = addEditViewModel::onCityChange,
+                onStateChanged = addEditViewModel::onStateChange,
+                onCountryChanged = addEditViewModel::onCountryChange,
+                onPostCodeChanged = addEditViewModel::onPostalCodeChange,
             )
         }
 
@@ -257,7 +269,7 @@ private fun AddEditView(
             color = Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
-        NearbyAmenities(isLargeView = isLargeView, isPortrait = isPortrait)
+        NearbyAmenities(isLargeView = isLargeView, isPortrait = isPortrait, addEditState = state, onNearbyPlaceChanged = addEditViewModel::onNearbyPlacesChanged)
         Button(onClick = { /*TODO*/ }, modifier = Modifier.align(Alignment.End).padding(8.dp)) {
             Text(text = "Create")
         }
@@ -456,7 +468,14 @@ private fun HouseDetailCard(
 private fun AddressDetail(
     modifier: Modifier = Modifier,
     //address: AddressModel,
-    isLargeView:Boolean
+    isLargeView:Boolean,
+    onStreetChanged: (String) -> Unit,
+    onExtraChanged: (String) -> Unit,
+    onCityChanged: (String) -> Unit,
+    onStateChanged: (String) -> Unit,
+    onCountryChanged: (String) -> Unit,
+    onPostCodeChanged: (String) -> Unit,
+
 ){
     val padding = if(isLargeView) 40.dp else 8.dp
 
@@ -486,21 +505,30 @@ private fun AddressDetail(
                 )
                 OutlinedTextField(
                     value = extra,
-                    onValueChange = {street = it },
+                    onValueChange = {
+                        extra = it
+                        onExtraChanged.invoke(extra)
+                    },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "extra") },
                     modifier = Modifier.padding(4.dp)
                 )
                 OutlinedTextField(
                     value = state,
-                    onValueChange = {state = it },
+                    onValueChange = {
+                        state = it
+                        onStateChanged.invoke(state)
+                    },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "state") },
                     modifier = Modifier.padding(4.dp)
                 )
                 OutlinedTextField(
                     value = postalCode,
-                    onValueChange = {postalCode = it },
+                    onValueChange = {
+                        postalCode = it
+                        onPostCodeChanged.invoke(postalCode)
+                    },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "post code") },
                     modifier = Modifier.padding(4.dp)
@@ -510,21 +538,30 @@ private fun AddressDetail(
         Column(modifier = Modifier.weight(1f)) {
             OutlinedTextField(
                 value = street,
-                onValueChange = {street = it },
+                onValueChange = {
+                    street = it
+                    onStreetChanged.invoke("$number $street")
+                },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "street") },
                 modifier = Modifier.padding(4.dp)
             )
             OutlinedTextField(
                 value = city,
-                onValueChange = {city = it },
+                onValueChange = {
+                    city = it
+                    onCityChanged.invoke(city)
+                },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "city") },
                 modifier = Modifier.padding(4.dp)
             )
             OutlinedTextField(
                 value = country,
-                onValueChange = {country = it },
+                onValueChange = {
+                    country = it
+                    onCityChanged.invoke(country)
+                },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "country") },
                 modifier = Modifier.padding(4.dp)
@@ -548,7 +585,9 @@ private fun AddressDetail(
 @Composable
 private fun NearbyAmenities(
     isLargeView:Boolean,
-    isPortrait: Boolean = false
+    isPortrait: Boolean = false,
+    addEditState: AddEditState,
+    onNearbyPlaceChanged: (NearbyPlacesType) -> Unit,
 ){
     val numberOfColumns = if (isLargeView && !isPortrait) 5 else 2
     LazyVerticalGrid(
@@ -559,20 +598,25 @@ private fun NearbyAmenities(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         items(NearbyPlacesType.values()){ nearbyType ->
-            NearbyCheckBox(nearbyPlacesType = nearbyType)
+            NearbyCheckBox(nearbyPlacesType = nearbyType, addEditState = addEditState, onNearbyPlaceChanged = onNearbyPlaceChanged)
         }
     }
 }
 @Composable
 private fun NearbyCheckBox(
-    nearbyPlacesType: NearbyPlacesType
+    nearbyPlacesType: NearbyPlacesType,
+    addEditState: AddEditState,
+    onNearbyPlaceChanged: (NearbyPlacesType) -> Unit,
 ){
+    val isTicked = if (addEditState.nearbyPlaces != null) addEditState.nearbyPlaces.contains(nearbyPlacesType) else false
+
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
-            checked = false,
+            checked = isTicked,
             onCheckedChange = {
+                onNearbyPlaceChanged.invoke(nearbyPlacesType)
             }
         )
         Text(text = TextUtils.capitaliseFirstLetter(nearbyPlacesType.displayText))
