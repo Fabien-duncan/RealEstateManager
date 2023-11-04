@@ -82,6 +82,19 @@ class PropertyMapper{
         soldDate = property.soldDate,
         agentName = property.agentName,
     )
+    fun NearbyPlacesToRoomEntities(nearbyPlaces: List<NearbyPlacesType>, propertyId: Long):List<PropertyNearbyPlaces>{
+
+        val nearbyPlacesRoom = mutableListOf<PropertyNearbyPlaces>()
+        nearbyPlaces.forEach {
+            nearbyPlacesRoom.add(
+                PropertyNearbyPlaces(
+                    propertyId = propertyId,
+                    nearbyType = it
+                )
+            )
+        }
+        return nearbyPlacesRoom
+    }
 
     private fun listOfpropertyPhotosRoomtoModel(propertyPhotos: List<PropertyPhotos>):List<PropertyPhotosModel>? {
         var photos = mutableListOf<PropertyPhotosModel>()

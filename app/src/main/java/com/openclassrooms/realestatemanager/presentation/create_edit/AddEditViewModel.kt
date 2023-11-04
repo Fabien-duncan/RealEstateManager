@@ -15,6 +15,7 @@ import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import com.openclassrooms.realestatemanager.presentation.detail.DetailSate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
@@ -31,7 +32,7 @@ class AddEditViewModel @Inject constructor(
     private val property: PropertyModel
         get() = state.run {
             PropertyModel(
-                price = price!!,
+                price = 2000000.00,
                 type = type!!,
                 area = area!!,
                 rooms = rooms!!,
@@ -39,9 +40,9 @@ class AddEditViewModel @Inject constructor(
                 bathrooms = bathrooms!!,
                 description = description!!,
                 isSold = isSold,
-                createdDate = createdDate!!,
+                createdDate = Date(),
                 soldDate = soldDate,
-                agentName = agentName!!,
+                agentName = "Fabien Duncan",
                 address = AddressModel(
                     propertyId = -1L,
                     street = street!!,
@@ -153,7 +154,7 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(nearbyPlaces = nearbyPlaces)
     }*/
 
-    fun addOrUpdateProperty() = viewModelScope.launch {
+    fun addOrUpdateProperty() = viewModelScope.launch(Dispatchers.IO) {
         addPropertyUseCase(property = property)
     }
     private fun checkFormIsValid():Boolean{

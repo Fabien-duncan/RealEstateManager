@@ -270,7 +270,15 @@ private fun AddEditView(
             modifier = Modifier.padding(8.dp)
         )
         NearbyAmenities(isLargeView = isLargeView, isPortrait = isPortrait, addEditState = state, onNearbyPlaceChanged = addEditViewModel::onNearbyPlacesChanged)
-        Button(onClick = { /*TODO*/ }, modifier = Modifier.align(Alignment.End).padding(8.dp)) {
+        Button(
+            onClick = {
+                addEditViewModel.addOrUpdateProperty()
+                println("creating Property")
+            },
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(8.dp)
+        ) {
             Text(text = "Create")
         }
     }
@@ -560,7 +568,7 @@ private fun AddressDetail(
                 value = country,
                 onValueChange = {
                     country = it
-                    onCityChanged.invoke(country)
+                    onCountryChanged.invoke(country)
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "country") },
