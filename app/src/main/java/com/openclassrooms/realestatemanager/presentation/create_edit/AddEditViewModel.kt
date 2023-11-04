@@ -14,10 +14,11 @@ import com.openclassrooms.realestatemanager.domain.use_cases.UpdatePropertyUseCa
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import com.openclassrooms.realestatemanager.presentation.detail.DetailSate
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
-
+@HiltViewModel
 class AddEditViewModel @Inject constructor(
     val addPropertyUseCase: AddPropertyUseCase,
     val updatePropertyUseCase: UpdatePropertyUseCase
@@ -57,10 +58,92 @@ class AddEditViewModel @Inject constructor(
             )
         }
 
-    fun addProperty() = viewModelScope.launch {
-        addPropertyUseCase(property)
+    fun onTypeChange(type:PropertyType){
+        state = state.copy(type = type)
+
+    }
+    fun onPriceChange(price:Double){
+        state = state.copy(price = price)
+
+    }
+    fun onAreaChange(area:Int){
+        state = state.copy(area = area)
+    }
+    fun onRoomsChange(rooms: Int) {
+        state = state.copy(rooms = rooms)
     }
 
+    fun onBedroomsChange(bedrooms: Int) {
+        state = state.copy(bedrooms = bedrooms)
+    }
+
+    fun onBathroomsChange(bathrooms: Int) {
+        state = state.copy(bathrooms = bathrooms)
+        println("These are all the values $state")
+    }
+
+    fun onDescriptionChange(description: String) {
+        state = state.copy(description = description)
+        println("you have changed the description to ${state.description} and the type is ${state.type}")
+    }
+
+    fun onIsSoldChange(isSold: Boolean) {
+        state = state.copy(isSold = isSold)
+    }
+
+    fun onCreatedDateChange(createDate: Date) {
+        state = state.copy(createdDate = createDate)
+    }
+
+    fun onSoldDateChange(soldDate: Date) {
+        state = state.copy(soldDate = soldDate)
+    }
+
+    fun onAgentNameChange(agentName: String) {
+        state = state.copy(agentName = agentName)
+    }
+
+    fun onStreetChange(street: String) {
+        state = state.copy(street = street)
+    }
+
+    fun onExtraChange(extra: String) {
+        state = state.copy(extra = extra)
+    }
+
+    fun onCityChange(city: String) {
+        state = state.copy(city = city)
+    }
+
+    fun onStateChange(addressState: String) {
+        state = state.copy(state = addressState)
+    }
+
+    fun onCountryChange(country: String) {
+        state = state.copy(country = country)
+    }
+
+    fun onPostalCodeChange(postCode: String) {
+        state = state.copy(postalCode = postCode)
+    }
+
+    fun onLatitudeChange(latitude: Double) {
+        state = state.copy(latitude = latitude)
+    }
+
+    fun onLongitudeChange(longitude: Double) {
+        state = state.copy(longitude = longitude)
+    }
+    fun onNearbyPlacesChanged(nearbyPlaces: List<NearbyPlacesType>){
+        state = state.copy(nearbyPlaces = nearbyPlaces)
+    }
+    /*fun onPhotosChanged(photos: List<>){
+        state = state.copy(nearbyPlaces = nearbyPlaces)
+    }*/
+
+    fun addOrUpdateProperty() = viewModelScope.launch {
+        addPropertyUseCase(property = property)
+    }
     private fun checkFormIsValid():Boolean{
             if (state.type == null) return false
             if (state.price == null || state.price!! <= 0.0) return false

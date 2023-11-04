@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.presentation.create_edit
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +27,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -54,18 +54,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
-import com.openclassrooms.realestatemanager.presentation.detail.NearbyPlacesCells
 
 @Composable
 fun AddEditScreen(
@@ -89,6 +88,9 @@ private fun AddEditView(
     /*state: AddEditState,*/
     isLargeView:Boolean
 ){
+    val addEditViewModel: AddEditViewModel = viewModel()
+    val state = addEditViewModel.state
+
     val scrollState = rememberScrollState()
     //var photos = state.photos
     val configuration = LocalConfiguration.current
@@ -174,6 +176,7 @@ private fun AddEditView(
                         onClick = {
                             onTypeSelected = type
                             isTypePickerExpanded = false
+                            addEditViewModel.onTypeChange(type)
                         },
                         text = {Text(text = type.name)}
 
@@ -184,7 +187,10 @@ private fun AddEditView(
 
         OutlinedTextField(
             value = description,
-            onValueChange = { description = it },
+            onValueChange = {
+                description = it
+                addEditViewModel.onDescriptionChange(description)
+            },
             placeholder = { Text(text = "Enter the description") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,7 +204,11 @@ private fun AddEditView(
                     modifier = Modifier
                         .width(200.dp)
                         .padding(8.dp),
-                    isLargeView = true
+                    isLargeView = true,
+                    onAreaChanged = addEditViewModel::onAreaChange,
+                    onBathroomsChanged = addEditViewModel::onBathroomsChange,
+                    onBedroomsChanged = addEditViewModel::onBedroomsChange,
+                    onRoomsChanged = addEditViewModel::onRoomsChange
                 )
 
                 AddressDetail(
@@ -216,7 +226,11 @@ private fun AddEditView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                isLargeView = false
+                isLargeView = false,
+                onAreaChanged = addEditViewModel::onAreaChange,
+                onBathroomsChanged = addEditViewModel::onBathroomsChange,
+                onBedroomsChanged = addEditViewModel::onBedroomsChange,
+                onRoomsChanged = addEditViewModel::onRoomsChange
             )
 
             Text(
@@ -244,6 +258,9 @@ private fun AddEditView(
             modifier = Modifier.padding(8.dp)
         )
         NearbyAmenities(isLargeView = isLargeView, isPortrait = isPortrait)
+        Button(onClick = { /*TODO*/ }, modifier = Modifier.align(Alignment.End).padding(8.dp)) {
+            Text(text = "Create")
+        }
     }
 }
 @Composable
@@ -324,6 +341,10 @@ private fun EmptyPhotoList(){
 private fun HouseDetails(
     //state: DetailSate,
     modifier: Modifier = Modifier,
+    onAreaChanged: (Int) -> Unit,
+    onRoomsChanged: (Int) -> Unit,
+    onBedroomsChanged: (Int) -> Unit,
+    onBathroomsChanged: (Int) -> Unit,
     isLargeView:Boolean
 ){
 
@@ -333,22 +354,26 @@ private fun HouseDetails(
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.area_image),
                 title = "surface in m²",
-                modifier = modifier
+                modifier = modifier,
+                onValueChanged = onAreaChanged
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_rooms_image),
                 title = "No. rooms",
-                modifier = modifier
+                modifier = modifier,
+                onValueChanged = onRoomsChanged
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_bathrooms_image),
                 title = "No. bathrooms",
-                modifier = modifier
+                modifier = modifier,
+                onValueChanged = onBathroomsChanged
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_bedrooms_image),
                 title = "No. bedrooms",
-                modifier = modifier
+                modifier = modifier,
+                onValueChanged = onBedroomsChanged
             )
         }
     }
@@ -367,12 +392,14 @@ private fun HouseDetails(
                 HouseDetailCard(
                     painter = painterResource(id = R.drawable.area_image),
                     title = "surface in m²",
-                    modifier = modifier
+                    modifier = modifier,
+                    onValueChanged = onAreaChanged
                 )
                 HouseDetailCard(
                     painter = painterResource(id = R.drawable.number_bathrooms_image),
                     title = "No. bathrooms",
-                    modifier = modifier
+                    modifier = modifier,
+                    onValueChanged = onBathroomsChanged
                 )
             }
             Row(
@@ -382,12 +409,14 @@ private fun HouseDetails(
                 HouseDetailCard(
                     painter = painterResource(id = R.drawable.number_rooms_image),
                     title = "No. rooms",
-                    modifier = modifier
+                    modifier = modifier,
+                    onValueChanged = onRoomsChanged
                 )
                 HouseDetailCard(
                     painter = painterResource(id = R.drawable.number_bedrooms_image),
                     title = "No. bedrooms",
-                    modifier = modifier
+                    modifier = modifier,
+                    onValueChanged = onBedroomsChanged
                 )
             }
         }
@@ -398,7 +427,8 @@ private fun HouseDetails(
 private fun HouseDetailCard(
     painter: Painter,
     title:String,
-    modifier: Modifier
+    modifier: Modifier,
+    onValueChanged: (Int) -> Unit
 ){
     var value by remember { mutableStateOf("") }
     Box(
@@ -409,7 +439,10 @@ private fun HouseDetailCard(
             Column(modifier = Modifier.padding(horizontal = 4.dp)) {
                 OutlinedTextField(
                     value = value,
-                    onValueChange = { value = it },
+                    onValueChange = {
+                        value = it
+                        onValueChanged.invoke(value.toInt())
+                    },
                     placeholder = { Text(text = title) },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
                 )

@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
 import com.openclassrooms.realestatemanager.presentation.common.rememberWindowSizeClass
+import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditViewModel
 import com.openclassrooms.realestatemanager.presentation.detail.DetailAssistedFactory
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 import com.openclassrooms.realestatemanager.presentation.navigation.Navigation
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
         val homeViewModel: HomeViewModel = viewModel()
         val navController = rememberNavController()
         val state by homeViewModel.state.collectAsState()
+
 
 
 
