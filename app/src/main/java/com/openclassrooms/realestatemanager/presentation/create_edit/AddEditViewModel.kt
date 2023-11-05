@@ -32,7 +32,7 @@ class AddEditViewModel @Inject constructor(
     private val property: PropertyModel
         get() = state.run {
             PropertyModel(
-                price = 2000000.00,
+                price = price!!,
                 type = type!!,
                 area = area!!,
                 rooms = rooms!!,
@@ -42,7 +42,7 @@ class AddEditViewModel @Inject constructor(
                 isSold = isSold,
                 createdDate = Date(),
                 soldDate = soldDate,
-                agentName = "Fabien Duncan",
+                agentName = agentName ?: "Fabien Duncan",
                 address = AddressModel(
                     propertyId = -1L,
                     street = street!!,

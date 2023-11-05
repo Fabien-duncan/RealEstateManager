@@ -98,6 +98,7 @@ private fun AddEditView(
 
     var type by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
 
     var isTypePickerExpanded by remember { mutableStateOf(false) }
     var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
@@ -114,6 +115,47 @@ private fun AddEditView(
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ){
+            OutlinedTextField(
+                value = price,
+                onValueChange = {
+                    price = it
+                    addEditViewModel.onPriceChange(it.toDouble())
+                },
+                placeholder = { Text(text = "price in $") },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(1f),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                leadingIcon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.dollar_image),
+                        contentDescription = "dollar"
+                    )
+                }
+            )
+            OutlinedTextField(
+                value = state.agentName ?: "",
+                onValueChange = {
+                    addEditViewModel.onAgentNameChange(it)
+                },
+                placeholder = { Text(text = "Agent Name") },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(1f),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                leadingIcon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.agent_24),
+                        contentDescription = "Agent"
+                    )
+                }
+            )
+        }
+
 
         Text(
             text = "Media",
@@ -158,7 +200,7 @@ private fun AddEditView(
                     },
                 trailingIcon = {
                     Icon(
-                        icon, "contentDescription",
+                        icon, "selection arrow",
                         Modifier.clickable { isTypePickerExpanded = !isTypePickerExpanded },
                     )
                 }
@@ -464,7 +506,7 @@ private fun HouseDetailCard(
                         onValueChanged.invoke(value.toInt())
                     },
                     placeholder = { Text(text = title) },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 )
             }
 
