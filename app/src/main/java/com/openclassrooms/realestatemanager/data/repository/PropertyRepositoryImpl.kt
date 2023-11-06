@@ -22,7 +22,7 @@ class PropertyRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao,
     private val propertyMapper: PropertyMapper
 ): Respository{
-    override suspend fun insert(property: PropertyModel) {
+    override suspend fun insert(property: PropertyModel): Long {
         val propertyRoomEntity = propertyMapper.propertyModelToRoom(property)
         val propertyId = propertyDao.insert(propertyRoomEntity)
 
@@ -35,6 +35,7 @@ class PropertyRepositoryImpl @Inject constructor(
             val nearbyPlace =propertyMapper.NearbyPlacesToRoomEntities(it, propertyId)
             propertyDao.insertNearbyPlaces(nearbyPlace)
         }
+        return propertyId
     }
 
     override suspend fun update(property: Property) {

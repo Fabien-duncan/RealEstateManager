@@ -26,6 +26,9 @@ class AddEditViewModel @Inject constructor(
 ):ViewModel() {
     var state by mutableStateOf(AddEditState())
         private set
+    private val _isAddOrUpdatePropertyFinished = mutableStateOf(false)
+    val isAddOrUpdatePropertyFinished: Boolean
+        get() = _isAddOrUpdatePropertyFinished.value
     val isFormValid: Boolean
         get() = checkFormIsValid()
 
@@ -156,8 +159,10 @@ class AddEditViewModel @Inject constructor(
 
     fun addOrUpdateProperty() = viewModelScope.launch(Dispatchers.IO) {
         addPropertyUseCase(property = property)
+        _isAddOrUpdatePropertyFinished.value = true
     }
     private fun checkFormIsValid():Boolean{
+            println("Checking form is valid")
             if (state.type == null) return false
             if (state.price == null || state.price!! <= 0.0) return false
             if (state.area == null || state.area!! <= 0) return false
@@ -165,7 +170,6 @@ class AddEditViewModel @Inject constructor(
             if (state.bedrooms == null || state.bedrooms!! <= 0) return false
             if (state.bathrooms == null || state.bathrooms!! <= 0) return false
             if (state.description.isNullOrBlank()) return false
-            if (state.createdDate == null) return false
             if (state.agentName.isNullOrBlank()) return false
             if (state.street.isNullOrBlank()) return false
             if (state.city.isNullOrBlank()) return false

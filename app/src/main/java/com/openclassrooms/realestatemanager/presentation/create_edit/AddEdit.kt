@@ -37,9 +37,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,11 +73,12 @@ fun AddEditScreen(
     modifier: Modifier = Modifier,
     propertyId: Long = -1,
     isLargeView:Boolean,
+    onCreatedClicked:() -> Unit,
     onBackPressed:() -> Unit
 ) {
     println("in Detail Screen and the property id is $propertyId")
 
-    AddEditView(modifier = modifier, isLargeView = isLargeView)
+    AddEditView(modifier = modifier, isLargeView = isLargeView, onCreatedClicked = onCreatedClicked)
 
     BackHandler {
         onBackPressed.invoke()
@@ -85,7 +88,7 @@ fun AddEditScreen(
 @Composable
 private fun AddEditView(
     modifier: Modifier,
-    /*state: AddEditState,*/
+    onCreatedClicked:() -> Unit,
     isLargeView:Boolean
 ){
     val addEditViewModel: AddEditViewModel = viewModel()
@@ -103,6 +106,10 @@ private fun AddEditView(
     var isTypePickerExpanded by remember { mutableStateOf(false) }
     var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
     var textfieldSize by remember { mutableStateOf(Size.Zero)}
+
+    var isFormValid by remember { mutableStateOf(false) }
+
+    val isAddOrUpdatePropertyFinished by rememberUpdatedState(addEditViewModel.isAddOrUpdatePropertyFinished)
 
     val icon = if (isTypePickerExpanded)
         Icons.Filled.KeyboardArrowUp
@@ -141,6 +148,8 @@ private fun AddEditView(
                 value = state.agentName ?: "",
                 onValueChange = {
                     addEditViewModel.onAgentNameChange(it)
+                    isFormValid = addEditViewModel.isFormValid
+                    println("is form valid: $isFormValid")
                 },
                 placeholder = { Text(text = "Agent Name") },
                 modifier = Modifier
@@ -315,13 +324,21 @@ private fun AddEditView(
         Button(
             onClick = {
                 addEditViewModel.addOrUpdateProperty()
-                println("creating Property")
+                /*onCreatedClicked.invoke()
+                println("creating Property")*/
             },
             modifier = Modifier
                 .align(Alignment.End)
-                .padding(8.dp)
+                .padding(8.dp),
+            enabled = isFormValid
         ) {
             Text(text = "Create")
+        }
+        LaunchedEffect(isAddOrUpdatePropertyFinished) {
+            if (isAddOrUpdatePropertyFinished) {
+                onCreatedClicked.invoke()
+                println("Creating Property")
+            }
         }
     }
 }

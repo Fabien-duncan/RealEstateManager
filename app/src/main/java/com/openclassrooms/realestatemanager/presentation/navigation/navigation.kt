@@ -113,8 +113,15 @@ fun Navigation(
             }
 
             ScreenType.AddEdit ->{
+                val propertiesListSize = if (state.properties is ScreenViewState.Success) state.properties.data.size else 0
                 println("AddEditPage")
-                AddEditScreen(isLargeView = isExpanded, modifier = modifier.padding(it)) {
+                AddEditScreen(
+                    isLargeView = isExpanded, modifier = modifier.padding(it),
+                    onCreatedClicked = {
+                        index = propertiesListSize
+                        isItemOpened = true
+                    },
+                ) {
                     isAddOpened = false
                 }
             }
