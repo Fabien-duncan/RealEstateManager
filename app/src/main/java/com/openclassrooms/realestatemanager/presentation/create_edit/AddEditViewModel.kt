@@ -67,22 +67,22 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(type = type)
 
     }
-    fun onPriceChange(price:Double){
+    fun onPriceChange(price:Double?){
         state = state.copy(price = price)
 
     }
-    fun onAreaChange(area:Int){
+    fun onAreaChange(area:Int?){
         state = state.copy(area = area)
     }
-    fun onRoomsChange(rooms: Int) {
+    fun onRoomsChange(rooms: Int?) {
         state = state.copy(rooms = rooms)
     }
 
-    fun onBedroomsChange(bedrooms: Int) {
+    fun onBedroomsChange(bedrooms: Int?) {
         state = state.copy(bedrooms = bedrooms)
     }
 
-    fun onBathroomsChange(bathrooms: Int) {
+    fun onBathroomsChange(bathrooms: Int?) {
         state = state.copy(bathrooms = bathrooms)
     }
 
@@ -107,7 +107,7 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(agentName = agentName)
     }
 
-    fun onNumberChange(number: Int) {
+    fun onNumberChange(number: Int?) {
         state = state.copy(number = number)
     }
     fun onStreetChange(street: String) {

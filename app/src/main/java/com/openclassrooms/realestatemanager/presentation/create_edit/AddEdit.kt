@@ -444,10 +444,10 @@ private fun EmptyPhotoList(){
 private fun HouseDetails(
     //state: DetailSate,
     modifier: Modifier = Modifier,
-    onAreaChanged: (Int) -> Unit,
-    onRoomsChanged: (Int) -> Unit,
-    onBedroomsChanged: (Int) -> Unit,
-    onBathroomsChanged: (Int) -> Unit,
+    onAreaChanged: (Int?) -> Unit,
+    onRoomsChanged: (Int?) -> Unit,
+    onBedroomsChanged: (Int?) -> Unit,
+    onBathroomsChanged: (Int?) -> Unit,
     isFormValid: () -> Unit,
     isLargeView:Boolean
 ){
@@ -541,7 +541,7 @@ private fun HouseDetailCard(
     painter: Painter,
     title:String,
     modifier: Modifier,
-    onValueChanged: (Int) -> Unit,
+    onValueChanged: (Int?) -> Unit,
     isFormValid: () -> Unit
 ){
     var value by remember { mutableStateOf("") }
@@ -555,11 +555,18 @@ private fun HouseDetailCard(
                     value = value,
                     onValueChange = {
                         value = it
-                        onValueChanged.invoke(value.toInt())
+                        onValueChanged.invoke(
+                            try {
+                                value.toInt()
+                            }catch (e: NumberFormatException){
+                                null
+                            }
+                        )
                         isFormValid.invoke()
                     },
                     placeholder = { Text(text = title) },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    isError = value.isNullOrBlank() ,
                 )
             }
 
