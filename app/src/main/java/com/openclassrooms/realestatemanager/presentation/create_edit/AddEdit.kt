@@ -54,9 +54,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
@@ -67,6 +69,7 @@ import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
+import java.nio.file.WatchEvent
 
 @Composable
 fun AddEditScreen(
@@ -131,6 +134,7 @@ private fun AddEditView(
                 onValueChange = {
                     price = it
                     addEditViewModel.onPriceChange(it.toDouble())
+                    isFormValid = addEditViewModel.isFormValid
                 },
                 placeholder = { Text(text = "price in $") },
                 modifier = Modifier
@@ -149,7 +153,6 @@ private fun AddEditView(
                 onValueChange = {
                     addEditViewModel.onAgentNameChange(it)
                     isFormValid = addEditViewModel.isFormValid
-                    println("is form valid: $isFormValid")
                 },
                 placeholder = { Text(text = "Agent Name") },
                 modifier = Modifier
@@ -228,6 +231,7 @@ private fun AddEditView(
                             onTypeSelected = type
                             isTypePickerExpanded = false
                             addEditViewModel.onTypeChange(type)
+                            isFormValid = addEditViewModel.isFormValid
                         },
                         text = {Text(text = type.name)}
 
@@ -241,6 +245,7 @@ private fun AddEditView(
             onValueChange = {
                 description = it
                 addEditViewModel.onDescriptionChange(description)
+                isFormValid = addEditViewModel.isFormValid
             },
             placeholder = { Text(text = "Enter the description") },
             modifier = Modifier
@@ -259,7 +264,8 @@ private fun AddEditView(
                     onAreaChanged = addEditViewModel::onAreaChange,
                     onBathroomsChanged = addEditViewModel::onBathroomsChange,
                     onBedroomsChanged = addEditViewModel::onBedroomsChange,
-                    onRoomsChanged = addEditViewModel::onRoomsChange
+                    onRoomsChanged = addEditViewModel::onRoomsChange,
+                    isFormValid = {isFormValid = addEditViewModel.isFormValid}
                 )
 
                 AddressDetail(
@@ -275,6 +281,7 @@ private fun AddEditView(
                     onStateChanged = addEditViewModel::onStateChange,
                     onCountryChanged = addEditViewModel::onCountryChange,
                     onPostCodeChanged = addEditViewModel::onPostalCodeChange,
+                    isFormValid = {isFormValid = addEditViewModel.isFormValid}
                 )
             }
         }
@@ -288,7 +295,8 @@ private fun AddEditView(
                 onAreaChanged = addEditViewModel::onAreaChange,
                 onBathroomsChanged = addEditViewModel::onBathroomsChange,
                 onBedroomsChanged = addEditViewModel::onBedroomsChange,
-                onRoomsChanged = addEditViewModel::onRoomsChange
+                onRoomsChanged = addEditViewModel::onRoomsChange,
+                isFormValid = {isFormValid = addEditViewModel.isFormValid}
             )
 
             Text(
@@ -312,6 +320,7 @@ private fun AddEditView(
                 onStateChanged = addEditViewModel::onStateChange,
                 onCountryChanged = addEditViewModel::onCountryChange,
                 onPostCodeChanged = addEditViewModel::onPostalCodeChange,
+                isFormValid = {isFormValid = addEditViewModel.isFormValid}
             )
         }
 
@@ -323,18 +332,31 @@ private fun AddEditView(
             modifier = Modifier.padding(8.dp)
         )
         NearbyAmenities(isLargeView = isLargeView, isPortrait = isPortrait, addEditState = state, onNearbyPlaceChanged = addEditViewModel::onNearbyPlacesChanged)
-        Button(
-            onClick = {
-                addEditViewModel.addOrUpdateProperty()
-                /*onCreatedClicked.invoke()
-                println("creating Property")*/
-            },
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(8.dp),
-            enabled = isFormValid
-        ) {
-            Text(text = "Create")
+        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
+            if (!isFormValid){
+                Text(
+                    text = "You need to fill in all the required fields",
+                    fontSize = 14.sp,
+                    color = Color.Red,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .weight(1f),
+                )
+            }
+            Button(
+                onClick = {
+                    addEditViewModel.addOrUpdateProperty()
+                    /*onCreatedClicked.invoke()
+                    println("creating Property")*/
+                },
+                modifier = Modifier
+                    .padding(8.dp),
+                enabled = isFormValid
+            ) {
+                Text(text = "Create")
+            }
         }
         LaunchedEffect(isAddOrUpdatePropertyFinished) {
             if (isAddOrUpdatePropertyFinished) {
@@ -426,6 +448,7 @@ private fun HouseDetails(
     onRoomsChanged: (Int) -> Unit,
     onBedroomsChanged: (Int) -> Unit,
     onBathroomsChanged: (Int) -> Unit,
+    isFormValid: () -> Unit,
     isLargeView:Boolean
 ){
 
@@ -436,25 +459,29 @@ private fun HouseDetails(
                 painter = painterResource(id = R.drawable.area_image),
                 title = "surface in m²",
                 modifier = modifier,
-                onValueChanged = onAreaChanged
+                onValueChanged = onAreaChanged,
+                isFormValid =isFormValid
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_rooms_image),
                 title = "No. rooms",
                 modifier = modifier,
-                onValueChanged = onRoomsChanged
+                onValueChanged = onRoomsChanged,
+                isFormValid =isFormValid
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_bathrooms_image),
                 title = "No. bathrooms",
                 modifier = modifier,
-                onValueChanged = onBathroomsChanged
+                onValueChanged = onBathroomsChanged,
+                isFormValid =isFormValid
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_bedrooms_image),
                 title = "No. bedrooms",
                 modifier = modifier,
-                onValueChanged = onBedroomsChanged
+                onValueChanged = onBedroomsChanged,
+                isFormValid =isFormValid
             )
         }
     }
@@ -474,13 +501,16 @@ private fun HouseDetails(
                     painter = painterResource(id = R.drawable.area_image),
                     title = "surface in m²",
                     modifier = modifier,
-                    onValueChanged = onAreaChanged
+                    onValueChanged = onAreaChanged,
+                    isFormValid =isFormValid
+
                 )
                 HouseDetailCard(
                     painter = painterResource(id = R.drawable.number_bathrooms_image),
                     title = "No. bathrooms",
                     modifier = modifier,
-                    onValueChanged = onBathroomsChanged
+                    onValueChanged = onBathroomsChanged,
+                    isFormValid =isFormValid
                 )
             }
             Row(
@@ -491,13 +521,15 @@ private fun HouseDetails(
                     painter = painterResource(id = R.drawable.number_rooms_image),
                     title = "No. rooms",
                     modifier = modifier,
-                    onValueChanged = onRoomsChanged
+                    onValueChanged = onRoomsChanged,
+                    isFormValid =isFormValid
                 )
                 HouseDetailCard(
                     painter = painterResource(id = R.drawable.number_bedrooms_image),
                     title = "No. bedrooms",
                     modifier = modifier,
-                    onValueChanged = onBedroomsChanged
+                    onValueChanged = onBedroomsChanged,
+                    isFormValid =isFormValid
                 )
             }
         }
@@ -509,7 +541,8 @@ private fun HouseDetailCard(
     painter: Painter,
     title:String,
     modifier: Modifier,
-    onValueChanged: (Int) -> Unit
+    onValueChanged: (Int) -> Unit,
+    isFormValid: () -> Unit
 ){
     var value by remember { mutableStateOf("") }
     Box(
@@ -523,6 +556,7 @@ private fun HouseDetailCard(
                     onValueChange = {
                         value = it
                         onValueChanged.invoke(value.toInt())
+                        isFormValid.invoke()
                     },
                     placeholder = { Text(text = title) },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -538,6 +572,7 @@ private fun AddressDetail(
     modifier: Modifier = Modifier,
     //address: AddressModel,
     isLargeView:Boolean,
+    isFormValid: () -> Unit,
     onNumberChanged: (Int) -> Unit,
     onStreetChanged: (String) -> Unit,
     onExtraChanged: (String) -> Unit,
@@ -571,6 +606,7 @@ private fun AddressDetail(
                     onValueChange = {
                         number = it
                         onNumberChanged.invoke(number.toInt())
+                        isFormValid.invoke()
                     },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "number") },
@@ -591,6 +627,7 @@ private fun AddressDetail(
                     onValueChange = {
                         state = it
                         onStateChanged.invoke(state)
+                        isFormValid.invoke()
                     },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "state") },
@@ -601,6 +638,7 @@ private fun AddressDetail(
                     onValueChange = {
                         postalCode = it
                         onPostCodeChanged.invoke(postalCode)
+                        isFormValid.invoke()
                     },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "post code") },
@@ -614,6 +652,7 @@ private fun AddressDetail(
                 onValueChange = {
                     street = it
                     onStreetChanged.invoke(street)
+                    isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "street") },
@@ -624,6 +663,7 @@ private fun AddressDetail(
                 onValueChange = {
                     city = it
                     onCityChanged.invoke(city)
+                    isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "city") },
@@ -634,6 +674,7 @@ private fun AddressDetail(
                 onValueChange = {
                     country = it
                     onCountryChanged.invoke(country)
+                    isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "country") },
