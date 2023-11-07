@@ -50,6 +50,7 @@ class PropertyMapper{
     private fun addressRoomToModel(address: Address) = AddressModel(
             id = address.id,
             propertyId = address.propertyId,
+            number = address.number,
             street = address.street,
             extra = address.extra,
             city = address.city,
@@ -61,6 +62,7 @@ class PropertyMapper{
     )
     fun addressModelToRoom(address: AddressModel, propertyId:Long) = Address(
         propertyId = propertyId,
+        number = address.number,
         street = address.street,
         city = address.city,
         state = address.state,

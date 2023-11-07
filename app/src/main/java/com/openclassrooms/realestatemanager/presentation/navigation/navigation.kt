@@ -65,7 +65,7 @@ fun Navigation(
             TopBar(
                 screenType = homeScreenType,
                 onBackArrowPressed = {
-                    isItemOpened = false
+                    isItemOpened = it
                     isAddOpened = false
                 },
                 onAddPressed = {
@@ -204,7 +204,7 @@ fun LaunchDetailScreenFromState(
             val properties = state.properties.data
             //println("go to data and index is $index")
             DetailScreen(
-                propertyId = properties[index].id,
+                propertyId = properties[index].id ,
                 assistedFactory = assistedFactory,
                 modifier = modifier,
                 isLargeView = isLargeView,
@@ -228,7 +228,7 @@ fun LaunchDetailScreenFromState(
 @Composable
 fun TopBar(
     screenType: ScreenType,
-    onBackArrowPressed: () -> Unit,
+    onBackArrowPressed: (Boolean) -> Unit,
     onAddPressed:() -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -238,7 +238,7 @@ fun TopBar(
             Text(text = "Real Estate Manager", color = Color.White, fontSize = 20.sp)
         },
         navigationIcon = {
-            if (screenType != ScreenType.Detail) {
+            if (screenType == ScreenType.List || screenType == ScreenType.ListWithDetail  ) {
                 IconButton(
                     onClick = { println("menu pressed") },
                 ) {
@@ -251,7 +251,9 @@ fun TopBar(
                 }
             } else {
                 IconButton(
-                    onClick = { onBackArrowPressed.invoke() },
+                    onClick = {
+                        onBackArrowPressed.invoke(false)
+                    },
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,

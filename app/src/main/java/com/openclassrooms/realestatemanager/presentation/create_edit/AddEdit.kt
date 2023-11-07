@@ -268,6 +268,7 @@ private fun AddEditView(
                         .padding(8.dp)
                         .weight(1f),
                     isLargeView = true,
+                    onNumberChanged = addEditViewModel::onNumberChange,
                     onStreetChanged = addEditViewModel::onStreetChange,
                     onExtraChanged = addEditViewModel::onExtraChange,
                     onCityChanged = addEditViewModel::onCityChange,
@@ -304,6 +305,7 @@ private fun AddEditView(
                     .padding(8.dp)
                     .background(Color.Green),
                 isLargeView = false,
+                onNumberChanged = addEditViewModel::onNumberChange,
                 onStreetChanged = addEditViewModel::onStreetChange,
                 onExtraChanged = addEditViewModel::onExtraChange,
                 onCityChanged = addEditViewModel::onCityChange,
@@ -336,8 +338,8 @@ private fun AddEditView(
         }
         LaunchedEffect(isAddOrUpdatePropertyFinished) {
             if (isAddOrUpdatePropertyFinished) {
-                onCreatedClicked.invoke()
                 println("Creating Property")
+                onCreatedClicked.invoke()
             }
         }
     }
@@ -536,6 +538,7 @@ private fun AddressDetail(
     modifier: Modifier = Modifier,
     //address: AddressModel,
     isLargeView:Boolean,
+    onNumberChanged: (Int) -> Unit,
     onStreetChanged: (String) -> Unit,
     onExtraChanged: (String) -> Unit,
     onCityChanged: (String) -> Unit,
@@ -565,7 +568,10 @@ private fun AddressDetail(
             Column() {
                 OutlinedTextField(
                     value = number,
-                    onValueChange = {number = it },
+                    onValueChange = {
+                        number = it
+                        onNumberChanged.invoke(number.toInt())
+                    },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "number") },
                     modifier = Modifier.padding(4.dp)
@@ -607,7 +613,7 @@ private fun AddressDetail(
                 value = street,
                 onValueChange = {
                     street = it
-                    onStreetChanged.invoke("$number $street")
+                    onStreetChanged.invoke(street)
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "street") },

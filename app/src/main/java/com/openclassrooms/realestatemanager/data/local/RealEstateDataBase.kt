@@ -124,10 +124,10 @@ abstract class RealEstateDataBase:RoomDatabase() {
         }
         private fun getAllAddresses(): List<Address> {
             return listOf(
-                Address(propertyId = 1, street = "73486 Sachs Center", extra = "apt 7B", city = "Jeffersonville", state = "Indiana", country = "United States", postalCode = "47134"),
-                Address(propertyId = 2, street = "1 Mallard Court", city = "Sacramento", state = "California", country = "United States", postalCode = "95828"),
-                Address(propertyId = 3, street = "26 Clove Hill", extra = "231", city = "San Jose", state = "California", country = "United States", postalCode = "95194"),
-                Address(propertyId = 4, street = "9943 Warbler Circle", city = "Richmond", state = "Virginia", country = "United States", postalCode = "23220"),
+                Address(propertyId = 1, number = 73486, street = "Sachs Center", extra = "apt 7B", city = "Jeffersonville", state = "Indiana", country = "United States", postalCode = "47134"),
+                Address(propertyId = 2, number = 1,street = "Mallard Court", city = "Sacramento", state = "California", country = "United States", postalCode = "95828"),
+                Address(propertyId = 3, number = 26, street = "Clove Hill", extra = "231", city = "San Jose", state = "California", country = "United States", postalCode = "95194"),
+                Address(propertyId = 4,number = 9943, street = "Warbler Circle", city = "Richmond", state = "Virginia", country = "United States", postalCode = "23220"),
             )
         }
 

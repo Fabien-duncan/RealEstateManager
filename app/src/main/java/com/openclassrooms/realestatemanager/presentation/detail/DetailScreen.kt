@@ -396,7 +396,7 @@ private fun AddressDetail(
                 Text(text = "Location")
             }
             Column(Modifier.padding(start = 24.dp)) {
-                Text(text = address.street, fontSize = 16.sp, color = Color.DarkGray)
+                Text(text = "${address.number} ${address.street}", fontSize = 16.sp, color = Color.DarkGray)
                 if (address.extra != null )Text(text = address.extra, fontSize = 16.sp, color = Color.DarkGray)
                 Text(text = address.city, fontSize = 16.sp, color = Color.DarkGray)
                 Text(text = address.state, fontSize = 16.sp, color = Color.DarkGray)

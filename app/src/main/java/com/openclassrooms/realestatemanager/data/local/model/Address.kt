@@ -10,6 +10,7 @@ data class Address(
     val id: Long = 0,
     @ColumnInfo(name = "property_id", index = true)
     val propertyId: Long,
+    val number: Int,
     val street: String,
     val extra: String? = null, //flat number or any extra detail
     val city: String,

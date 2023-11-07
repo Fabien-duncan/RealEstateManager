@@ -48,6 +48,7 @@ class AddEditViewModel @Inject constructor(
                 agentName = agentName ?: "Fabien Duncan",
                 address = AddressModel(
                     propertyId = -1L,
+                    number = number!!,
                     street = street!!,
                     extra = extra,
                     city = city!!,
@@ -83,7 +84,6 @@ class AddEditViewModel @Inject constructor(
 
     fun onBathroomsChange(bathrooms: Int) {
         state = state.copy(bathrooms = bathrooms)
-
     }
 
     fun onDescriptionChange(description: String) {
@@ -107,6 +107,9 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(agentName = agentName)
     }
 
+    fun onNumberChange(number: Int) {
+        state = state.copy(number = number)
+    }
     fun onStreetChange(street: String) {
         state = state.copy(street = street)
     }
@@ -195,6 +198,7 @@ data class AddEditState(
     val soldDate: Date? = null,
     val agentName: String? = null,
     val addressId: Long = 0,
+    val number: Int?=null,
     val street: String? = null,
     val extra: String? = null,
     val city: String? = null,
