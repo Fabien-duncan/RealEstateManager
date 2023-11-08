@@ -93,7 +93,8 @@ fun Navigation(
                         index = it
                         id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[index].id
                         isItemOpened = true
-                    }
+                    },
+                    isLargeScreen = false
                 )
             }
 
@@ -126,10 +127,10 @@ fun Navigation(
 
             ScreenType.AddEdit ->{
                 val propertiesListSize = if (state.properties is ScreenViewState.Success) (state.properties as ScreenViewState.Success<List<PropertyModel>>).data.size else 0
-                //val propertyId = if (state.properties is ScreenViewState.Success) (state.properties as ScreenViewState.Success<List<PropertyModel>>).data.last().id else -2L
                 println("AddEditPage")
                 AddEditScreen(
-                    isLargeView = isExpanded, modifier = modifier.padding(it),
+                    isLargeView = isExpanded,
+                    modifier = modifier.padding(it),
                     onCreatedClicked = { newId->
                         id = newId
                         index = propertiesListSize-1
@@ -156,7 +157,13 @@ private fun ListAndDetailScreen(
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
-        HomeScreen(state = state, onItemClicked = onItemClicked, modifier = modifier.width(350.dp), selectedIndex = index)
+        HomeScreen(
+            state = state,
+            onItemClicked = onItemClicked,
+            modifier = modifier.width(350.dp),
+            selectedIndex = index,
+            isLargeScreen = true
+        )
         Divider(
             color = Color.Gray,
             modifier = Modifier

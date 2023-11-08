@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.presentation.home
 
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Environment
 import androidx.compose.foundation.Image
@@ -33,6 +34,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +56,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeState,
     selectedIndex:Int = -1,
-    onItemClicked:(index:Int) -> Unit
+    onItemClicked:(index:Int) -> Unit,
+    isLargeScreen: Boolean,
 ){
     when(state.properties){
         is ScreenViewState.Loading -> {
@@ -65,7 +68,13 @@ fun HomeScreen(
         is ScreenViewState.Success -> {
             val properties = state.properties.data
             println("HomeScreen: got data and selected index is $selectedIndex")
-            HomePropertyList(properties = properties, modifier = modifier, onItemClicked = onItemClicked, selectedIndex = selectedIndex)
+            HomePropertyList(
+                properties = properties,
+                modifier = modifier,
+                onItemClicked = onItemClicked,
+                selectedIndex = selectedIndex,
+                isLargeScreen = isLargeScreen
+            )
 
         }
 
@@ -76,8 +85,6 @@ fun HomeScreen(
                 color = MaterialTheme.colorScheme.error
             )
         }
-
-        else -> {}
     }
 }
 
@@ -86,12 +93,13 @@ private fun HomePropertyList(
     properties: List<PropertyModel>,
     modifier: Modifier,
     selectedIndex: Int,
+    isLargeScreen: Boolean,
     onItemClicked:(index:Int)-> Unit
 ){
     LazyColumn(contentPadding = PaddingValues(top = 0.dp), modifier = modifier){
 
         itemsIndexed(properties){ index, property ->
-            PropertyItem(property = property, isSelected = index == selectedIndex){
+            PropertyItem(property = property, isSelected = index == selectedIndex, isLargeScreen = isLargeScreen){
                 onItemClicked.invoke(index)
             }
         }
@@ -103,12 +111,16 @@ private fun HomePropertyList(
 private fun PropertyItem(
     property: PropertyModel,
     isSelected: Boolean,
+    isLargeScreen: Boolean,
     onItemClicked: () -> Unit,
 
 ){
     //val imagePath = Environment.getExternalStorageDirectory().path + "media/external/images/media/IMG_20231020_143821/jpg"
     /*val imagePath = "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
     val imageUri = Uri.parse(imagePath)*/
+    val configuration = LocalConfiguration.current
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     val listOfPhotos = property.photos
     val imageUri = if (!listOfPhotos.isNullOrEmpty()) Uri.parse(listOfPhotos[0].photoPath) else null
 
@@ -135,9 +147,17 @@ private fun PropertyItem(
                 modifier = selectedModifier
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth(1f / 3f)
-                        .fillMaxHeight(),
+                    modifier =
+                        if(isPortrait || isLargeScreen){
+                            Modifier
+                                .fillMaxWidth(1f / 3f)
+                                .fillMaxHeight()
+                        }
+                        else{
+                            Modifier
+                                .fillMaxWidth(1f / 5f)
+                                .fillMaxHeight()
+                        },
                     contentAlignment = Alignment.Center
                 ) {
 
@@ -191,7 +211,7 @@ private fun PropertyItem(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = property.address.street,
+                        text = "${property.address.number} ${property.address.street}",
                         color = Color.Gray,
                         modifier = Modifier.fillMaxWidth()
                     )

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
@@ -254,35 +256,53 @@ private fun AddEditView(
         )
 
         if (!isPortrait){
-            Row{
-                HouseDetails(
-                    //state = state,
-                    modifier = Modifier
-                        .width(200.dp)
-                        .padding(8.dp),
-                    isLargeView = true,
-                    onAreaChanged = addEditViewModel::onAreaChange,
-                    onBathroomsChanged = addEditViewModel::onBathroomsChange,
-                    onBedroomsChanged = addEditViewModel::onBedroomsChange,
-                    onRoomsChanged = addEditViewModel::onRoomsChange,
-                    isFormValid = {isFormValid = addEditViewModel.isFormValid}
-                )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+                Column(modifier = Modifier.weight(0.5f)){
+                    HouseDetails(
+                        //state = state,
+                        modifier = Modifier
+                            .padding(8.dp),
+                        isLargeView = true,
+                        onAreaChanged = addEditViewModel::onAreaChange,
+                        onBathroomsChanged = addEditViewModel::onBathroomsChange,
+                        onBedroomsChanged = addEditViewModel::onBedroomsChange,
+                        onRoomsChanged = addEditViewModel::onRoomsChange,
+                        isFormValid = { isFormValid = addEditViewModel.isFormValid }
+                    )
+                }
 
-                AddressDetail(
-                    //address = it.address,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .weight(1f),
-                    isLargeView = true,
-                    onNumberChanged = addEditViewModel::onNumberChange,
-                    onStreetChanged = addEditViewModel::onStreetChange,
-                    onExtraChanged = addEditViewModel::onExtraChange,
-                    onCityChanged = addEditViewModel::onCityChange,
-                    onStateChanged = addEditViewModel::onStateChange,
-                    onCountryChanged = addEditViewModel::onCountryChange,
-                    onPostCodeChanged = addEditViewModel::onPostalCodeChange,
-                    isFormValid = {isFormValid = addEditViewModel.isFormValid}
-                )
+                Column(modifier = Modifier.weight(1f).height(350.dp).border(width = 1.dp, color = Color.Gray)){
+                    Text(
+                        text = "Address",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.DarkGray,
+                        modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Divider(
+                        color = Color.Gray,
+                        thickness = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    AddressDetail(
+                        //address = it.address,
+                        modifier = Modifier
+                            .padding(8.dp),
+                        isLargeView = true,
+                        onNumberChanged = addEditViewModel::onNumberChange,
+                        onStreetChanged = addEditViewModel::onStreetChange,
+                        onExtraChanged = addEditViewModel::onExtraChange,
+                        onCityChanged = addEditViewModel::onCityChange,
+                        onStateChanged = addEditViewModel::onStateChange,
+                        onCountryChanged = addEditViewModel::onCountryChange,
+                        onPostCodeChanged = addEditViewModel::onPostalCodeChange,
+                        isFormValid = { isFormValid = addEditViewModel.isFormValid }
+                    )
+                }
+                Column(modifier = Modifier.weight(0.8f)){
+                    AddressMapImage(isLargeView = true)
+                }
             }
         }
         else{
@@ -322,6 +342,7 @@ private fun AddEditView(
                 onPostCodeChanged = addEditViewModel::onPostalCodeChange,
                 isFormValid = {isFormValid = addEditViewModel.isFormValid}
             )
+            AddressMapImage(isLargeView = false)
         }
 
         Text(
@@ -558,7 +579,7 @@ private fun HouseDetailCard(
                         onValueChanged.invoke(value)
                         isFormValid.invoke()
                     },
-                    placeholder = { Text(text = title) },
+                    placeholder = { Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     isError = value.isNullOrBlank() ,
                 )
@@ -583,7 +604,7 @@ private fun AddressDetail(
     onPostCodeChanged: (String) -> Unit,
 
 ){
-    val padding = if(isLargeView) 40.dp else 8.dp
+    val padding = if(isLargeView) 8.dp else 8.dp
 
     var number by remember { mutableStateOf("") }
     var street by remember { mutableStateOf("") }
@@ -681,13 +702,32 @@ private fun AddressDetail(
             )
         }
     }
-    AsyncImage(
+    /*AsyncImage(
         model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
         contentDescription = "map view",
         contentScale = if (isLargeView )ContentScale.FillHeight else ContentScale.FillWidth,
         modifier = if (isLargeView) Modifier
             .heightIn(max = 250.dp)
             .padding(horizontal = padding, vertical = 8.dp)
+            .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
+        else Modifier
+            .fillMaxWidth()
+            .padding(horizontal = padding, vertical = 8.dp)
+            .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
+    )*/
+}
+@Composable
+private fun AddressMapImage(
+    isLargeView:Boolean,
+){
+    val padding = if(isLargeView) 8.dp else 8.dp
+    AsyncImage(
+        model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
+        contentDescription = "map view",
+        contentScale = if (isLargeView )ContentScale.FillHeight else ContentScale.FillWidth,
+        modifier = if (isLargeView) Modifier
+            .heightIn(max = 350.dp)
+            .padding(horizontal = padding, vertical = 0.dp)
             .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
         else Modifier
             .fillMaxWidth()
@@ -702,7 +742,7 @@ private fun NearbyAmenities(
     addEditState: AddEditState,
     onNearbyPlaceChanged: (NearbyPlacesType) -> Unit,
 ){
-    val numberOfColumns = if (isLargeView && !isPortrait) 5 else 2
+    val numberOfColumns = if (!isPortrait) 5 else 2
     LazyVerticalGrid(
         modifier = Modifier
             .heightIn(min = 50.dp, max = 250.dp)
