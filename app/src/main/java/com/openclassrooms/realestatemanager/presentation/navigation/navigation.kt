@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.openclassrooms.realestatemanager.common.ScreenViewState
+import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
 import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditScreen
@@ -40,19 +44,24 @@ import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeState
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
+import okhttp3.internal.wait
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Navigation(
     windowSize: WindowSizeType,
-    homeViewModel: HomeViewModel,
-    state: HomeState,
     modifier: Modifier = Modifier,
     assistedFactory: DetailAssistedFactory,
 ) {
+    val homeViewModel: HomeViewModel = viewModel()
+
+    val state by homeViewModel.state.collectAsState()
+
     val isExpanded = windowSize == WindowSizeType.Expanded
 
     var index by remember{ mutableStateOf(0) }
+
+    var id by remember{ mutableStateOf(-1L) }
 
     var isItemOpened by remember { mutableStateOf(false) }
 
@@ -113,11 +122,13 @@ fun Navigation(
             }
 
             ScreenType.AddEdit ->{
-                val propertiesListSize = if (state.properties is ScreenViewState.Success) state.properties.data.size else 0
+                val propertiesListSize = if (state.properties is ScreenViewState.Success) (state.properties as ScreenViewState.Success<List<PropertyModel>>).data.size else 0
+                //val propertyId = if (state.properties is ScreenViewState.Success) (state.properties as ScreenViewState.Success<List<PropertyModel>>).data.last().id else -2L
                 println("AddEditPage")
                 AddEditScreen(
                     isLargeView = isExpanded, modifier = modifier.padding(it),
                     onCreatedClicked = {
+                        //id = propertyId + 1
                         index = propertiesListSize
                         isItemOpened = true
                     },
@@ -202,15 +213,21 @@ fun LaunchDetailScreenFromState(
 
         is ScreenViewState.Success -> {
             val properties = state.properties.data
-            //println("go to data and index is $index")
-            DetailScreen(
-                propertyId = properties[index].id ,
-                assistedFactory = assistedFactory,
-                modifier = modifier,
-                isLargeView = isLargeView,
-                onBackPressed = onBackPressed
-            )
 
+            //println("go to data and index is $index")
+            if (properties.size > index){
+                DetailScreen(
+                    propertyId = properties[index].id,
+                    assistedFactory = assistedFactory,
+                    modifier = modifier,
+                    isLargeView = isLargeView,
+                    onBackPressed = onBackPressed
+                )
+            }
+            Text(
+                text = "An unexpected Error occurred and the Property was unable to Load",
+                color = MaterialTheme.colorScheme.error
+            )
         }
 
         is ScreenViewState.Error -> {

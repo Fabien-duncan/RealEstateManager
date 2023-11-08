@@ -337,7 +337,7 @@ private fun AddEditView(
                 Text(
                     text = "You need to fill in all the required fields",
                     fontSize = 14.sp,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     fontStyle = FontStyle.Italic,
                     textAlign = TextAlign.End,
                     modifier = Modifier
@@ -361,6 +361,7 @@ private fun AddEditView(
         LaunchedEffect(isAddOrUpdatePropertyFinished) {
             if (isAddOrUpdatePropertyFinished) {
                 println("Creating Property")
+                addEditViewModel.resetFinishedState()
                 onCreatedClicked.invoke()
             }
         }
@@ -444,10 +445,10 @@ private fun EmptyPhotoList(){
 private fun HouseDetails(
     //state: DetailSate,
     modifier: Modifier = Modifier,
-    onAreaChanged: (Int?) -> Unit,
-    onRoomsChanged: (Int?) -> Unit,
-    onBedroomsChanged: (Int?) -> Unit,
-    onBathroomsChanged: (Int?) -> Unit,
+    onAreaChanged: (String?) -> Unit,
+    onRoomsChanged: (String?) -> Unit,
+    onBedroomsChanged: (String?) -> Unit,
+    onBathroomsChanged: (String?) -> Unit,
     isFormValid: () -> Unit,
     isLargeView:Boolean
 ){
@@ -541,7 +542,7 @@ private fun HouseDetailCard(
     painter: Painter,
     title:String,
     modifier: Modifier,
-    onValueChanged: (Int?) -> Unit,
+    onValueChanged: (String?) -> Unit,
     isFormValid: () -> Unit
 ){
     var value by remember { mutableStateOf("") }
@@ -555,13 +556,7 @@ private fun HouseDetailCard(
                     value = value,
                     onValueChange = {
                         value = it
-                        onValueChanged.invoke(
-                            try {
-                                value.toInt()
-                            }catch (e: NumberFormatException){
-                                null
-                            }
-                        )
+                        onValueChanged.invoke(value)
                         isFormValid.invoke()
                     },
                     placeholder = { Text(text = title) },
@@ -580,7 +575,7 @@ private fun AddressDetail(
     //address: AddressModel,
     isLargeView:Boolean,
     isFormValid: () -> Unit,
-    onNumberChanged: (Int) -> Unit,
+    onNumberChanged: (String?) -> Unit,
     onStreetChanged: (String) -> Unit,
     onExtraChanged: (String) -> Unit,
     onCityChanged: (String) -> Unit,
@@ -612,10 +607,9 @@ private fun AddressDetail(
                     value = number,
                     onValueChange = {
                         number = it
-                        onNumberChanged.invoke(number.toInt())
+                        onNumberChanged.invoke(number)
                         isFormValid.invoke()
                     },
-                    //label = { Text(text = "type") },
                     placeholder = { Text(text = "number") },
                     modifier = Modifier.padding(4.dp)
                 )
@@ -625,7 +619,6 @@ private fun AddressDetail(
                         extra = it
                         onExtraChanged.invoke(extra)
                     },
-                    //label = { Text(text = "type") },
                     placeholder = { Text(text = "extra") },
                     modifier = Modifier.padding(4.dp)
                 )

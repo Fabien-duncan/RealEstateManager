@@ -10,6 +10,8 @@ import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.domain.use_cases.AddPropertyUseCase
+import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
+import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.UpdatePropertyUseCase
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
@@ -22,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditViewModel @Inject constructor(
     val addPropertyUseCase: AddPropertyUseCase,
+    val getAllPropertiesUseCase: GetAllPropertiesUseCase,
     val updatePropertyUseCase: UpdatePropertyUseCase
 ):ViewModel() {
     var state by mutableStateOf(AddEditState())
@@ -71,19 +74,19 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(price = price)
 
     }
-    fun onAreaChange(area:Int?){
-        state = state.copy(area = area)
+    fun onAreaChange(area:String?){
+        state = state.copy(area = convertToIntOrNull(area))
     }
-    fun onRoomsChange(rooms: Int?) {
-        state = state.copy(rooms = rooms)
-    }
-
-    fun onBedroomsChange(bedrooms: Int?) {
-        state = state.copy(bedrooms = bedrooms)
+    fun onRoomsChange(rooms: String?) {
+        state = state.copy(rooms = convertToIntOrNull(rooms))
     }
 
-    fun onBathroomsChange(bathrooms: Int?) {
-        state = state.copy(bathrooms = bathrooms)
+    fun onBedroomsChange(bedrooms: String?) {
+        state = state.copy(bedrooms = convertToIntOrNull(bedrooms))
+    }
+
+    fun onBathroomsChange(bathrooms: String?) {
+        state = state.copy(bathrooms = convertToIntOrNull(bathrooms))
     }
 
     fun onDescriptionChange(description: String) {
@@ -107,8 +110,8 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(agentName = agentName)
     }
 
-    fun onNumberChange(number: Int?) {
-        state = state.copy(number = number)
+    fun onNumberChange(number: String?) {
+        state = state.copy(number = convertToIntOrNull(number))
     }
     fun onStreetChange(street: String) {
         state = state.copy(street = street)
@@ -162,8 +165,24 @@ class AddEditViewModel @Inject constructor(
 
     fun addOrUpdateProperty() = viewModelScope.launch(Dispatchers.IO) {
         addPropertyUseCase(property = property)
+        getAllPropertiesUseCase
         _isAddOrUpdatePropertyFinished.value = true
     }
+
+    fun convertToIntOrNull(value:String?):Int? {
+        return if (value.isNullOrBlank()) null
+        else {
+            try {
+                value.toInt()
+            } catch (e: NumberFormatException) {
+                null
+            }
+        }
+    }
+    fun resetFinishedState(){
+        _isAddOrUpdatePropertyFinished.value = false
+    }
+
     private fun checkFormIsValid():Boolean{
             println("Checking form is valid")
             if (state.type == null) return false

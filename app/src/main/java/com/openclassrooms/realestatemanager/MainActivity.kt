@@ -51,9 +51,9 @@ class MainActivity : ComponentActivity() {
     }
     @Composable
     fun RealEstateApp(modifier: Modifier = Modifier, windowSize:WindowSizeType){
-        val homeViewModel: HomeViewModel = viewModel()
+       /* val homeViewModel: HomeViewModel = viewModel()
         val navController = rememberNavController()
-        val state by homeViewModel.state.collectAsState()
+        val state by homeViewModel.state.collectAsState()*/
 
 
 
@@ -62,8 +62,8 @@ class MainActivity : ComponentActivity() {
 
         Navigation(
             windowSize = windowSize,
-            homeViewModel = homeViewModel,
-            state = state,
+            /*homeViewModel = homeViewModel,
+            state = state,*/
             modifier = modifier,
             assistedFactory = assistedFactory
         )
