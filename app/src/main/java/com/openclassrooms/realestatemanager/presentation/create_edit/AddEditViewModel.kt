@@ -164,8 +164,9 @@ class AddEditViewModel @Inject constructor(
     }*/
 
     fun addOrUpdateProperty() = viewModelScope.launch(Dispatchers.IO) {
-        addPropertyUseCase(property = property)
-        getAllPropertiesUseCase
+        val id = addPropertyUseCase(property = property)
+        //getAllPropertiesUseCase
+        state = state.copy(id = id)
         _isAddOrUpdatePropertyFinished.value = true
     }
 

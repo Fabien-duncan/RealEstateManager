@@ -61,7 +61,7 @@ fun Navigation(
 
     var index by remember{ mutableStateOf(0) }
 
-    var id by remember{ mutableStateOf(-1L) }
+    var id by remember{ mutableStateOf(1L) }
 
     var isItemOpened by remember { mutableStateOf(false) }
 
@@ -91,6 +91,7 @@ fun Navigation(
                     modifier = modifier.padding(it),
                     onItemClicked = {
                         index = it
+                        id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[index].id
                         isItemOpened = true
                     }
                 )
@@ -101,23 +102,25 @@ fun Navigation(
                     state = state,
                     modifier = modifier.padding(it),
                     assistedFactory = assistedFactory,
-                    index = index,
-                    isLargeView = false
+                    isLargeView = false,
+                    propertyId = id
                 ) {
                     isItemOpened = false
                 }
             }
 
             ScreenType.ListWithDetail -> {
-                println("tablet mode")
+                println("tablet mode index is $index")
                 ListAndDetailScreen(
                     state = state,
                     onItemClicked = {
                         index = it
+                        id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[index].id
                     },
                     assistedFactory = assistedFactory,
                     modifier = modifier.padding(it),
-                    index = index
+                    index = index,
+                    id = id
                 )
             }
 
@@ -127,10 +130,11 @@ fun Navigation(
                 println("AddEditPage")
                 AddEditScreen(
                     isLargeView = isExpanded, modifier = modifier.padding(it),
-                    onCreatedClicked = {
-                        //id = propertyId + 1
-                        index = propertiesListSize
+                    onCreatedClicked = { newId->
+                        id = newId
+                        index = propertiesListSize-1
                         isItemOpened = true
+                        isAddOpened = false
                     },
                 ) {
                     isAddOpened = false
@@ -147,6 +151,7 @@ private fun ListAndDetailScreen(
     onItemClicked:(index:Int) -> Unit,
     assistedFactory: DetailAssistedFactory,
     index: Int,
+    id:Long,
 ){
     Row(
         modifier = Modifier.fillMaxSize()
@@ -162,8 +167,8 @@ private fun ListAndDetailScreen(
             state = state,
             modifier = modifier,
             assistedFactory = assistedFactory,
-            index = index,
-            isLargeView = true
+            isLargeView = true,
+            propertyId = id
         ) {
 
         }
@@ -201,8 +206,8 @@ fun LaunchDetailScreenFromState(
     state: HomeState,
     modifier: Modifier,
     assistedFactory: DetailAssistedFactory,
-    index: Int,
     isLargeView:Boolean,
+    propertyId:Long,
     onBackPressed:() -> Unit
 ){
     when(state.properties){
@@ -215,19 +220,15 @@ fun LaunchDetailScreenFromState(
             val properties = state.properties.data
 
             //println("go to data and index is $index")
-            if (properties.size > index){
-                DetailScreen(
-                    propertyId = properties[index].id,
-                    assistedFactory = assistedFactory,
-                    modifier = modifier,
-                    isLargeView = isLargeView,
-                    onBackPressed = onBackPressed
-                )
-            }
-            Text(
-                text = "An unexpected Error occurred and the Property was unable to Load",
-                color = MaterialTheme.colorScheme.error
+
+            DetailScreen(
+                propertyId = propertyId,
+                assistedFactory = assistedFactory,
+                modifier = modifier,
+                isLargeView = isLargeView,
+                onBackPressed = onBackPressed
             )
+
         }
 
         is ScreenViewState.Error -> {

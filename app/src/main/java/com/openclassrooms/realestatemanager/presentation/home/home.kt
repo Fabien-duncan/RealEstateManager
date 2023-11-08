@@ -64,7 +64,7 @@ fun HomeScreen(
 
         is ScreenViewState.Success -> {
             val properties = state.properties.data
-            println("got data")
+            println("HomeScreen: got data and selected index is $selectedIndex")
             HomePropertyList(properties = properties, modifier = modifier, onItemClicked = onItemClicked, selectedIndex = selectedIndex)
 
         }

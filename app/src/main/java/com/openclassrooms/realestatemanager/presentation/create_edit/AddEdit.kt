@@ -76,7 +76,7 @@ fun AddEditScreen(
     modifier: Modifier = Modifier,
     propertyId: Long = -1,
     isLargeView:Boolean,
-    onCreatedClicked:() -> Unit,
+    onCreatedClicked:(Long) -> Unit,
     onBackPressed:() -> Unit
 ) {
     println("in Detail Screen and the property id is $propertyId")
@@ -91,7 +91,7 @@ fun AddEditScreen(
 @Composable
 private fun AddEditView(
     modifier: Modifier,
-    onCreatedClicked:() -> Unit,
+    onCreatedClicked:(Long) -> Unit,
     isLargeView:Boolean
 ){
     val addEditViewModel: AddEditViewModel = viewModel()
@@ -348,8 +348,6 @@ private fun AddEditView(
             Button(
                 onClick = {
                     addEditViewModel.addOrUpdateProperty()
-                    /*onCreatedClicked.invoke()
-                    println("creating Property")*/
                 },
                 modifier = Modifier
                     .padding(8.dp),
@@ -362,7 +360,8 @@ private fun AddEditView(
             if (isAddOrUpdatePropertyFinished) {
                 println("Creating Property")
                 addEditViewModel.resetFinishedState()
-                onCreatedClicked.invoke()
+                if (state.id !=null)onCreatedClicked.invoke(state.id)
+                else onCreatedClicked.invoke(-1L)
             }
         }
     }
