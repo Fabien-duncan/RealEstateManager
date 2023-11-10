@@ -104,8 +104,6 @@ private fun AddEditView(
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-    var type by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
 
     var isTypePickerExpanded by remember { mutableStateOf(false) }
@@ -243,10 +241,9 @@ private fun AddEditView(
         }
 
         OutlinedTextField(
-            value = description,
+            value = state.description ?: "",
             onValueChange = {
-                description = it
-                addEditViewModel.onDescriptionChange(description)
+                addEditViewModel.onDescriptionChange(it)
                 isFormValid = addEditViewModel.isFormValid
             },
             placeholder = { Text(text = "Enter the description") },
@@ -267,17 +264,23 @@ private fun AddEditView(
                         onBathroomsChanged = addEditViewModel::onBathroomsChange,
                         onBedroomsChanged = addEditViewModel::onBedroomsChange,
                         onRoomsChanged = addEditViewModel::onRoomsChange,
-                        isFormValid = { isFormValid = addEditViewModel.isFormValid }
+                        isFormValid = { isFormValid = addEditViewModel.isFormValid },
+                        state = state
                     )
                 }
 
-                Column(modifier = Modifier.weight(1f).height(350.dp).border(width = 1.dp, color = Color.Gray)){
+                Column(modifier = Modifier
+                    .weight(1f)
+                    .height(350.dp)
+                    .border(width = 1.dp, color = Color.Gray)){
                     Text(
                         text = "Address",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.DarkGray,
-                        modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
                     Divider(
@@ -297,7 +300,8 @@ private fun AddEditView(
                         onStateChanged = addEditViewModel::onStateChange,
                         onCountryChanged = addEditViewModel::onCountryChange,
                         onPostCodeChanged = addEditViewModel::onPostalCodeChange,
-                        isFormValid = { isFormValid = addEditViewModel.isFormValid }
+                        isFormValid = { isFormValid = addEditViewModel.isFormValid },
+                        state = state
                     )
                 }
                 Column(modifier = Modifier.weight(0.8f)){
@@ -316,7 +320,8 @@ private fun AddEditView(
                 onBathroomsChanged = addEditViewModel::onBathroomsChange,
                 onBedroomsChanged = addEditViewModel::onBedroomsChange,
                 onRoomsChanged = addEditViewModel::onRoomsChange,
-                isFormValid = {isFormValid = addEditViewModel.isFormValid}
+                isFormValid = {isFormValid = addEditViewModel.isFormValid},
+                state = state
             )
 
             Text(
@@ -340,7 +345,8 @@ private fun AddEditView(
                 onStateChanged = addEditViewModel::onStateChange,
                 onCountryChanged = addEditViewModel::onCountryChange,
                 onPostCodeChanged = addEditViewModel::onPostalCodeChange,
-                isFormValid = {isFormValid = addEditViewModel.isFormValid}
+                isFormValid = {isFormValid = addEditViewModel.isFormValid},
+                state = state
             )
             AddressMapImage(isLargeView = false)
         }
@@ -470,6 +476,7 @@ private fun HouseDetails(
     onBedroomsChanged: (String?) -> Unit,
     onBathroomsChanged: (String?) -> Unit,
     isFormValid: () -> Unit,
+    state: AddEditState,
     isLargeView:Boolean
 ){
 
@@ -481,28 +488,32 @@ private fun HouseDetails(
                 title = "surface in m²",
                 modifier = modifier,
                 onValueChanged = onAreaChanged,
-                isFormValid =isFormValid
+                isFormValid =isFormValid,
+                value = state.rooms
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_rooms_image),
                 title = "No. rooms",
                 modifier = modifier,
                 onValueChanged = onRoomsChanged,
-                isFormValid =isFormValid
+                isFormValid =isFormValid,
+                value = state.rooms
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_bathrooms_image),
                 title = "No. bathrooms",
                 modifier = modifier,
                 onValueChanged = onBathroomsChanged,
-                isFormValid =isFormValid
+                isFormValid =isFormValid,
+                value = state.bathrooms
             )
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.number_bedrooms_image),
                 title = "No. bedrooms",
                 modifier = modifier,
                 onValueChanged = onBedroomsChanged,
-                isFormValid =isFormValid
+                isFormValid =isFormValid,
+                value = state.bedrooms
             )
         }
     }
@@ -523,7 +534,8 @@ private fun HouseDetails(
                     title = "surface in m²",
                     modifier = modifier,
                     onValueChanged = onAreaChanged,
-                    isFormValid =isFormValid
+                    isFormValid =isFormValid,
+                    value = state.area
 
                 )
                 HouseDetailCard(
@@ -531,7 +543,8 @@ private fun HouseDetails(
                     title = "No. bathrooms",
                     modifier = modifier,
                     onValueChanged = onBathroomsChanged,
-                    isFormValid =isFormValid
+                    isFormValid =isFormValid,
+                    value = state.bathrooms
                 )
             }
             Row(
@@ -543,14 +556,16 @@ private fun HouseDetails(
                     title = "No. rooms",
                     modifier = modifier,
                     onValueChanged = onRoomsChanged,
-                    isFormValid =isFormValid
+                    isFormValid =isFormValid,
+                    value = state.rooms
                 )
                 HouseDetailCard(
                     painter = painterResource(id = R.drawable.number_bedrooms_image),
                     title = "No. bedrooms",
                     modifier = modifier,
                     onValueChanged = onBedroomsChanged,
-                    isFormValid =isFormValid
+                    isFormValid =isFormValid,
+                    value = state.bedrooms
                 )
             }
         }
@@ -563,9 +578,9 @@ private fun HouseDetailCard(
     title:String,
     modifier: Modifier,
     onValueChanged: (String?) -> Unit,
+    value: Int?,
     isFormValid: () -> Unit
 ){
-    var value by remember { mutableStateOf("") }
     Box(
         modifier = modifier.padding(top = 8.dp),
     ) {
@@ -573,15 +588,14 @@ private fun HouseDetailCard(
             Image(painter = painter, contentDescription = title, modifier = Modifier.padding(top=14.dp))
             Column(modifier = Modifier.padding(horizontal = 4.dp)) {
                 OutlinedTextField(
-                    value = value,
+                    value = ("${ value ?: "" }"),
                     onValueChange = {
-                        value = it
-                        onValueChanged.invoke(value)
+                        onValueChanged.invoke(it)
                         isFormValid.invoke()
                     },
                     placeholder = { Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    isError = value.isNullOrBlank() ,
+                    isError = value == null,
                 )
             }
 
@@ -591,6 +605,7 @@ private fun HouseDetailCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddressDetail(
+    state: AddEditState,
     modifier: Modifier = Modifier,
     //address: AddressModel,
     isLargeView:Boolean,
@@ -606,13 +621,13 @@ private fun AddressDetail(
 ){
     val padding = if(isLargeView) 8.dp else 8.dp
 
-    var number by remember { mutableStateOf("") }
+    /*var number by remember { mutableStateOf("") }
     var street by remember { mutableStateOf("") }
     var extra by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
     var state by remember { mutableStateOf("") }
     var country by remember { mutableStateOf("") }
-    var postalCode by remember { mutableStateOf("") }
+    var postalCode by remember { mutableStateOf("") }*/
 
     Row(
         modifier = Modifier
@@ -624,29 +639,26 @@ private fun AddressDetail(
         Column(modifier = Modifier.weight(1f)) {
             Column() {
                 OutlinedTextField(
-                    value = number,
+                    value = ("${ state.number ?: "" }"),
                     onValueChange = {
-                        number = it
-                        onNumberChanged.invoke(number)
+                        onNumberChanged.invoke(it)
                         isFormValid.invoke()
                     },
                     placeholder = { Text(text = "number") },
                     modifier = Modifier.padding(4.dp)
                 )
                 OutlinedTextField(
-                    value = extra,
+                    value = state.extra ?: "",
                     onValueChange = {
-                        extra = it
-                        onExtraChanged.invoke(extra)
+                        onExtraChanged.invoke(it)
                     },
                     placeholder = { Text(text = "extra") },
                     modifier = Modifier.padding(4.dp)
                 )
                 OutlinedTextField(
-                    value = state,
+                    value = state.state ?: "",
                     onValueChange = {
-                        state = it
-                        onStateChanged.invoke(state)
+                        onStateChanged.invoke(it)
                         isFormValid.invoke()
                     },
                     //label = { Text(text = "type") },
@@ -654,10 +666,9 @@ private fun AddressDetail(
                     modifier = Modifier.padding(4.dp)
                 )
                 OutlinedTextField(
-                    value = postalCode,
+                    value = state.postalCode ?: "",
                     onValueChange = {
-                        postalCode = it
-                        onPostCodeChanged.invoke(postalCode)
+                        onPostCodeChanged.invoke(it)
                         isFormValid.invoke()
                     },
                     //label = { Text(text = "type") },
@@ -668,10 +679,9 @@ private fun AddressDetail(
         }
         Column(modifier = Modifier.weight(1f)) {
             OutlinedTextField(
-                value = street,
+                value = state.street ?: "",
                 onValueChange = {
-                    street = it
-                    onStreetChanged.invoke(street)
+                    onStreetChanged.invoke(it)
                     isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
@@ -679,10 +689,9 @@ private fun AddressDetail(
                 modifier = Modifier.padding(4.dp)
             )
             OutlinedTextField(
-                value = city,
+                value = state.city ?: "",
                 onValueChange = {
-                    city = it
-                    onCityChanged.invoke(city)
+                    onCityChanged.invoke(it)
                     isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
@@ -690,10 +699,9 @@ private fun AddressDetail(
                 modifier = Modifier.padding(4.dp)
             )
             OutlinedTextField(
-                value = country,
+                value = state.country ?: "",
                 onValueChange = {
-                    country = it
-                    onCountryChanged.invoke(country)
+                    onCountryChanged.invoke(it)
                     isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
