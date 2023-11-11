@@ -18,13 +18,14 @@ import com.openclassrooms.realestatemanager.enums.PropertyType
 import com.openclassrooms.realestatemanager.presentation.detail.DetailSate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 @HiltViewModel
 class AddEditViewModel @Inject constructor(
     val addPropertyUseCase: AddPropertyUseCase,
-    val getAllPropertiesUseCase: GetAllPropertiesUseCase,
+    val getPropertyByIdUseCase: GetPropertyByIdUseCase,
     val updatePropertyUseCase: UpdatePropertyUseCase
 ):ViewModel() {
     var state by mutableStateOf(AddEditState())
@@ -38,6 +39,7 @@ class AddEditViewModel @Inject constructor(
     private val property: PropertyModel
         get() = state.run {
             PropertyModel(
+                id = id,
                 price = price!!,
                 type = type!!,
                 area = area!!,
@@ -70,8 +72,8 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(type = type)
 
     }
-    fun onPriceChange(price:Double?){
-        state = state.copy(price = price)
+    fun onPriceChange(price:String?){
+        state = state.copy(price = convertToDoubleOrNull(price))
 
     }
     fun onAreaChange(area:String?){
@@ -170,11 +172,56 @@ class AddEditViewModel @Inject constructor(
         _isAddOrUpdatePropertyFinished.value = true
     }
 
-    fun convertToIntOrNull(value:String?):Int? {
+    fun getPropertyById(propertyId:Long) = viewModelScope.launch {
+        if (state.id != propertyId){
+            println("getting property by Id")
+            getPropertyByIdUseCase(propertyId).collectLatest { property ->
+                state = state.copy(
+                    id = property.id,
+                    price = property.price,
+                    type = property.type,
+                    area = property.area!!,
+                    rooms = property.rooms!!,
+                    bedrooms = property.bedrooms!!,
+                    bathrooms = property.bathrooms!!,
+                    description = property.description!!,
+                    isSold = property.isSold,
+                    createdDate = property.createdDate,
+                    soldDate = property.soldDate,
+                    agentName = property.agentName,
+                    number = property.address.number!!,
+                    street = property.address.street!!,
+                    extra = property.address.extra,
+                    city = property.address.city!!,
+                    state = property.address.state!!,
+                    country = property.address.country!!,
+                    postalCode = property.address.postalCode!!,
+                    latitude = property.address.latitude,
+                    longitude = property.address.longitude,
+                    nearbyPlaces = property.nearbyPlaces,
+                    photos = property.photos
+                )
+
+            }
+        }
+
+    }
+
+    private fun convertToIntOrNull(value:String?):Int? {
         return if (value.isNullOrBlank()) null
         else {
             try {
                 value.toInt()
+            } catch (e: NumberFormatException) {
+                null
+            }
+        }
+    }
+    private fun convertToDoubleOrNull(value:String?):Double? {
+        return if (value.isNullOrBlank()) null
+        else {
+            try {
+                value.toDouble()
             } catch (e: NumberFormatException) {
                 null
             }
@@ -205,7 +252,7 @@ class AddEditViewModel @Inject constructor(
 }
 
 data class AddEditState(
-    val id:Long? = null,
+    val id:Long = -1L,
     val type: PropertyType? = null,
     val price:Double? = null,
     val area:Int? = null,

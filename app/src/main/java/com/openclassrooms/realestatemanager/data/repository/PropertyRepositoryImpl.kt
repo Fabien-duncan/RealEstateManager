@@ -5,14 +5,12 @@ import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
-import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.repository.Respository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.util.Date
@@ -32,9 +30,16 @@ class PropertyRepositoryImpl @Inject constructor(
         propertyDao.insert(addressRoomEntity)
 
         property.nearbyPlaces?.let {
-            val nearbyPlace =propertyMapper.NearbyPlacesToRoomEntities(it, propertyId)
+            val nearbyPlace =propertyMapper.nearbyPlacesToRoomEntities(it, propertyId)
             propertyDao.insertNearbyPlaces(nearbyPlace)
         }
+
+        property.photos?.let {
+            val photos = propertyMapper.listOfPropertyPhotosModelToRoom(it, propertyId)
+            propertyDao.insert(photos)
+        }
+
+
         return propertyId
     }
 

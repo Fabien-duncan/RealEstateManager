@@ -33,7 +33,7 @@ class PropertyMapper{
         agentName = property.property.agentName,
         address = addressRoomToModel(property.address),
         nearbyPlaces = property.nearbyPlaces?.let { copyNearbyPlacesList(it) },
-        photos = property.photos?.let { listOfpropertyPhotosRoomtoModel(it) }
+        photos = property.photos?.let { listOfPropertyPhotosRoomToModel(it) }
     )
 
     private fun copyNearbyPlacesList(nearbyPlaces: List<PropertyNearbyPlaces>):List<NearbyPlacesType>?{
@@ -71,20 +71,24 @@ class PropertyMapper{
         latitude = address.latitude,
         longitude = address.longitude
     )
-    fun propertyModelToRoom(property: PropertyModel) = Property(
-        type = property.type,
-        price = property.price,
-        area = property.area,
-        rooms = property.rooms,
-        bedrooms = property.bedrooms,
-        bathrooms = property.bathrooms,
-        description = property.description,
-        isSold = property.isSold,
-        createdDate = property.createdDate,
-        soldDate = property.soldDate,
-        agentName = property.agentName,
-    )
-    fun NearbyPlacesToRoomEntities(nearbyPlaces: List<NearbyPlacesType>, propertyId: Long):List<PropertyNearbyPlaces>{
+    fun propertyModelToRoom(property: PropertyModel):Property {
+        val roomProperty = Property(
+            type = property.type,
+            price = property.price,
+            area = property.area,
+            rooms = property.rooms,
+            bedrooms = property.bedrooms,
+            bathrooms = property.bathrooms,
+            description = property.description,
+            isSold = property.isSold,
+            createdDate = property.createdDate,
+            soldDate = property.soldDate,
+            agentName = property.agentName,
+            )
+        if (property.id > 0) return roomProperty.copy(id = property.id)
+        else return roomProperty
+    }
+    fun nearbyPlacesToRoomEntities(nearbyPlaces: List<NearbyPlacesType>, propertyId: Long):List<PropertyNearbyPlaces>{
 
         val nearbyPlacesRoom = mutableListOf<PropertyNearbyPlaces>()
         nearbyPlaces.forEach {
@@ -98,7 +102,7 @@ class PropertyMapper{
         return nearbyPlacesRoom
     }
 
-    private fun listOfpropertyPhotosRoomtoModel(propertyPhotos: List<PropertyPhotos>):List<PropertyPhotosModel>? {
+    private fun listOfPropertyPhotosRoomToModel(propertyPhotos: List<PropertyPhotos>):List<PropertyPhotosModel>? {
         var photos = mutableListOf<PropertyPhotosModel>()
 
         propertyPhotos.forEach{
@@ -106,10 +110,26 @@ class PropertyMapper{
         }
         return photos
     }
-    private fun propertyPhotoRoomToModel(propertyPhotos: PropertyPhotos) = PropertyPhotosModel(
-        id =  propertyPhotos.id,
-        photoPath = propertyPhotos.photoPath,
-        caption = propertyPhotos.caption
+    private fun propertyPhotoRoomToModel(propertyPhoto: PropertyPhotos) = PropertyPhotosModel(
+        id =  propertyPhoto.id,
+        photoPath = propertyPhoto.photoPath,
+        caption = propertyPhoto.caption
+    )
+
+    public fun listOfPropertyPhotosModelToRoom(propertyPhotos:List<PropertyPhotosModel>, propertyId: Long):List<PropertyPhotos> {
+        var photos = mutableListOf<PropertyPhotos>()
+
+        propertyPhotos.forEach {
+            photos.add(propertyPhotoModelToRoom(it, propertyId))
+        }
+
+        return photos
+    }
+    private fun propertyPhotoModelToRoom(propertyPhoto: PropertyPhotosModel, propertyId: Long) = PropertyPhotos(
+        id =  propertyPhoto.id,
+        propertyId = propertyId,
+        photoPath = propertyPhoto.photoPath,
+        caption = propertyPhoto.caption
     )
 
 }

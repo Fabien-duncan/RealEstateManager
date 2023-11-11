@@ -76,14 +76,14 @@ import java.nio.file.WatchEvent
 @Composable
 fun AddEditScreen(
     modifier: Modifier = Modifier,
-    propertyId: Long = -1,
+    propertyId: Long = -1L,
     isLargeView:Boolean,
     onCreatedClicked:(Long) -> Unit,
     onBackPressed:() -> Unit
 ) {
-    println("in Detail Screen and the property id is $propertyId")
+    println("in addEdit Screen and the property id is $propertyId")
 
-    AddEditView(modifier = modifier, isLargeView = isLargeView, onCreatedClicked = onCreatedClicked)
+    AddEditView(modifier = modifier, propertyId = propertyId, isLargeView = isLargeView, onCreatedClicked = onCreatedClicked)
 
     BackHandler {
         onBackPressed.invoke()
@@ -93,10 +93,12 @@ fun AddEditScreen(
 @Composable
 private fun AddEditView(
     modifier: Modifier,
+    propertyId: Long,
     onCreatedClicked:(Long) -> Unit,
     isLargeView:Boolean
 ){
     val addEditViewModel: AddEditViewModel = viewModel()
+    if (propertyId > 0) addEditViewModel.getPropertyById(propertyId)
     val state = addEditViewModel.state
 
     val scrollState = rememberScrollState()
@@ -104,7 +106,7 @@ private fun AddEditView(
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-    var price by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf(state.price) }
 
     var isTypePickerExpanded by remember { mutableStateOf(false) }
     var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
@@ -130,10 +132,9 @@ private fun AddEditView(
             modifier = Modifier.fillMaxWidth(),
         ){
             OutlinedTextField(
-                value = price,
+                value = "${ state.price ?: "" }",
                 onValueChange = {
-                    price = it
-                    addEditViewModel.onPriceChange(it.toDouble())
+                    addEditViewModel.onPriceChange(it)
                     isFormValid = addEditViewModel.isFormValid
                 },
                 placeholder = { Text(text = "price in $") },
@@ -380,7 +381,7 @@ private fun AddEditView(
                     .padding(8.dp),
                 enabled = isFormValid
             ) {
-                Text(text = "Create")
+                Text(text = if (propertyId > 0) "Save Changes" else "Create")
             }
         }
         LaunchedEffect(isAddOrUpdatePropertyFinished) {

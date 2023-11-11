@@ -66,8 +66,9 @@ fun Navigation(
     var isItemOpened by remember { mutableStateOf(false) }
 
     var isAddOpened by remember { mutableStateOf(false) }
+    var isEditOpened by remember { mutableStateOf(false) }
 
-    var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened, isAddOpened = isAddOpened)
+    var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened, isAddOpened = isAddOpened || isEditOpened)
 
     Scaffold(
         topBar = {
@@ -76,9 +77,14 @@ fun Navigation(
                 onBackArrowPressed = {
                     isItemOpened = it
                     isAddOpened = false
+                    isEditOpened = false
                 },
                 onAddPressed = {
                     isAddOpened = true
+                    isItemOpened = false
+                },
+                onEditPressed = {
+                    isEditOpened = true
                     isItemOpened = false
                 }
             )
@@ -129,6 +135,7 @@ fun Navigation(
                 val propertiesListSize = if (state.properties is ScreenViewState.Success) (state.properties as ScreenViewState.Success<List<PropertyModel>>).data.size else 0
                 println("AddEditPage")
                 AddEditScreen(
+                    propertyId = if(isEditOpened) id else -1L,
                     isLargeView = isExpanded,
                     modifier = modifier.padding(it),
                     onCreatedClicked = { newId->
@@ -254,6 +261,7 @@ fun LaunchDetailScreenFromState(
 fun TopBar(
     screenType: ScreenType,
     onBackArrowPressed: (Boolean) -> Unit,
+    onEditPressed: () -> Unit,
     onAddPressed:() -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -302,13 +310,15 @@ fun TopBar(
                     )
 
                 }
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Property",
-                        tint = Color.White
-                    )
+                if(screenType == ScreenType.Detail || screenType == ScreenType.ListWithDetail){
+                    IconButton(onClick = { onEditPressed.invoke() }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit Property",
+                            tint = Color.White
+                        )
 
+                    }
                 }
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(
