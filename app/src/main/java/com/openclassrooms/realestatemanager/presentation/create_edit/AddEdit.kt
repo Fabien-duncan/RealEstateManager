@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.presentation.create_edit
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -59,6 +60,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -72,7 +74,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import coil.compose.rememberImagePainter
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
@@ -187,9 +188,18 @@ private fun AddEditView(
         var selectedImageUri by remember {
             mutableStateOf<Uri?>(null)
         }
-        val singlePhotoPicker = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickVisualMedia(),
-            onResult = {uri ->  println("the image is ${uri.toString()}")}
+        val context = LocalContext.current
+        val photosPicker = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickMultipleVisualMedia(),
+            onResult = {uris ->
+                val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                //GivesAll permissions to
+                uris.forEach {
+                    context.contentResolver.takePersistableUriPermission(it, flag)
+                }
+
+                println("the image is ${uris}")
+            }
         )
         val addEditProperties = PropertyPhotosModel(id = -1L, photoPath = "", caption = "")//used for creating the button to add add properties
         //combines the list of properties with the add property button
@@ -204,7 +214,7 @@ private fun AddEditView(
                     PhotoItem(photo = photo, onPhotoChanged = addEditViewModel::onPhotoCaptionChanged, index = index )
                 }
                 else{
-                    AddPhotoItem(onAddPhotoClicked = singlePhotoPicker)
+                    AddPhotoItem(onAddPhotoClicked = photosPicker)
                 }
             }
         }
@@ -424,6 +434,8 @@ private fun PhotoItem(
     index: Int
 ){
     val imageUri = Uri.parse(photo.photoPath)
+
+
     println("photo Uri for the ${photo.caption} is ${photo.photoPath}")
     val photoDescription =
         if(photo.caption == null) "A photo with no caption"
@@ -469,7 +481,7 @@ private fun PhotoItem(
 @Composable
 private fun AddPhotoItem(
     modifier: Modifier = Modifier,
-    onAddPhotoClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>
+    onAddPhotoClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>
 ){
     Box(
         modifier = Modifier

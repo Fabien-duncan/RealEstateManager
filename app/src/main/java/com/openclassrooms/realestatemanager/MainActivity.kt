@@ -56,8 +56,6 @@ class MainActivity : ComponentActivity() {
         val state by homeViewModel.state.collectAsState()*/
 
 
-
-
         //HomeScreen(modifier = modifier ,state = state, onPropertyClicked = { println("element $it has been clicked") })
 
         Navigation(
