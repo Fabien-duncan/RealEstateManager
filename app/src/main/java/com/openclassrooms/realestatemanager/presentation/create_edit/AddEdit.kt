@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -55,6 +57,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -177,17 +180,17 @@ private fun AddEditView(
             color = Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
-        /*if (photos != null) {
-            if(!photos.isEmpty()) {
-                LazyRow(modifier = Modifier.padding(4.dp)) {
-                    itemsIndexed(photos) { index, photo ->
-                        PhotoItem(photo = photo)
-                    }
+
+        if(!state.photos.isNullOrEmpty()) {
+            LazyRow(modifier = Modifier.padding(4.dp)) {
+                itemsIndexed(state.photos) { index, photo ->
+                    PhotoItem(photo = photo, onPhotoChanged = addEditViewModel::onPhotoCaptionChanged, index = index )
                 }
-            }else{
-                EmptyPhotoList()
             }
-        }*/
+        }else{
+            EmptyPhotoList()
+        }
+
         Text(
             text = "Description",
             fontSize = 22.sp,
@@ -394,10 +397,13 @@ private fun AddEditView(
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PhotoItem(
     modifier: Modifier = Modifier,
-    photo: PropertyPhotosModel
+    photo: PropertyPhotosModel,
+    onPhotoChanged:(String, Int) -> Unit,
+    index: Int
 ){
     val imageUri = Uri.parse(photo.photoPath)
     val photoDescription =
@@ -406,8 +412,8 @@ private fun PhotoItem(
     Box(
         modifier = Modifier
             .padding(4.dp)
-            .width(120.dp)
-            .height(120.dp)
+            .width(160.dp)
+            .height(160.dp)
             .clip(MaterialTheme.shapes.extraSmall)
             .background(MaterialTheme.colorScheme.primary)
     ) {
@@ -421,23 +427,26 @@ private fun PhotoItem(
                 .padding(0.dp)
         )
 
-        photo.caption?.let { caption ->
-            Box(
+
+            OutlinedTextField(
+                value ="${TextUtils.capitaliseFirstLetter(photo.caption ?: "")}" ,
+                textStyle = TextStyle(
+                    color = Color.White,
+
+                ),
+                onValueChange = {
+                    println("change caption")
+                    onPhotoChanged.invoke(it, index)
+                },
+                placeholder = { Text(text = "Enter caption", color = Color.White) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.Black.copy(alpha = 0.5f))
-                    .height(30.dp)
-                    .align(Alignment.BottomStart),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = TextUtils.capitaliseFirstLetter(caption),
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
-            }
+                    .align(Alignment.BottomStart)
+                    .background(Color.Black.copy(alpha = 0.5f)),
+            )
         }
-    }
+
+
 }
 @Composable
 private fun EmptyPhotoList(){
@@ -620,15 +629,6 @@ private fun AddressDetail(
     onPostCodeChanged: (String) -> Unit,
 
 ){
-    val padding = if(isLargeView) 8.dp else 8.dp
-
-    /*var number by remember { mutableStateOf("") }
-    var street by remember { mutableStateOf("") }
-    var extra by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
-    var state by remember { mutableStateOf("") }
-    var country by remember { mutableStateOf("") }
-    var postalCode by remember { mutableStateOf("") }*/
 
     Row(
         modifier = Modifier
@@ -784,3 +784,4 @@ private fun NearbyCheckBox(
         Text(text = TextUtils.capitaliseFirstLetter(nearbyPlacesType.displayText))
     }
 }
+

@@ -147,6 +147,12 @@ class AddEditViewModel @Inject constructor(
     fun onLongitudeChange(longitude: Double) {
         state = state.copy(longitude = longitude)
     }
+    fun onPhotoCaptionChanged(caption: String, item:Int) {
+        var photos = state.photos?.toMutableList()
+        photos?.set(item, photos[item].copy(caption = caption))
+
+        state = state.copy(photos = photos)
+    }
     fun onNearbyPlacesChanged(nearbyPlace: NearbyPlacesType){
         var nearbyPlaces = mutableListOf<NearbyPlacesType>()
         state.copy().nearbyPlaces?.map {

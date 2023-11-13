@@ -9,7 +9,7 @@ object TextUtils {
             val restOfChars = input.substring(1).lowercase(Locale.ROOT)
             "$firstChar$restOfChars"
         } else {
-            return "No data was found!"
+            return input
         }
     }
 }
