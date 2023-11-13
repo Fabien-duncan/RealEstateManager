@@ -3,6 +3,10 @@ package com.openclassrooms.realestatemanager.presentation.create_edit
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -62,19 +66,18 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
-import java.nio.file.WatchEvent
 
 @Composable
 fun AddEditScreen(
@@ -105,7 +108,7 @@ private fun AddEditView(
     val state = addEditViewModel.state
 
     val scrollState = rememberScrollState()
-    //var photos = state.photos
+
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
@@ -113,7 +116,7 @@ private fun AddEditView(
 
     var isTypePickerExpanded by remember { mutableStateOf(false) }
     var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
-    var textfieldSize by remember { mutableStateOf(Size.Zero)}
+    var textFieldSize by remember { mutableStateOf(Size.Zero)}
 
     var isFormValid by remember { mutableStateOf(false) }
 
@@ -181,14 +184,29 @@ private fun AddEditView(
             modifier = Modifier.padding(8.dp)
         )
 
-        if(!state.photos.isNullOrEmpty()) {
-            LazyRow(modifier = Modifier.padding(4.dp)) {
-                itemsIndexed(state.photos) { index, photo ->
+        var selectedImageUri by remember {
+            mutableStateOf<Uri?>(null)
+        }
+        val singlePhotoPicker = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = {uri ->  println("the image is ${uri.toString()}")}
+        )
+        val addEditProperties = PropertyPhotosModel(id = -1L, photoPath = "", caption = "")//used for creating the button to add add properties
+        //combines the list of properties with the add property button
+        val photosWithAddButton = if(!state.photos.isNullOrEmpty()) {
+            state.photos + addEditProperties
+        }else{
+            mutableListOf(addEditProperties)
+        }
+        LazyRow(modifier = Modifier.padding(4.dp)) {
+            itemsIndexed(photosWithAddButton) { index, photo ->
+                if (photo.id != -1L){
                     PhotoItem(photo = photo, onPhotoChanged = addEditViewModel::onPhotoCaptionChanged, index = index )
                 }
+                else{
+                    AddPhotoItem(onAddPhotoClicked = singlePhotoPicker)
+                }
             }
-        }else{
-            EmptyPhotoList()
         }
 
         Text(
@@ -212,7 +230,7 @@ private fun AddEditView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
+                        textFieldSize = coordinates.size.toSize()
                     },
                 trailingIcon = {
                     Icon(
@@ -225,7 +243,7 @@ private fun AddEditView(
                 expanded = isTypePickerExpanded,
                 onDismissRequest = { isTypePickerExpanded = false },
                 modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                     /*.border(border = BorderStroke(width = 1.dp, color = Color.DarkGray))*/
                     .background(Color.LightGray)
             ) {
@@ -406,6 +424,7 @@ private fun PhotoItem(
     index: Int
 ){
     val imageUri = Uri.parse(photo.photoPath)
+    println("photo Uri for the ${photo.caption} is ${photo.photoPath}")
     val photoDescription =
         if(photo.caption == null) "A photo with no caption"
         else "A photo of ${photo.caption}"
@@ -428,25 +447,55 @@ private fun PhotoItem(
         )
 
 
-            OutlinedTextField(
-                value ="${TextUtils.capitaliseFirstLetter(photo.caption ?: "")}" ,
-                textStyle = TextStyle(
-                    color = Color.White,
+        OutlinedTextField(
+            value ="${TextUtils.capitaliseFirstLetter(photo.caption ?: "")}" ,
+            textStyle = TextStyle(
+                color = Color.White,
 
-                ),
-                onValueChange = {
-                    println("change caption")
-                    onPhotoChanged.invoke(it, index)
-                },
-                placeholder = { Text(text = "Enter caption", color = Color.White) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomStart)
-                    .background(Color.Black.copy(alpha = 0.5f)),
-            )
+            ),
+            onValueChange = {
+                println("change caption")
+                onPhotoChanged.invoke(it, index)
+            },
+            placeholder = { Text(text = "Enter caption", color = Color.White) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomStart)
+                .background(Color.Black.copy(alpha = 0.5f)),
+        )
         }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddPhotoItem(
+    modifier: Modifier = Modifier,
+    onAddPhotoClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>
+){
+    Box(
+        modifier = Modifier
+            .padding(4.dp)
+            .width(160.dp)
+            .height(160.dp)
+            .clip(MaterialTheme.shapes.extraSmall)
+            .clickable {
+                println("adding a photo")
+                onAddPhotoClicked.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+            //.border(width = 2.dp, color = Color.LightGray)
+    ) {
 
+        Image(
+            painter = painterResource(id = R.drawable.add_image_48),
+            contentDescription = "click to add photos",
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp)
+        )
+        //Text(text = "Add photos", Modifier.fillMaxWidth().align(Alignment.BottomStart), textAlign = TextAlign.Center)
 
+    }
 }
 @Composable
 private fun EmptyPhotoList(){
