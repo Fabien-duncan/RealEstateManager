@@ -8,7 +8,7 @@ import java.util.Date
 data class PropertyModel(
     val id:Long = 0,
     val type: PropertyType,
-    val price:Double,
+    val price:Int,
     val area:Int,
     val rooms: Int,
     val bedrooms: Int,

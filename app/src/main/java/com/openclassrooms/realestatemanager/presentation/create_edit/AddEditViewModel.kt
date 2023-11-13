@@ -73,7 +73,7 @@ class AddEditViewModel @Inject constructor(
 
     }
     fun onPriceChange(price:String?){
-        state = state.copy(price = convertToDoubleOrNull(price))
+        state = state.copy(price = convertToIntOrNull(price))
 
     }
     fun onAreaChange(area:String?){
@@ -254,7 +254,7 @@ class AddEditViewModel @Inject constructor(
 data class AddEditState(
     val id:Long = -1L,
     val type: PropertyType? = null,
-    val price:Double? = null,
+    val price:Int? = null,
     val area:Int? = null,
     val rooms: Int? = null,
     val bedrooms: Int? = null,

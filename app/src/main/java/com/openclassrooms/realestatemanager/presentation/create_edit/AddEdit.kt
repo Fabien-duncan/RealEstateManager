@@ -363,7 +363,7 @@ private fun AddEditView(
         Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
             if (!isFormValid){
                 Text(
-                    text = "You need to fill in all the required fields",
+                    text = "${if(propertyId > 0) "Nothing has been modified or you" else "you"} need to fill in all the required fields",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.error,
                     fontStyle = FontStyle.Italic,

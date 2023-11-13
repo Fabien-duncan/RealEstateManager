@@ -77,7 +77,7 @@ abstract class RealEstateDataBase:RoomDatabase() {
             return listOf(
                 Property(
                     type = PropertyType.LOFT,
-                    price = 1435577.38,
+                    price = 1435577,
                     area = 118,
                     rooms = 3,
                     bedrooms = 2,
@@ -89,7 +89,7 @@ abstract class RealEstateDataBase:RoomDatabase() {
                 ),
                 Property(
                     type = PropertyType.HOUSE,
-                    price = 877502.05,
+                    price = 877502,
                     area = 206,
                     rooms = 8,
                     bedrooms = 5,
@@ -100,7 +100,7 @@ abstract class RealEstateDataBase:RoomDatabase() {
                 ),
                 Property(
                     type = PropertyType.APARTMENT,
-                    price = 482515.33,
+                    price = 482515,
                     area = 227,
                     rooms = 2,
                     bedrooms = 1,
@@ -111,7 +111,7 @@ abstract class RealEstateDataBase:RoomDatabase() {
                 ),
                 Property(
                     type = PropertyType.CONDO,
-                    price = 4078847.7,
+                    price = 4078847,
                     area = 547,
                     rooms = 15,
                     bedrooms = 8,
