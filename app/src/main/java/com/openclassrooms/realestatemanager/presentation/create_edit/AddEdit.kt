@@ -34,6 +34,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -44,6 +45,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -69,9 +71,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
@@ -126,6 +130,17 @@ private fun AddEditView(
     var textFieldSize by remember { mutableStateOf(Size.Zero)}
 
     var isFormValid by remember { mutableStateOf(false) }
+
+    var isImageSelectChoiceVisible by remember { mutableStateOf(false) }
+    var imageSelectPopupPosition by remember { mutableStateOf(IntOffset.Zero) }
+    val context = LocalContext.current
+    val photosPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = {uris ->
+            addEditViewModel.onImagesAdded(uris, context)
+            isFormValid = addEditViewModel.isFormValid
+        }
+    )
 
     val isAddOrUpdatePropertyFinished by rememberUpdatedState(addEditViewModel.isAddOrUpdatePropertyFinished)
 
@@ -191,14 +206,7 @@ private fun AddEditView(
             modifier = Modifier.padding(8.dp)
         )
 
-        val context = LocalContext.current
-        val photosPicker = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickMultipleVisualMedia(),
-            onResult = {uris ->
-                addEditViewModel.onImagesAdded(uris, context)
-                isFormValid = addEditViewModel.isFormValid
-            }
-        )
+
         val addEditProperties = PropertyPhotosModel(id = -1L, photoPath = "", caption = "")//used for creating the button to add add properties
         //combines the list of properties with the add property button
         val photosWithAddButton = if(!state.photos.isNullOrEmpty()) {
@@ -212,7 +220,10 @@ private fun AddEditView(
                     PhotoItem(photo = photo, onPhotoChanged = addEditViewModel::onPhotoCaptionChanged, index = index )
                 }
                 else{
-                    AddPhotoItem(onAddPhotoClicked = photosPicker)
+                    AddPhotoItem(onAddPhotoClicked = { isImageSelectChoiceVisible = true }/*photosPicker*/)
+                    if (isImageSelectChoiceVisible) {
+                        PhotoSelectPopup(changeIsImageSelectedChoice = {isImageSelectChoiceVisible = false}, onAddPhotoClicked = photosPicker )
+                    }
                 }
             }
         }
@@ -434,6 +445,45 @@ private fun AddEditView(
         }
     }
 }
+@Composable
+private fun PhotoSelectPopup(
+    changeIsImageSelectedChoice: () -> Unit,
+    onAddPhotoClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>
+
+){
+    Popup(onDismissRequest = { changeIsImageSelectedChoice.invoke()}, alignment = Alignment.CenterEnd ) {
+        Column(){
+            Button(
+                modifier = Modifier.padding(8.dp),
+                onClick = {
+                    // Handle confirm button click
+                    changeIsImageSelectedChoice.invoke()
+                    onAddPhotoClicked.launch(
+                        PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                        )
+                    )
+                }
+            ) {
+                Image(painter = painterResource(id = R.drawable.photo_gallery_24), contentDescription = "from gallery", modifier = Modifier.padding(end = 4.dp))
+                Text("from Gallery")
+
+            }
+            Button(
+                modifier = Modifier.padding(8.dp),
+                onClick = {
+                    // Handle confirm button click
+                    changeIsImageSelectedChoice.invoke()
+
+                }
+            ) {
+                Image(painter = painterResource(id = R.drawable.photo_camera_24), contentDescription = "from camera", modifier = Modifier.padding(end = 4.dp))
+                Text("from Camera")
+
+            }
+        }
+    }
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PhotoItem(
@@ -459,7 +509,7 @@ private fun PhotoItem(
         AsyncImage(
             model = imageUri,
             contentDescription = photoDescription,
-            contentScale = ContentScale.FillHeight,
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(0.dp)
@@ -488,7 +538,7 @@ private fun PhotoItem(
 @Composable
 private fun AddPhotoItem(
     modifier: Modifier = Modifier,
-    onAddPhotoClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>
+    onAddPhotoClicked: () -> Unit //ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>
 ){
     Box(
         modifier = Modifier
@@ -498,13 +548,14 @@ private fun AddPhotoItem(
             .clip(MaterialTheme.shapes.extraSmall)
             .clickable {
                 println("adding a photo")
-                onAddPhotoClicked.launch(
+                /*onAddPhotoClicked.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                )
+                )*/
+
+                onAddPhotoClicked.invoke()
             }
             //.border(width = 2.dp, color = Color.LightGray)
     ) {
-
         Image(
             painter = painterResource(id = R.drawable.add_image_48),
             contentDescription = "click to add photos",

@@ -224,7 +224,7 @@ private fun PhotoItem(
         AsyncImage(
             model = imageUri,
             contentDescription = photoDescription,
-            contentScale = ContentScale.FillHeight,
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(0.dp)

@@ -166,13 +166,13 @@ private fun PropertyItem(
                         AsyncImage(
                             model = imageUri,
                             contentDescription = "A photo of the property",
-                            contentScale = ContentScale.FillHeight
+                            contentScale = ContentScale.FillBounds
                         )
                     }else{
                         Image(
                             painter = painterResource(id = R.drawable.missing_image),
                             contentDescription = "No Image",
-                            contentScale = ContentScale.FillHeight,
+                            contentScale = ContentScale.FillBounds,
                             modifier = Modifier
                                 .background(MaterialTheme.colorScheme.secondary)
                                 .fillMaxSize(),
