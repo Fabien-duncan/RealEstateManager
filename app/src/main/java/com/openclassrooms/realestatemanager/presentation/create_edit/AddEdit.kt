@@ -388,7 +388,15 @@ private fun AddEditView(
             color = Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
-        NearbyAmenities(isLargeView = isLargeView, isPortrait = isPortrait, addEditState = state, onNearbyPlaceChanged = addEditViewModel::onNearbyPlacesChanged)
+        NearbyAmenities(
+            isLargeView = isLargeView,
+            isPortrait = isPortrait,
+            addEditState = state,
+            onNearbyPlaceChanged = {
+                addEditViewModel.onNearbyPlacesChanged(it)
+                isFormValid = addEditViewModel.isFormValid
+            }
+        )
         Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
             if (!isFormValid){
                 Text(

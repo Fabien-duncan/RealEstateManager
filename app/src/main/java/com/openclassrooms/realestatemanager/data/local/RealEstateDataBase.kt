@@ -140,7 +140,7 @@ abstract class RealEstateDataBase:RoomDatabase() {
 
                 PropertyPhotos(propertyId = 1, photoPath = "https://www.indexsante.ca/chroniques/images/appartement-residence.jpg", caption = "facade"),
                 PropertyPhotos(propertyId = 1, photoPath = "https://media.lesechos.com/api/v1/images/view/634e807253fc0b2c225abf6a/1280x720/0702580327940-web-tete.jpg", caption = "lounge"),
-                PropertyPhotos(propertyId = 1, photoPath = "content://media/picker/0/com.android.providers.media.photopicker/media/1000000046", caption = "kitchen"),
+                PropertyPhotos(propertyId = 1, photoPath = "https://www.ikea.com/ext/ingkadam/m/261c243e95fe8c7d/original/PH195797.jpg?f=s", caption = "kitchen"),
 
                 PropertyPhotos(propertyId = 4, photoPath = "https://www.edinarealty.com/media/3678/difference-between-condo.jpg?mode=crop&width=800&height=540", caption = "facade")
 
