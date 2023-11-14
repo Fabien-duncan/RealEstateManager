@@ -185,18 +185,16 @@ private fun AddEditView(
             modifier = Modifier.padding(8.dp)
         )
 
-        var selectedImageUri by remember {
-            mutableStateOf<Uri?>(null)
-        }
         val context = LocalContext.current
         val photosPicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
             onResult = {uris ->
-                val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                //GivesAll permissions to
-                uris.forEach {
-                    context.contentResolver.takePersistableUriPermission(it, flag)
-                }
+
+                addEditViewModel.onImagesAdded(uris, context)
+                /*uris.forEach {
+                    //context.contentResolver.takePersistableUriPermission(it, flag)
+                    addEditViewModel.onImageAdded(it, context)
+                }*/
 
                 println("the image is ${uris}")
             }
