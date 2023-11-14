@@ -11,8 +11,6 @@ import java.util.Date
 object FileUtils {
     fun copyImageToInternalStorage(originalImageUri: Uri, context: Context): Uri {
         val originalFileName = getFileNameFromUri(context.contentResolver, originalImageUri)
-        // Generate a unique file name with the original file extension
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val fileName = "copied_image_$originalFileName"
 
         val inputStream = context.contentResolver.openInputStream(originalImageUri)
@@ -23,8 +21,6 @@ object FileUtils {
                 input.copyTo(output)
             }
         }
-
-        println("${Uri.fromFile(File(context.filesDir, fileName))} has been added successfully!")
         // Return the URI to the copied image
         return Uri.fromFile(File(context.filesDir, fileName))
     }

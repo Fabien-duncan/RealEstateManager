@@ -78,6 +78,34 @@ class AddEditViewModel @Inject constructor(
             )
         }
 
+    fun resetState(){
+        state = state.copy(
+            id = -1L,
+            price = null,
+            type = null,
+            area = null,
+            rooms = null,
+            bedrooms = null,
+            bathrooms = null,
+            description = null,
+            isSold = false,
+            createdDate = null,
+            soldDate = null,
+            agentName = null,
+            number = null,
+            street = null,
+            extra = null,
+            city = null,
+            state = null,
+            country = null,
+            postalCode = null,
+            latitude = null,
+            longitude = null,
+            nearbyPlaces = null,
+            photos = null
+        )
+        println("reset state: state.price is now ${state.price}")
+    }
     fun onTypeChange(type:PropertyType){
         state = state.copy(type = type)
 
@@ -163,6 +191,19 @@ class AddEditViewModel @Inject constructor(
 
         state = state.copy(photos = photos)
     }
+    fun onImagesAdded(originalImagesUris: List<Uri>, context:Context){
+        val photosCopy = (state.copy().photos ?: mutableListOf()).toMutableList()
+        originalImagesUris.forEach {
+            val newUri = FileUtils.copyImageToInternalStorage(it, context)
+            val newPhoto = PropertyPhotosModel(photoPath = newUri.toString())
+
+            photosCopy += newPhoto
+        }
+
+        println("list of photos $photosCopy")
+
+        state = state.copy(photos = photosCopy)
+    }
     fun onNearbyPlacesChanged(nearbyPlace: NearbyPlacesType){
         var nearbyPlaces = mutableListOf<NearbyPlacesType>()
         state.copy().nearbyPlaces?.map {
@@ -245,19 +286,6 @@ class AddEditViewModel @Inject constructor(
     }
     fun resetFinishedState(){
         _isAddOrUpdatePropertyFinished.value = false
-    }
-    fun onImagesAdded(originalImagesUris: List<Uri>, context:Context){
-        val photosCopy = (state.copy().photos ?: mutableListOf()).toMutableList()
-        originalImagesUris.forEach {
-            val newUri = FileUtils.copyImageToInternalStorage(it, context)
-            val newPhoto = PropertyPhotosModel(photoPath = newUri.toString())
-
-            photosCopy += newPhoto
-        }
-
-        println("list of photos $photosCopy")
-
-        state = state.copy(photos = photosCopy)
     }
 
     private fun checkFormIsValid():Boolean{

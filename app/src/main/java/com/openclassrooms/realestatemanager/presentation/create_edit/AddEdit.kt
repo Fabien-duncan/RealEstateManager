@@ -85,14 +85,18 @@ fun AddEditScreen(
     modifier: Modifier = Modifier,
     propertyId: Long = -1L,
     isLargeView:Boolean,
+    addEditViewModel: AddEditViewModel,
     onCreatedClicked:(Long) -> Unit,
     onBackPressed:() -> Unit
 ) {
     println("in addEdit Screen and the property id is $propertyId")
+    //val addEditViewModel: AddEditViewModel = viewModel()
+    if (propertyId > 0) addEditViewModel.getPropertyById(propertyId)
 
-    AddEditView(modifier = modifier, propertyId = propertyId, isLargeView = isLargeView, onCreatedClicked = onCreatedClicked)
+    AddEditView(modifier = modifier, propertyId = propertyId, isLargeView = isLargeView, onCreatedClicked = onCreatedClicked, addEditViewModel = addEditViewModel)
 
     BackHandler {
+        addEditViewModel.resetState()
         onBackPressed.invoke()
     }
 }
@@ -102,11 +106,13 @@ private fun AddEditView(
     modifier: Modifier,
     propertyId: Long,
     onCreatedClicked:(Long) -> Unit,
-    isLargeView:Boolean
+    isLargeView:Boolean,
+    addEditViewModel: AddEditViewModel
 ){
-    val addEditViewModel: AddEditViewModel = viewModel()
-    if (propertyId > 0) addEditViewModel.getPropertyById(propertyId)
+
     val state = addEditViewModel.state
+
+    println("addEdit  View: state.price is ${state.price}")
 
     val scrollState = rememberScrollState()
 
@@ -189,14 +195,8 @@ private fun AddEditView(
         val photosPicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
             onResult = {uris ->
-
                 addEditViewModel.onImagesAdded(uris, context)
-                /*uris.forEach {
-                    //context.contentResolver.takePersistableUriPermission(it, flag)
-                    addEditViewModel.onImageAdded(it, context)
-                }*/
-
-                println("the image is ${uris}")
+                isFormValid = addEditViewModel.isFormValid
             }
         )
         val addEditProperties = PropertyPhotosModel(id = -1L, photoPath = "", caption = "")//used for creating the button to add add properties
@@ -417,8 +417,11 @@ private fun AddEditView(
             if (isAddOrUpdatePropertyFinished) {
                 println("Creating Property")
                 addEditViewModel.resetFinishedState()
+
                 if (state.id !=null)onCreatedClicked.invoke(state.id)
                 else onCreatedClicked.invoke(-1L)
+
+
             }
         }
     }
@@ -433,8 +436,6 @@ private fun PhotoItem(
 ){
     val imageUri = Uri.parse(photo.photoPath)
 
-
-    println("photo Uri for the ${photo.caption} is ${photo.photoPath}")
     val photoDescription =
         if(photo.caption == null) "A photo with no caption"
         else "A photo of ${photo.caption}"
@@ -711,6 +712,7 @@ private fun AddressDetail(
                     value = state.extra ?: "",
                     onValueChange = {
                         onExtraChanged.invoke(it)
+                        isFormValid.invoke()
                     },
                     placeholder = { Text(text = "extra") },
                     modifier = Modifier.padding(4.dp)

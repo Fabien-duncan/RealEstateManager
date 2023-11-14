@@ -39,6 +39,7 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
 import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditScreen
+import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditViewModel
 import com.openclassrooms.realestatemanager.presentation.detail.DetailAssistedFactory
 import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
@@ -54,6 +55,7 @@ fun Navigation(
     assistedFactory: DetailAssistedFactory,
 ) {
     val homeViewModel: HomeViewModel = viewModel()
+    val addEditViewModel: AddEditViewModel = viewModel()
 
     val state by homeViewModel.state.collectAsState()
 
@@ -78,14 +80,18 @@ fun Navigation(
                     isItemOpened = it
                     isAddOpened = false
                     isEditOpened = false
+
                 },
                 onAddPressed = {
                     isAddOpened = true
                     isItemOpened = false
+                    isEditOpened = false
+                    addEditViewModel.resetState()
                 },
                 onEditPressed = {
                     isEditOpened = true
                     isItemOpened = false
+
                 }
             )
         }
@@ -137,12 +143,14 @@ fun Navigation(
                 AddEditScreen(
                     propertyId = if(isEditOpened) id else -1L,
                     isLargeView = isExpanded,
+                    addEditViewModel = addEditViewModel,
                     modifier = modifier.padding(it),
                     onCreatedClicked = { newId->
                         id = newId
                         index = propertiesListSize-1
                         isItemOpened = true
                         isAddOpened = false
+                        isEditOpened = false
                     },
                 ) {
                     isAddOpened = false
