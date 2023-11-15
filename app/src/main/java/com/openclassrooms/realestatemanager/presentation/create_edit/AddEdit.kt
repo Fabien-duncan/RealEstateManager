@@ -500,9 +500,6 @@ private fun PhotoSelectPopup(
     permissionLauncher: ManagedActivityResultLauncher<String, Boolean>
 ){
 
-
-
-
     Popup(onDismissRequest = { changeIsImageSelectedChoice.invoke()}, alignment = Alignment.CenterEnd ) {
         Column(){
             Button(
