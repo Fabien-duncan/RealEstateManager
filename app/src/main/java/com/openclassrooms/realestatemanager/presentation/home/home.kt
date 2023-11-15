@@ -85,6 +85,7 @@ fun HomeScreen(
                 color = MaterialTheme.colorScheme.error
             )
         }
+        else -> {}
     }
 }
 

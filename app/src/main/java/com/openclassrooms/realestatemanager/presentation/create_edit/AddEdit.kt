@@ -1,6 +1,8 @@
 package com.openclassrooms.realestatemanager.presentation.create_edit
 
-import android.content.Intent
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -34,7 +36,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -45,7 +46,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -76,13 +76,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Popup
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Objects
 
 @Composable
 fun AddEditScreen(
@@ -137,10 +142,43 @@ private fun AddEditView(
     val photosPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = {uris ->
-            addEditViewModel.onImagesAdded(uris, context)
+            addEditViewModel.onImagesAdded(originalImagesUris = uris, context =  context)
             isFormValid = addEditViewModel.isFormValid
         }
     )
+    val tempFile = context.createImageFile()
+    val uri: Uri = FileProvider.getUriForFile(
+        Objects.requireNonNull(context),
+        context.packageName + ".provider",
+        tempFile
+    )
+
+    val takePicture = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+    ){
+        if (it) {
+            addEditViewModel.onImagesAdded(originalImagesUris = listOf(uri), context =  context)
+            println("launch camera: Uri is $uri")
+        }
+        else{
+            println("failed to get uri")
+        }
+        //addEditViewModel.onImagesAdded(uris, context)
+        //isFormValid = addEditViewModel.isFormValid
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission is granted, launch the camera intent
+            takePicture.launch(uri)
+            println("camera Image Uri = $uri")
+        } else {
+            // Handle the case where permission is not granted
+            println("Permission Denied ")
+        }
+    }
 
     val isAddOrUpdatePropertyFinished by rememberUpdatedState(addEditViewModel.isAddOrUpdatePropertyFinished)
 
@@ -220,9 +258,16 @@ private fun AddEditView(
                     PhotoItem(photo = photo, onPhotoChanged = addEditViewModel::onPhotoCaptionChanged, index = index )
                 }
                 else{
-                    AddPhotoItem(onAddPhotoClicked = { isImageSelectChoiceVisible = true }/*photosPicker*/)
+                    AddPhotoItem(onAddPhotoClicked = { isImageSelectChoiceVisible = true })
                     if (isImageSelectChoiceVisible) {
-                        PhotoSelectPopup(changeIsImageSelectedChoice = {isImageSelectChoiceVisible = false}, onAddPhotoClicked = photosPicker )
+                        PhotoSelectPopup(
+                            changeIsImageSelectedChoice = { isImageSelectChoiceVisible = false },
+                            onAddPhotoClicked = photosPicker,
+                            context = context,
+                            uri = uri,
+                            takePicture = takePicture,
+                            permissionLauncher = permissionLauncher
+                        )
                     }
                 }
             }
@@ -448,9 +493,16 @@ private fun AddEditView(
 @Composable
 private fun PhotoSelectPopup(
     changeIsImageSelectedChoice: () -> Unit,
-    onAddPhotoClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>
-
+    onAddPhotoClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>,
+    context:Context,
+    uri:Uri,
+    takePicture: ManagedActivityResultLauncher<Uri, Boolean>,
+    permissionLauncher: ManagedActivityResultLauncher<String, Boolean>
 ){
+
+
+
+
     Popup(onDismissRequest = { changeIsImageSelectedChoice.invoke()}, alignment = Alignment.CenterEnd ) {
         Column(){
             Button(
@@ -472,9 +524,20 @@ private fun PhotoSelectPopup(
             Button(
                 modifier = Modifier.padding(8.dp),
                 onClick = {
+                    val permissionCheckResult =
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+
+                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED)
+                    {
+                        println("Launching camera ")
+                        takePicture.launch(uri)
+                    }
+                    else
+                    {
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
                     // Handle confirm button click
                     changeIsImageSelectedChoice.invoke()
-
                 }
             ) {
                 Image(painter = painterResource(id = R.drawable.photo_camera_24), contentDescription = "from camera", modifier = Modifier.padding(end = 4.dp))
@@ -540,6 +603,7 @@ private fun AddPhotoItem(
     modifier: Modifier = Modifier,
     onAddPhotoClicked: () -> Unit //ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>
 ){
+
     Box(
         modifier = Modifier
             .padding(4.dp)
@@ -903,5 +967,16 @@ private fun NearbyCheckBox(
         )
         Text(text = TextUtils.capitaliseFirstLetter(nearbyPlacesType.displayText))
     }
+}
+fun Context.createImageFile(): File {
+    val timeStamp = SimpleDateFormat("yyyy_MM_dd_HH:mm:ss").format(Date())
+    val imageFileName = "JPEG_" + timeStamp + "_"
+    val image = File.createTempFile(
+        imageFileName,
+        ".jpg",
+        externalCacheDir
+    )
+
+    return image
 }
 
