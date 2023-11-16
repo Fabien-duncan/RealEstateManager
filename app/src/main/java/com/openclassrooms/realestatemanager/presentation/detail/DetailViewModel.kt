@@ -30,19 +30,24 @@ class DetailViewModel @AssistedInject constructor(
     private fun getPropertyById() = viewModelScope.launch {
         getPropertyByIdUseCase(propertyId).collectLatest {property ->
             state = state.copy(property = property)
-            mapImageLink = getMapImage()
+            mapImageLink = getMapImage(property.address.latitude, property.address.longitude)
         }
     }
     fun updatePropertyById(id:Long) = viewModelScope.launch {
         getPropertyByIdUseCase(id).collectLatest {property ->
             state = state.copy(property = property)
-            mapImageLink = getMapImage()
+            mapImageLink = getMapImage(property.address.latitude, property.address.longitude)
         }
     }
 }
-private fun getMapImage():String{
+private fun getMapImage(lat:Double?, long:Double?):String{
     val key = BuildConfig.GMP_key
-    return "https://maps.googleapis.com/maps/api/staticmap?center=43.63653809062132,%206.6440696545611475&format=jpg&markers=size:mid%7C43.63653809062132,%206.6440696545611475&zoom=19&size=400x400&key=$key"
+    return if (lat != null && long != null){
+        "https://maps.googleapis.com/maps/api/staticmap?center=$lat,%20$long&format=jpg&markers=%7C$lat,%20$long&zoom=19&size=800x400&key=$key"
+    }
+    else{
+        ""
+    }
 }
 
 data class DetailSate(

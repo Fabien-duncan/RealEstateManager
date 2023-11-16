@@ -394,9 +394,9 @@ private fun AddressDetail(
     isLargeView:Boolean,
     mapImageLink: String
 ){
-    val padding = if(isLargeView) 40.dp else 8.dp
+    val padding = if(isLargeView) 80.dp else 8.dp
     Row(modifier = Modifier
-        .padding(top = 16.dp, start = 8.dp, end = 8.dp)
+        .padding(top = 16.dp, start = padding, end = 8.dp)
         .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         Column() {
             Row {
@@ -412,21 +412,46 @@ private fun AddressDetail(
                 Text(text = address.country, fontSize = 16.sp, color = Color.DarkGray)
             }
         }
-        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
-            AsyncImage(
-                model = Uri.parse(mapImageLink),
-                contentDescription = "map view",
-                contentScale = if (isLargeView )ContentScale.FillHeight else ContentScale.FillWidth,
-                modifier = if (isLargeView) Modifier
-                    .heightIn(max = 250.dp)
-                    .padding(horizontal = padding, vertical = 8.dp)
-                    .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
-                else Modifier
-                    .widthIn(180.dp)
-                    .padding(horizontal = padding, vertical = 8.dp)
-                    .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
-            )
+
+        if (mapImageLink.isNotEmpty()) {
+            Column(modifier = Modifier.fillMaxWidth().padding(4.dp), horizontalAlignment = Alignment.End) {
+                AsyncImage(
+                    model = Uri.parse(mapImageLink),
+                    contentDescription = "map view",
+                    contentScale = if (isLargeView) ContentScale.FillHeight else ContentScale.FillBounds,
+                    modifier = if (isLargeView) Modifier
+                        .heightIn(max = 250.dp)
+                        .padding(horizontal = padding, vertical = 8.dp)
+                        .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
+                    else Modifier
+                        .widthIn(180.dp)
+                        .heightIn(180.dp)
+                        .padding(horizontal = padding, vertical = 8.dp)
+                        .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
+                )
+            }
         }
+        else{
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = padding, vertical = 8.dp).background(MaterialTheme.colorScheme.secondary)){
+                Image(
+                    painter = painterResource(id = R.drawable.missing_image),
+                    contentDescription = "No Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(if (isLargeView) 180.dp else 100.dp)
+                        .padding(4.dp)
+                )
+                Text(
+                    text = "address has not been verified yet!!",
+                    color = Color.White,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(4.dp)
+                )
+            }
+        }
+
     }
 }
 @Composable
