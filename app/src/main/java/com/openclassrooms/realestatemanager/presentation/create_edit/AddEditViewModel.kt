@@ -289,23 +289,30 @@ class AddEditViewModel @Inject constructor(
     }
 
     private fun checkFormIsValid():Boolean{
-            println("Checking form is valid")
-            if (state.type == null) return false
-            if (state.price == null || state.price!! <= 0.0) return false
-            if (state.area == null || state.area!! <= 0) return false
-            if (state.rooms == null || state.rooms!! <= 0) return false
-            if (state.bedrooms == null || state.bedrooms!! <= 0) return false
-            if (state.bathrooms == null || state.bathrooms!! <= 0) return false
-            if (state.description.isNullOrBlank()) return false
-            if (state.agentName.isNullOrBlank()) return false
-            if (state.street.isNullOrBlank()) return false
-            if (state.city.isNullOrBlank()) return false
-            if (state.state.isNullOrBlank()) return false
-            if (state.country.isNullOrBlank()) return false
-            if (state.postalCode.isNullOrBlank()) return false
+        println("Checking form is valid")
+        if (state.type == null) return false
+        if (state.price == null || state.price!! <= 0.0) return false
+        if (state.area == null || state.area!! <= 0) return false
+        if (state.rooms == null || state.rooms!! <= 0) return false
+        if (state.bedrooms == null || state.bedrooms!! <= 0) return false
+        if (state.bathrooms == null || state.bathrooms!! <= 0) return false
+        if (state.description.isNullOrBlank()) return false
+        if (state.agentName.isNullOrBlank()) return false
+        if (state.street.isNullOrBlank()) return false
+        if (state.city.isNullOrBlank()) return false
+        if (state.state.isNullOrBlank()) return false
+        if (state.country.isNullOrBlank()) return false
+        if (state.postalCode.isNullOrBlank()) return false
 
-            return true
+        return true
+    }
+    fun retrieveAddSaveMap(context: Context){
+        viewModelScope.launch(Dispatchers.IO){
+            val key = "googleMapAPiKey"
+            val staticMapImage = FileUtils.downloadStaticMapImage("https://maps.googleapis.com/maps/api/staticmap?center=43.63653809062132,%206.6440696545611475&format=jpg&markers=size:mid%7C43.63653809062132,%206.6440696545611475&zoom=19&size=400x400&key=$key")
+            FileUtils.saveImageToInternalStorage(context, staticMapImage, "static_map_image.jpg")
         }
+    }
 }
 
 data class AddEditState(

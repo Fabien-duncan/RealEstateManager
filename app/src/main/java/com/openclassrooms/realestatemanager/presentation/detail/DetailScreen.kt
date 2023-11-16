@@ -62,6 +62,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.Property
@@ -405,6 +406,7 @@ private fun AddressDetail(
             }
         }
         Column() {
+            //val key = BuildConfig.GMP_key
             AsyncImage(
                 model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
                 contentDescription = "map view",
