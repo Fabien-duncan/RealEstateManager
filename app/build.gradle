@@ -20,6 +20,12 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+        // Set API keys in BuildConfig
+        buildConfigField "String", "GMP_key", "${properties.getProperty("GMP_key")}"
+        android.buildFeatures.buildConfig true
     }
 
     buildTypes {

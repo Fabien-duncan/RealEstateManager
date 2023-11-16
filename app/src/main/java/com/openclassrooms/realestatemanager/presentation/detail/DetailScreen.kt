@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -61,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
@@ -90,10 +92,11 @@ fun DetailScreen(
     )
     viewModel.updatePropertyById(propertyId)
     val state = viewModel.state
+    val mapImageLink = viewModel.mapImageLink
 
     println("property id is ${state.property?.id}")
 
-    DetailScreenView(modifier = modifier, state = state, isLargeView = isLargeView)
+    DetailScreenView(modifier = modifier, state = state, isLargeView = isLargeView, mapImageLink = mapImageLink)
 
     BackHandler {
         onBackPressed.invoke()
@@ -105,7 +108,8 @@ fun DetailScreen(
 private fun DetailScreenView(
     modifier: Modifier,
     state: DetailSate,
-    isLargeView:Boolean
+    isLargeView:Boolean,
+    mapImageLink:String
 ){
     val scrollState = rememberScrollState()
     var photos = state.property?.photos
@@ -171,7 +175,8 @@ private fun DetailScreenView(
                         modifier = Modifier
                             .padding(8.dp)
                             .weight(1f),
-                        isLargeView = true
+                        isLargeView = true,
+                        mapImageLink = mapImageLink
                     )
                 }
             }
@@ -191,7 +196,8 @@ private fun DetailScreenView(
                     modifier = Modifier
                         .padding(8.dp)
                         .background(Color.Green),
-                    isLargeView = false
+                    isLargeView = false,
+                    mapImageLink = mapImageLink
                 )
             }
         }
@@ -385,7 +391,8 @@ private fun HouseDetailCard(
 private fun AddressDetail(
     modifier: Modifier = Modifier,
     address: AddressModel,
-    isLargeView:Boolean
+    isLargeView:Boolean,
+    mapImageLink: String
 ){
     val padding = if(isLargeView) 40.dp else 8.dp
     Row(modifier = Modifier
@@ -405,10 +412,9 @@ private fun AddressDetail(
                 Text(text = address.country, fontSize = 16.sp, color = Color.DarkGray)
             }
         }
-        Column() {
-            //val key = BuildConfig.GMP_key
+        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
             AsyncImage(
-                model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
+                model = Uri.parse(mapImageLink),
                 contentDescription = "map view",
                 contentScale = if (isLargeView )ContentScale.FillHeight else ContentScale.FillWidth,
                 modifier = if (isLargeView) Modifier
@@ -416,7 +422,7 @@ private fun AddressDetail(
                     .padding(horizontal = padding, vertical = 8.dp)
                     .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
                 else Modifier
-                    .fillMaxWidth()
+                    .widthIn(180.dp)
                     .padding(horizontal = padding, vertical = 8.dp)
                     .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
             )
