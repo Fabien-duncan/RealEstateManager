@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.presentation.detail
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -432,7 +433,12 @@ private fun AddressDetail(
             }
         }
         else{
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = padding, vertical = 8.dp).background(MaterialTheme.colorScheme.secondary)){
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = padding, vertical = 8.dp)
+                    .background(MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.extraSmall)
+            ){
                 Image(
                     painter = painterResource(id = R.drawable.missing_image),
                     contentDescription = "No Image",
@@ -442,7 +448,7 @@ private fun AddressDetail(
                         .padding(4.dp)
                 )
                 Text(
-                    text = "address has not been verified yet!!",
+                    text = "The address has not been verified yet! Click to verify",
                     color = Color.White,
                     fontStyle = FontStyle.Italic,
                     textAlign = TextAlign.Center,

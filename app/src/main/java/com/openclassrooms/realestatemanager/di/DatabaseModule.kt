@@ -28,10 +28,4 @@ object DatabaseModule {
     @Singleton
     fun providePropertyMapper() = PropertyMapper()
 
-    /*@Provides
-    @Singleton
-    fun provideDatabaseCallback(propertyDao: PropertyDao): DatabaseCallBack{
-        return DatabaseCallBack(propertyDao)
-    }*/
-
 }
