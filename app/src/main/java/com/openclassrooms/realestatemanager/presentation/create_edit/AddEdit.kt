@@ -380,6 +380,7 @@ private fun AddEditView(
                         modifier = Modifier
                             .padding(8.dp),
                         isLargeView = true,
+                        onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                         onNumberChanged = addEditViewModel::onNumberChange,
                         onStreetChanged = addEditViewModel::onStreetChange,
                         onExtraChanged = addEditViewModel::onExtraChange,
@@ -425,6 +426,7 @@ private fun AddEditView(
                     .padding(8.dp)
                     .background(Color.Green),
                 isLargeView = false,
+                onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                 onNumberChanged = addEditViewModel::onNumberChange,
                 onStreetChanged = addEditViewModel::onStreetChange,
                 onExtraChanged = addEditViewModel::onExtraChange,
@@ -800,6 +802,7 @@ private fun AddressDetail(
     modifier: Modifier = Modifier,
     //address: AddressModel,
     isLargeView:Boolean,
+    onCheckAddressClicked:() -> Unit,
     isFormValid: () -> Unit,
     onNumberChanged: (String?) -> Unit,
     onStreetChanged: (String) -> Unit,
@@ -892,6 +895,10 @@ private fun AddressDetail(
                 modifier = Modifier.padding(4.dp)
             )
         }
+    }
+    Button(onClick = { onCheckAddressClicked.invoke() }) {
+        Text(text = "check address")
+
     }
     /*AsyncImage(
         model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),

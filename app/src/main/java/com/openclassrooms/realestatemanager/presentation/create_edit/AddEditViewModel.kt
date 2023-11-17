@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,12 +13,14 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.ColumnInfo
+import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.domain.use_cases.AddPropertyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
+import com.openclassrooms.realestatemanager.domain.use_cases.GetLatLngFromAddressUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.UpdatePropertyUseCase
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
@@ -36,7 +39,7 @@ import javax.inject.Inject
 class AddEditViewModel @Inject constructor(
     val addPropertyUseCase: AddPropertyUseCase,
     val getPropertyByIdUseCase: GetPropertyByIdUseCase,
-    val updatePropertyUseCase: UpdatePropertyUseCase
+    val getLatLngFromAddressUseCase: GetLatLngFromAddressUseCase,
 ):ViewModel() {
     var state by mutableStateOf(AddEditState())
         private set
@@ -227,6 +230,14 @@ class AddEditViewModel @Inject constructor(
         //getAllPropertiesUseCase
         state = state.copy(id = id)
         _isAddOrUpdatePropertyFinished.value = true
+    }
+    fun getLatLongFromAddress(){
+        viewModelScope.launch{
+            val key = BuildConfig.GMP_key
+            val address = "${state.number} ${state.street} ${state.city} ${state.postalCode}"
+            val result = getLatLngFromAddressUseCase.invoke(address = address, apiKey = key)
+            Log.d("addEditViewModel","your lat long is ${result.toString()}")
+        }
     }
 
     fun getPropertyById(propertyId:Long) = viewModelScope.launch {

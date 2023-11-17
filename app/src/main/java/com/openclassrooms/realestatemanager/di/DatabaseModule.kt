@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.di
 
 import android.content.Context
+import com.openclassrooms.realestatemanager.data.api.GeocodingApiService
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
@@ -9,6 +10,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -27,5 +30,20 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePropertyMapper() = PropertyMapper()
+
+    @Provides
+    @Singleton
+    fun provideGeocodingApiService(retrofit: Retrofit): GeocodingApiService {
+        return retrofit.create(GeocodingApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://maps.googleapis.com/maps/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
 }
