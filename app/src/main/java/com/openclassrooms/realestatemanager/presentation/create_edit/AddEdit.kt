@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -34,6 +35,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
@@ -43,6 +45,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -58,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -380,6 +384,7 @@ private fun AddEditView(
                         modifier = Modifier
                             .padding(8.dp),
                         isLargeView = true,
+                        mapImageLink = addEditViewModel.mapImageLink,
                         onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                         onNumberChanged = addEditViewModel::onNumberChange,
                         onStreetChanged = addEditViewModel::onStreetChange,
@@ -426,6 +431,7 @@ private fun AddEditView(
                     .padding(8.dp)
                     .background(Color.Green),
                 isLargeView = false,
+                mapImageLink = addEditViewModel.mapImageLink,
                 onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                 onNumberChanged = addEditViewModel::onNumberChange,
                 onStreetChanged = addEditViewModel::onStreetChange,
@@ -800,7 +806,7 @@ private fun HouseDetailCard(
 private fun AddressDetail(
     state: AddEditState,
     modifier: Modifier = Modifier,
-    //address: AddressModel,
+    mapImageLink:String,
     isLargeView:Boolean,
     onCheckAddressClicked:() -> Unit,
     isFormValid: () -> Unit,
@@ -813,7 +819,7 @@ private fun AddressDetail(
     onPostCodeChanged: (String) -> Unit,
 
 ){
-
+    var isAddressValidated by remember{ mutableStateOf(false) }
     Row(
         modifier = Modifier
             .padding(top = 8.dp, start = 8.dp, end = 8.dp)
@@ -900,19 +906,52 @@ private fun AddressDetail(
         Text(text = "check address")
 
     }
-    /*AsyncImage(
-        model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
-        contentDescription = "map view",
-        contentScale = if (isLargeView )ContentScale.FillHeight else ContentScale.FillWidth,
-        modifier = if (isLargeView) Modifier
-            .heightIn(max = 250.dp)
-            .padding(horizontal = padding, vertical = 8.dp)
-            .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
-        else Modifier
-            .fillMaxWidth()
-            .padding(horizontal = padding, vertical = 8.dp)
-            .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
-    )*/
+    if(mapImageLink.isNotEmpty()){
+        Box(
+            modifier = if (isLargeView) Modifier
+                .heightIn(max = 250.dp)
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
+                        else Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
+        ){
+            AsyncImage(
+                model = Uri.parse(mapImageLink),
+                contentDescription = "map view",
+                modifier = if (isLargeView) Modifier
+                    .heightIn(max = 250.dp)
+                else Modifier
+                    .fillMaxWidth(),
+                contentScale = if (isLargeView) ContentScale.FillHeight else ContentScale.FillWidth,
+            )
+            Row(
+                modifier = Modifier
+                    .height(54.dp)
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(text = "Click to validate Address", fontStyle = FontStyle.Italic)
+                IconToggleButton(
+                    checked = isAddressValidated,
+                    onCheckedChange = { isAddressValidated = !isAddressValidated },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(horizontal = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Radio button icon",
+                        tint = if (isAddressValidated) Color.Green else Color.LightGray,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+        }
+    }
 }
 @Composable
 private fun AddressMapImage(

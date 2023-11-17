@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.ColumnInfo
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
+import com.openclassrooms.realestatemanager.domain.geocoding.LatLongEntity
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
@@ -48,7 +49,10 @@ class AddEditViewModel @Inject constructor(
         get() = _isAddOrUpdatePropertyFinished.value
     val isFormValid: Boolean
         get() = checkFormIsValid()
-
+    var mapImageLink by mutableStateOf("")
+        private set
+    var position by mutableStateOf(LatLongEntity(null,null))
+        private set
     private val property: PropertyModel
         get() = state.run {
             PropertyModel(
@@ -236,7 +240,11 @@ class AddEditViewModel @Inject constructor(
             val key = BuildConfig.GMP_key
             val address = "${state.number} ${state.street} ${state.city} ${state.postalCode}"
             val result = getLatLngFromAddressUseCase.invoke(address = address, apiKey = key)
-            Log.d("addEditViewModel","your lat long is ${result.toString()}")
+            if (result != null) {
+                position = result
+                mapImageLink = getMapImage(result.latitude, result.longitude)
+            }
+            Log.d("addEditViewModel","your lat long is $position and the link to the image is $mapImageLink")
         }
     }
 
@@ -317,11 +325,13 @@ class AddEditViewModel @Inject constructor(
 
         return true
     }
-    fun retrieveAddSaveMap(context: Context){
-        viewModelScope.launch(Dispatchers.IO){
-            val key = "googleMapAPiKey"
-            val staticMapImage = FileUtils.downloadStaticMapImage("https://maps.googleapis.com/maps/api/staticmap?center=43.63653809062132,%206.6440696545611475&format=jpg&markers=size:mid%7C43.63653809062132,%206.6440696545611475&zoom=19&size=400x400&key=$key")
-            FileUtils.saveImageToInternalStorage(context, staticMapImage, "static_map_image.jpg")
+    private fun getMapImage(lat:Double?, long:Double?):String{
+        val key = BuildConfig.GMP_key
+        return if (lat != null && long != null){
+            "https://maps.googleapis.com/maps/api/staticmap?center=$lat,%20$long&format=jpg&markers=%7C$lat,%20$long&zoom=19&size=800x400&key=$key"
+        }
+        else{
+            ""
         }
     }
 }
