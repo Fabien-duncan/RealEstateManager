@@ -44,6 +44,7 @@ class AddEditViewModel @Inject constructor(
 ):ViewModel() {
     var state by mutableStateOf(AddEditState())
         private set
+    var isAddressValid by mutableStateOf(false)
     private val _isAddOrUpdatePropertyFinished = mutableStateOf(false)
     val isAddOrUpdatePropertyFinished: Boolean
         get() = _isAddOrUpdatePropertyFinished.value
@@ -228,8 +229,14 @@ class AddEditViewModel @Inject constructor(
     /*fun onPhotosChanged(photos: List<>){
         state = state.copy(nearbyPlaces = nearbyPlaces)
     }*/
+    fun onIsAddressValidChanged(){
+        isAddressValid = !isAddressValid
+    }
 
     fun addOrUpdateProperty() = viewModelScope.launch(Dispatchers.IO) {
+        if (isAddressValid && position.latitude != null && position.longitude != null){
+            state = state.copy(latitude = position.latitude, longitude = position.longitude)
+        }
         val id = addPropertyUseCase(property = property)
         //getAllPropertiesUseCase
         state = state.copy(id = id)
@@ -279,6 +286,7 @@ class AddEditViewModel @Inject constructor(
                 )
 
             }
+            isAddressValid = state.latitude != null && state.longitude != null
         }
 
     }

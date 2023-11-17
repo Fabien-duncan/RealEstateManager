@@ -384,6 +384,8 @@ private fun AddEditView(
                         modifier = Modifier
                             .padding(8.dp),
                         isLargeView = true,
+                        isAddressValidated = addEditViewModel.isAddressValid,
+                        onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged,
                         mapImageLink = addEditViewModel.mapImageLink,
                         onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                         onNumberChanged = addEditViewModel::onNumberChange,
@@ -431,6 +433,8 @@ private fun AddEditView(
                     .padding(8.dp)
                     .background(Color.Green),
                 isLargeView = false,
+                isAddressValidated = addEditViewModel.isAddressValid,
+                onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged,
                 mapImageLink = addEditViewModel.mapImageLink,
                 onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                 onNumberChanged = addEditViewModel::onNumberChange,
@@ -805,11 +809,13 @@ private fun HouseDetailCard(
 @Composable
 private fun AddressDetail(
     state: AddEditState,
+    isAddressValidated: Boolean,
     modifier: Modifier = Modifier,
     mapImageLink:String,
     isLargeView:Boolean,
     onCheckAddressClicked:() -> Unit,
     isFormValid: () -> Unit,
+    onIsAddressValidChanged: () -> Unit,
     onNumberChanged: (String?) -> Unit,
     onStreetChanged: (String) -> Unit,
     onExtraChanged: (String) -> Unit,
@@ -819,7 +825,7 @@ private fun AddressDetail(
     onPostCodeChanged: (String) -> Unit,
 
 ){
-    var isAddressValidated by remember{ mutableStateOf(false) }
+    //var isAddressValidated by remember{ mutableStateOf(false) }
     Row(
         modifier = Modifier
             .padding(top = 8.dp, start = 8.dp, end = 8.dp)
@@ -937,7 +943,7 @@ private fun AddressDetail(
                 Text(text = "Click to validate Address", fontStyle = FontStyle.Italic)
                 IconToggleButton(
                     checked = isAddressValidated,
-                    onCheckedChange = { isAddressValidated = !isAddressValidated },
+                    onCheckedChange = { onIsAddressValidChanged.invoke()},
                     modifier = Modifier
                         .size(48.dp)
                         .padding(horizontal = 4.dp)
