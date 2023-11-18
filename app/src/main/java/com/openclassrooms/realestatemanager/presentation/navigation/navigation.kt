@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -172,27 +173,29 @@ private fun ListAndDetailScreen(
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
-        HomeScreen(
-            state = state,
-            onItemClicked = onItemClicked,
-            modifier = modifier.width(350.dp),
-            selectedIndex = index,
-            isLargeScreen = true
-        )
+        Column(modifier = modifier.weight(0.4f)){
+            HomeScreen(
+                state = state,
+                onItemClicked = onItemClicked,
+                selectedIndex = index,
+                isLargeScreen = true
+            )
+        }
         Divider(
             color = Color.Gray,
             modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp)
         )
-        LaunchDetailScreenFromState(
-            state = state,
-            modifier = modifier,
-            assistedFactory = assistedFactory,
-            isLargeView = true,
-            propertyId = id
-        ) {
+        Column(modifier = modifier.weight(1f)){
+            LaunchDetailScreenFromState(
+                state = state,
+                assistedFactory = assistedFactory,
+                isLargeView = true,
+                propertyId = id
+            ) {
 
+            }
         }
 
     }
@@ -226,7 +229,7 @@ fun getScreenType(
 @Composable
 fun LaunchDetailScreenFromState(
     state: HomeState,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     assistedFactory: DetailAssistedFactory,
     isLargeView:Boolean,
     propertyId:Long,

@@ -43,7 +43,7 @@ class DetailViewModel @AssistedInject constructor(
 private fun getMapImage(lat:Double?, long:Double?):String{
     val key = BuildConfig.GMP_key
     return if (lat != null && long != null){
-        "https://maps.googleapis.com/maps/api/staticmap?center=$lat,%20$long&format=jpg&markers=%7C$lat,%20$long&zoom=19&size=800x400&key=$key"
+        "https://maps.googleapis.com/maps/api/staticmap?center=$lat,%20$long&format=jpg&markers=%7C$lat,%20$long&zoom=19&size=1200x600&key=$key"
     }
     else{
         ""

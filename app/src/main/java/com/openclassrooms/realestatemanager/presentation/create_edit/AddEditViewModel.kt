@@ -230,7 +230,9 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(nearbyPlaces = nearbyPlaces)
     }*/
     fun onIsAddressValidChanged(){
+
         isAddressValid = !isAddressValid
+        Log.d("addEditViewModel", "changed isAddressValid to $isAddressValid")
     }
 
     fun addOrUpdateProperty() = viewModelScope.launch(Dispatchers.IO) {

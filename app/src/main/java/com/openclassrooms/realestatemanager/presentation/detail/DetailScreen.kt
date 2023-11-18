@@ -293,7 +293,7 @@ private fun HouseDetails(
 ){
 
     if(isLargeView){
-        Column(
+        Column( modifier = Modifier.padding(end = 20.dp)
         ) {
             HouseDetailCard(
                 painter = painterResource(id = R.drawable.area_image),
@@ -395,11 +395,11 @@ private fun AddressDetail(
     isLargeView:Boolean,
     mapImageLink: String
 ){
-    val padding = if(isLargeView) 80.dp else 8.dp
+    val padding = if(isLargeView) 8.dp else 8.dp
     Row(modifier = Modifier
         .padding(top = 16.dp, start = padding, end = 8.dp)
         .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-        Column() {
+        Column(modifier = Modifier.weight(0.7f)) {
             Row {
                 Image(painter = painterResource(id = R.drawable.address_image), contentDescription = "address")
                 Text(text = "Location")
@@ -415,13 +415,14 @@ private fun AddressDetail(
         }
 
         if (mapImageLink.isNotEmpty()) {
-            Column(modifier = Modifier.fillMaxWidth().padding(4.dp), horizontalAlignment = Alignment.End) {
+            Column(modifier = Modifier.fillMaxWidth().padding(4.dp).weight(if (isLargeView) 2.5f else 1f), horizontalAlignment = Alignment.End) {
                 AsyncImage(
                     model = Uri.parse(mapImageLink),
                     contentDescription = "map view",
-                    contentScale = if (isLargeView) ContentScale.FillHeight else ContentScale.FillBounds,
+                    contentScale = ContentScale.FillWidth,
                     modifier = if (isLargeView) Modifier
                         .heightIn(max = 250.dp)
+                        .fillMaxWidth()
                         .padding(horizontal = padding, vertical = 8.dp)
                         .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
                     else Modifier
@@ -438,6 +439,7 @@ private fun AddressDetail(
                     .fillMaxWidth()
                     .padding(horizontal = padding, vertical = 8.dp)
                     .background(MaterialTheme.colorScheme.secondary, MaterialTheme.shapes.extraSmall)
+                    .weight(1f)
             ){
                 Image(
                     painter = painterResource(id = R.drawable.missing_image),

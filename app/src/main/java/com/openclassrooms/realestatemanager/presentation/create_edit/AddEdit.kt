@@ -362,7 +362,7 @@ private fun AddEditView(
 
                 Column(modifier = Modifier
                     .weight(1f)
-                    .height(350.dp)
+                    .height(380.dp)
                     .border(width = 1.dp, color = Color.Gray)){
                     Text(
                         text = "Address",
@@ -381,12 +381,7 @@ private fun AddEditView(
                     )
                     AddressDetail(
                         //address = it.address,
-                        modifier = Modifier
-                            .padding(8.dp),
                         isLargeView = true,
-                        isAddressValidated = addEditViewModel.isAddressValid,
-                        onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged,
-                        mapImageLink = addEditViewModel.mapImageLink,
                         onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                         onNumberChanged = addEditViewModel::onNumberChange,
                         onStreetChanged = addEditViewModel::onStreetChange,
@@ -399,8 +394,13 @@ private fun AddEditView(
                         state = state
                     )
                 }
-                Column(modifier = Modifier.weight(0.8f)){
-                    AddressMapImage(isLargeView = true)
+                Column(modifier = Modifier.weight(0.8f)) {
+                    AddressMapImage(
+                        isLargeView = true,
+                        isAddressValidated = addEditViewModel.isAddressValid,
+                        mapImageLink = addEditViewModel.mapImageLink,
+                        onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged
+                    )
                 }
             }
         }
@@ -429,13 +429,7 @@ private fun AddEditView(
 
             AddressDetail(
                 //address = it.address,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .background(Color.Green),
                 isLargeView = false,
-                isAddressValidated = addEditViewModel.isAddressValid,
-                onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged,
-                mapImageLink = addEditViewModel.mapImageLink,
                 onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                 onNumberChanged = addEditViewModel::onNumberChange,
                 onStreetChanged = addEditViewModel::onStreetChange,
@@ -447,7 +441,12 @@ private fun AddEditView(
                 isFormValid = {isFormValid = addEditViewModel.isFormValid},
                 state = state
             )
-            AddressMapImage(isLargeView = false)
+            AddressMapImage(
+                isLargeView = false,
+                isAddressValidated = addEditViewModel.isAddressValid,
+                mapImageLink = addEditViewModel.mapImageLink,
+                onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged
+            )
         }
 
         Text(
@@ -809,13 +808,9 @@ private fun HouseDetailCard(
 @Composable
 private fun AddressDetail(
     state: AddEditState,
-    isAddressValidated: Boolean,
-    modifier: Modifier = Modifier,
-    mapImageLink:String,
     isLargeView:Boolean,
     onCheckAddressClicked:() -> Unit,
     isFormValid: () -> Unit,
-    onIsAddressValidChanged: () -> Unit,
     onNumberChanged: (String?) -> Unit,
     onStreetChanged: (String) -> Unit,
     onExtraChanged: (String) -> Unit,
@@ -908,17 +903,28 @@ private fun AddressDetail(
             )
         }
     }
-    Button(onClick = { onCheckAddressClicked.invoke() }) {
-        Text(text = "check address")
+    Button(onClick = { onCheckAddressClicked.invoke() }, modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)) {
+        Text(text = "Check address")
 
     }
+}
+@Composable
+private fun AddressMapImage(
+    isLargeView:Boolean,
+    isAddressValidated: Boolean,
+    mapImageLink:String,
+    onIsAddressValidChanged: () -> Unit,
+){
     if(mapImageLink.isNotEmpty()){
         Box(
             modifier = if (isLargeView) Modifier
-                .heightIn(max = 250.dp)
+                .height(380.dp)
                 .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxWidth()
                 .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
-                        else Modifier
+            else Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 8.dp)
                 .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
@@ -927,7 +933,7 @@ private fun AddressDetail(
                 model = Uri.parse(mapImageLink),
                 contentDescription = "map view",
                 modifier = if (isLargeView) Modifier
-                    .heightIn(max = 250.dp)
+                    .height(380.dp)
                 else Modifier
                     .fillMaxWidth(),
                 contentScale = if (isLargeView) ContentScale.FillHeight else ContentScale.FillWidth,
@@ -958,25 +964,6 @@ private fun AddressDetail(
             }
         }
     }
-}
-@Composable
-private fun AddressMapImage(
-    isLargeView:Boolean,
-){
-    val padding = if(isLargeView) 8.dp else 8.dp
-    AsyncImage(
-        model = Uri.parse("https://i.insider.com/5c954296dc67671dc8346930?width=1136&format=jpeg"),
-        contentDescription = "map view",
-        contentScale = if (isLargeView )ContentScale.FillHeight else ContentScale.FillWidth,
-        modifier = if (isLargeView) Modifier
-            .heightIn(max = 350.dp)
-            .padding(horizontal = padding, vertical = 0.dp)
-            .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
-        else Modifier
-            .fillMaxWidth()
-            .padding(horizontal = padding, vertical = 8.dp)
-            .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
-    )
 }
 @Composable
 private fun NearbyAmenities(
