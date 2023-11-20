@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,6 +38,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
@@ -61,6 +64,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -83,14 +87,22 @@ import androidx.compose.ui.window.Popup
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarConfig
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
+import kotlinx.coroutines.selects.select
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.Calendar
 import java.util.Date
 import java.util.Objects
 
@@ -123,6 +135,15 @@ private fun AddEditView(
     isLargeView:Boolean,
     addEditViewModel: AddEditViewModel
 ){
+    val selectedDate = remember { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        mutableStateOf<LocalDate?>(LocalDate.now().minusDays(3))
+    } else {
+        TODO("VERSION.SDK_INT < O")
+    }
+    }
+    var hasSoldDateSelected by remember {
+        mutableStateOf(false)
+    }
 
     val state = addEditViewModel.state
 
@@ -465,6 +486,66 @@ private fun AddEditView(
                 isFormValid = addEditViewModel.isFormValid
             }
         )
+        if(state.id > 0){
+            Divider(
+                color = Color.Gray,
+                thickness = 1.dp,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = false,
+                        onCheckedChange = {
+
+                        }
+                    )
+                    Text(text = "Property is sold")
+                }
+                val calendarState = rememberUseCaseState(visible = false, true, onCloseRequest = {})
+                Icon(imageVector = Icons.Default.DateRange, contentDescription = "date", modifier = Modifier.padding(start = 12.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .padding(8.dp)
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = MaterialTheme.shapes.extraSmall
+                        )
+                        .clickable {
+                            calendarState.show()
+                        },
+                    verticalArrangement = Arrangement.Center
+                ){
+                    Text(
+                        fontStyle = if (!hasSoldDateSelected) FontStyle.Italic else FontStyle.Normal,
+                        text = if (!hasSoldDateSelected) "select Date" else selectedDate.value.toString(),
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+
+                    )
+                }
+
+                CalendarDialog(
+                    state = calendarState,
+                    config = CalendarConfig(
+                        yearSelection = true,
+                        style = CalendarStyle.MONTH,
+                    ),
+                    selection = CalendarSelection.Date(
+                        selectedDate = selectedDate.value
+                    ) { newDate ->
+                        selectedDate.value = newDate
+                        hasSoldDateSelected = true
+                        println("date: $newDate")
+                    },
+                )
+            }
+        }
         Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
             if (!isFormValid){
                 Text(
