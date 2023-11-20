@@ -51,12 +51,6 @@ class MainActivity : ComponentActivity() {
     }
     @Composable
     fun RealEstateApp(modifier: Modifier = Modifier, windowSize:WindowSizeType){
-       /* val homeViewModel: HomeViewModel = viewModel()
-        val navController = rememberNavController()
-        val state by homeViewModel.state.collectAsState()*/
-
-
-        //HomeScreen(modifier = modifier ,state = state, onPropertyClicked = { println("element $it has been clicked") })
 
         Navigation(
             windowSize = windowSize,
@@ -69,76 +63,5 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar() {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    TopAppBar(
-        title = {
-            Text(text = "Real Estate Manager", color = Color.White, fontSize = 20.sp)
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = { *//*TODO*//* },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Go Back",
-                    tint = Color.White
-                )
-
-            }
-        },
-        actions = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy((-8).dp),
-                modifier = Modifier.padding(0.dp)
-            ) {
-                IconButton(onClick = { *//*TODO*//* }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Create Property",
-                        tint = Color.White
-                    )
-
-                }
-                IconButton(onClick = { *//*TODO*//* }) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Property",
-                        tint = Color.White
-                    )
-
-                }
-                IconButton(onClick = { *//*TODO*//* }) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = Color.White
-                    )
-
-                }
-            }
-        },
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = MaterialTheme.colorScheme.secondary),
-    )
-}*/
-@Composable
-fun MainText(
-    modifier: Modifier
-){
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text(text = "Le premier bien immobilier enregistré vaut ${Utils.convertDollarToEuro(100)}")
-    }
-
-}
 
 
