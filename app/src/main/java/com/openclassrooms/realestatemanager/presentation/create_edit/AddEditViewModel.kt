@@ -67,7 +67,7 @@ class AddEditViewModel @Inject constructor(
                 description = description!!,
                 isSold = isSold,
                 createdDate = Date(),
-                soldDate = soldDate,
+                soldDate = if (isSold)soldDate else null,
                 agentName = agentName ?: "Fabien Duncan",
                 address = AddressModel(
                     propertyId = -1L,
@@ -142,8 +142,9 @@ class AddEditViewModel @Inject constructor(
         //println("you have changed the description to ${state.description} and the type is ${state.type}")
     }
 
-    fun onIsSoldChange(isSold: Boolean) {
-        state = state.copy(isSold = isSold)
+    fun onIsSoldChange() {
+        val isSold = state.isSold
+        state = state.copy(isSold = !isSold)
     }
 
     fun onCreatedDateChange(createDate: Date) {
@@ -184,14 +185,6 @@ class AddEditViewModel @Inject constructor(
     fun onPostalCodeChange(postCode: String) {
         state = state.copy(postalCode = postCode)
         println("These are all the values $state")
-    }
-
-    fun onLatitudeChange(latitude: Double) {
-        state = state.copy(latitude = latitude)
-    }
-
-    fun onLongitudeChange(longitude: Double) {
-        state = state.copy(longitude = longitude)
     }
     fun onPhotoCaptionChanged(caption: String, item:Int) {
         var photos = state.photos?.toMutableList()
