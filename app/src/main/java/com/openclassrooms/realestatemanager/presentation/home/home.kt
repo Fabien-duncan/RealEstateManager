@@ -90,7 +90,7 @@ fun HomeScreen(
 
                     FloatingActionButton(
                         onClick = { isMapView = !isMapView },
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
                     ) {
                         if (isMapView) {
                             Icon(
@@ -106,13 +106,18 @@ fun HomeScreen(
                     }
                 }
             ){
-                HomePropertyList(
-                    properties = properties,
-                    modifier = modifier.padding(it),
-                    onItemClicked = onItemClicked,
-                    selectedIndex = selectedIndex,
-                    isLargeScreen = isLargeScreen
-                )
+                if (isMapView){
+                    MapView(modifier = modifier.padding(it))
+                }
+                else{
+                    HomePropertyList(
+                        properties = properties,
+                        modifier = modifier.padding(it),
+                        onItemClicked = onItemClicked,
+                        selectedIndex = selectedIndex,
+                        isLargeScreen = isLargeScreen
+                    )
+                }
             }
         }
 
