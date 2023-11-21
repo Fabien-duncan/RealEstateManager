@@ -14,7 +14,6 @@ import java.util.*
 fun DatePicker(
     openDialog: MutableState<Boolean>,
     onSoldDateChanged: (Date) -> Unit,
-    isFormValid: () -> Unit
 ) {
     val snackState = remember { SnackbarHostState() }
     SnackbarHost(hostState = snackState, Modifier)
@@ -37,7 +36,6 @@ fun DatePicker(
                         datePickerState.selectedDateMillis?.let { Date(it) }
                             ?.let {
                                 onSoldDateChanged.invoke(it)
-                                isFormValid.invoke()
                             }
                     },
                     enabled = datePickerState.selectedDateMillis != null

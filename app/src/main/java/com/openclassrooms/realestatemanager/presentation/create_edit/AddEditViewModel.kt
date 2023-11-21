@@ -48,8 +48,8 @@ class AddEditViewModel @Inject constructor(
     private val _isAddOrUpdatePropertyFinished = mutableStateOf(false)
     val isAddOrUpdatePropertyFinished: Boolean
         get() = _isAddOrUpdatePropertyFinished.value
-    val isFormValid: Boolean
-        get() = checkFormIsValid()
+    var _isFormValid by mutableStateOf(false)
+        private set
     var mapImageLink by mutableStateOf("")
         private set
     var position by mutableStateOf(LatLongEntity(null,null))
@@ -116,81 +116,98 @@ class AddEditViewModel @Inject constructor(
     }
     fun onTypeChange(type:PropertyType){
         state = state.copy(type = type)
-
+        setFormIsValid()
     }
     fun onPriceChange(price:String?){
         state = state.copy(price = convertToIntOrNull(price))
-
+        setFormIsValid()
     }
     fun onAreaChange(area:String?){
         state = state.copy(area = convertToIntOrNull(area))
+        setFormIsValid()
     }
     fun onRoomsChange(rooms: String?) {
         state = state.copy(rooms = convertToIntOrNull(rooms))
+        setFormIsValid()
     }
 
     fun onBedroomsChange(bedrooms: String?) {
         state = state.copy(bedrooms = convertToIntOrNull(bedrooms))
+        setFormIsValid()
     }
 
     fun onBathroomsChange(bathrooms: String?) {
         state = state.copy(bathrooms = convertToIntOrNull(bathrooms))
+        setFormIsValid()
     }
 
     fun onDescriptionChange(description: String) {
         state = state.copy(description = description)
+        setFormIsValid()
         //println("you have changed the description to ${state.description} and the type is ${state.type}")
     }
 
     fun onIsSoldChange() {
         val isSold = state.isSold
         state = state.copy(isSold = !isSold)
+        setFormIsValid()
     }
 
     fun onCreatedDateChange(createDate: Date) {
         state = state.copy(createdDate = createDate)
+        setFormIsValid()
     }
 
     fun onSoldDateChange(soldDate: Date) {
         state = state.copy(soldDate = soldDate)
+        setFormIsValid()
     }
 
     fun onAgentNameChange(agentName: String) {
         state = state.copy(agentName = agentName)
+        setFormIsValid()
     }
 
     fun onNumberChange(number: String?) {
         state = state.copy(number = convertToIntOrNull(number))
+        setFormIsValid()
     }
     fun onStreetChange(street: String) {
         state = state.copy(street = street)
+        setFormIsValid()
     }
 
     fun onExtraChange(extra: String) {
         state = state.copy(extra = extra)
+        setFormIsValid()
     }
 
     fun onCityChange(city: String) {
         state = state.copy(city = city)
+        setFormIsValid()
     }
 
     fun onStateChange(addressState: String) {
         state = state.copy(state = addressState)
+        setFormIsValid()
     }
 
     fun onCountryChange(country: String) {
         state = state.copy(country = country)
+        setFormIsValid()
     }
 
     fun onPostalCodeChange(postCode: String) {
         state = state.copy(postalCode = postCode)
         println("These are all the values $state")
+        setFormIsValid()
     }
     fun onPhotoCaptionChanged(caption: String, item:Int) {
         var photos = state.photos?.toMutableList()
         photos?.set(item, photos[item].copy(caption = caption))
 
         state = state.copy(photos = photos)
+        setFormIsValid()
     }
     fun onImagesAdded(originalImagesUris: List<Uri>, context:Context){
         val photosCopy = (state.copy().photos ?: mutableListOf()).toMutableList()
@@ -204,6 +221,7 @@ class AddEditViewModel @Inject constructor(
         println("list of photos $photosCopy")
 
         state = state.copy(photos = photosCopy)
+        setFormIsValid()
     }
     fun onNearbyPlacesChanged(nearbyPlace: NearbyPlacesType){
         var nearbyPlaces = mutableListOf<NearbyPlacesType>()
@@ -216,6 +234,7 @@ class AddEditViewModel @Inject constructor(
             nearbyPlaces.add(nearbyPlace)
         }
         state = state.copy(nearbyPlaces = nearbyPlaces)
+        setFormIsValid()
 
         println("These are all the values $state")
     }
@@ -226,6 +245,7 @@ class AddEditViewModel @Inject constructor(
 
         isAddressValid = !isAddressValid
         Log.d("addEditViewModel", "changed isAddressValid to $isAddressValid")
+        setFormIsValid()
     }
 
     fun addOrUpdateProperty() = viewModelScope.launch(Dispatchers.IO) {
@@ -310,6 +330,9 @@ class AddEditViewModel @Inject constructor(
         _isAddOrUpdatePropertyFinished.value = false
     }
 
+    private fun setFormIsValid(){
+        _isFormValid = checkFormIsValid()
+    }
     private fun checkFormIsValid():Boolean{
         println("Checking form is valid")
         if (state.type == null) return false

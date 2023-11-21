@@ -126,12 +126,6 @@ private fun AddEditView(
     isLargeView:Boolean,
     addEditViewModel: AddEditViewModel
 ){
-    val selectedDate = remember { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        mutableStateOf<LocalDate?>(LocalDate.now().minusDays(3))
-    } else {
-        TODO("VERSION.SDK_INT < O")
-    }
-    }
 
     val state = addEditViewModel.state
 
@@ -150,13 +144,11 @@ private fun AddEditView(
     var isFormValid by remember { mutableStateOf(false) }
 
     var isImageSelectChoiceVisible by remember { mutableStateOf(false) }
-    var imageSelectPopupPosition by remember { mutableStateOf(IntOffset.Zero) }
     val context = LocalContext.current
     val photosPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = {uris ->
             addEditViewModel.onImagesAdded(originalImagesUris = uris, context =  context)
-            isFormValid = addEditViewModel.isFormValid
         }
     )
     val tempFile = context.createImageFile()
@@ -176,8 +168,6 @@ private fun AddEditView(
         else{
             println("failed to get uri")
         }
-        //addEditViewModel.onImagesAdded(uris, context)
-        //isFormValid = addEditViewModel.isFormValid
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -193,11 +183,8 @@ private fun AddEditView(
         }
     }
 
-    //val datePickerState = rememberDatePickerState()
     val dateFormat = SimpleDateFormat("dd/MM/yy")
     var openDialog = remember { mutableStateOf(false) }
-    var isDateSoldPicked = remember{ mutableStateOf(false) }
-    var dateSold =  remember{ mutableStateOf(Date()) }
 
     val isAddOrUpdatePropertyFinished by rememberUpdatedState(addEditViewModel.isAddOrUpdatePropertyFinished)
 
@@ -220,7 +207,6 @@ private fun AddEditView(
                 value = "${ state.price ?: "" }",
                 onValueChange = {
                     addEditViewModel.onPriceChange(it)
-                    isFormValid = addEditViewModel.isFormValid
                 },
                 placeholder = { Text(text = "price in $") },
                 modifier = Modifier
@@ -238,7 +224,6 @@ private fun AddEditView(
                 value = state.agentName ?: "",
                 onValueChange = {
                     addEditViewModel.onAgentNameChange(it)
-                    isFormValid = addEditViewModel.isFormValid
                 },
                 placeholder = { Text(text = "Agent Name") },
                 modifier = Modifier
@@ -336,7 +321,6 @@ private fun AddEditView(
                             onTypeSelected = type
                             isTypePickerExpanded = false
                             addEditViewModel.onTypeChange(type)
-                            isFormValid = addEditViewModel.isFormValid
                         },
                         text = {Text(text = type.name)}
 
@@ -349,7 +333,6 @@ private fun AddEditView(
             value = state.description ?: "",
             onValueChange = {
                 addEditViewModel.onDescriptionChange(it)
-                isFormValid = addEditViewModel.isFormValid
             },
             placeholder = { Text(text = "Enter the description") },
             modifier = Modifier
@@ -369,7 +352,6 @@ private fun AddEditView(
                         onBathroomsChanged = addEditViewModel::onBathroomsChange,
                         onBedroomsChanged = addEditViewModel::onBedroomsChange,
                         onRoomsChanged = addEditViewModel::onRoomsChange,
-                        isFormValid = { isFormValid = addEditViewModel.isFormValid },
                         state = state
                     )
                 }
@@ -404,7 +386,6 @@ private fun AddEditView(
                         onStateChanged = addEditViewModel::onStateChange,
                         onCountryChanged = addEditViewModel::onCountryChange,
                         onPostCodeChanged = addEditViewModel::onPostalCodeChange,
-                        isFormValid = { isFormValid = addEditViewModel.isFormValid },
                         state = state
                     )
                 }
@@ -429,7 +410,6 @@ private fun AddEditView(
                 onBathroomsChanged = addEditViewModel::onBathroomsChange,
                 onBedroomsChanged = addEditViewModel::onBedroomsChange,
                 onRoomsChanged = addEditViewModel::onRoomsChange,
-                isFormValid = {isFormValid = addEditViewModel.isFormValid},
                 state = state
             )
 
@@ -452,7 +432,6 @@ private fun AddEditView(
                 onStateChanged = addEditViewModel::onStateChange,
                 onCountryChanged = addEditViewModel::onCountryChange,
                 onPostCodeChanged = addEditViewModel::onPostalCodeChange,
-                isFormValid = {isFormValid = addEditViewModel.isFormValid},
                 state = state
             )
             AddressMapImage(
@@ -476,7 +455,6 @@ private fun AddEditView(
             addEditState = state,
             onNearbyPlaceChanged = {
                 addEditViewModel.onNearbyPlacesChanged(it)
-                isFormValid = addEditViewModel.isFormValid
             }
         )
         if(state.id > 0){
@@ -493,7 +471,6 @@ private fun AddEditView(
                         checked = state.isSold,
                         onCheckedChange = {
                             addEditViewModel.onIsSoldChange()
-                            isFormValid = addEditViewModel.isFormValid
                         }
                     )
                     Text(text = "Property is sold")
@@ -531,13 +508,12 @@ private fun AddEditView(
                     DatePicker(
                         openDialog = openDialog,
                         onSoldDateChanged = addEditViewModel::onSoldDateChange,
-                        isFormValid = { isFormValid = addEditViewModel.isFormValid }
                     )
                 }
             }
         }
         Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
-            if (!isFormValid){
+            if (!addEditViewModel._isFormValid){
                 Text(
                     text = "${if(propertyId > 0) "Nothing has been modified or you" else "you"} need to fill in all the required fields",
                     fontSize = 14.sp,
@@ -555,7 +531,7 @@ private fun AddEditView(
                 },
                 modifier = Modifier
                     .padding(8.dp),
-                enabled = isFormValid
+                enabled = addEditViewModel._isFormValid
             ) {
                 Text(text = if (propertyId > 0) "Save Changes" else "Create")
             }
@@ -748,7 +724,6 @@ private fun HouseDetails(
     onRoomsChanged: (String?) -> Unit,
     onBedroomsChanged: (String?) -> Unit,
     onBathroomsChanged: (String?) -> Unit,
-    isFormValid: () -> Unit,
     state: AddEditState,
     isLargeView:Boolean
 ){
@@ -761,7 +736,6 @@ private fun HouseDetails(
                 title = "surface in m²",
                 modifier = modifier,
                 onValueChanged = onAreaChanged,
-                isFormValid =isFormValid,
                 value = state.rooms
             )
             HouseDetailCard(
@@ -769,7 +743,6 @@ private fun HouseDetails(
                 title = "No. rooms",
                 modifier = modifier,
                 onValueChanged = onRoomsChanged,
-                isFormValid =isFormValid,
                 value = state.rooms
             )
             HouseDetailCard(
@@ -777,7 +750,6 @@ private fun HouseDetails(
                 title = "No. bathrooms",
                 modifier = modifier,
                 onValueChanged = onBathroomsChanged,
-                isFormValid =isFormValid,
                 value = state.bathrooms
             )
             HouseDetailCard(
@@ -785,7 +757,6 @@ private fun HouseDetails(
                 title = "No. bedrooms",
                 modifier = modifier,
                 onValueChanged = onBedroomsChanged,
-                isFormValid =isFormValid,
                 value = state.bedrooms
             )
         }
@@ -807,7 +778,6 @@ private fun HouseDetails(
                     title = "surface in m²",
                     modifier = modifier,
                     onValueChanged = onAreaChanged,
-                    isFormValid =isFormValid,
                     value = state.area
 
                 )
@@ -816,7 +786,6 @@ private fun HouseDetails(
                     title = "No. bathrooms",
                     modifier = modifier,
                     onValueChanged = onBathroomsChanged,
-                    isFormValid =isFormValid,
                     value = state.bathrooms
                 )
             }
@@ -829,7 +798,6 @@ private fun HouseDetails(
                     title = "No. rooms",
                     modifier = modifier,
                     onValueChanged = onRoomsChanged,
-                    isFormValid =isFormValid,
                     value = state.rooms
                 )
                 HouseDetailCard(
@@ -837,7 +805,6 @@ private fun HouseDetails(
                     title = "No. bedrooms",
                     modifier = modifier,
                     onValueChanged = onBedroomsChanged,
-                    isFormValid =isFormValid,
                     value = state.bedrooms
                 )
             }
@@ -852,7 +819,6 @@ private fun HouseDetailCard(
     modifier: Modifier,
     onValueChanged: (String?) -> Unit,
     value: Int?,
-    isFormValid: () -> Unit
 ){
     Box(
         modifier = modifier.padding(top = 8.dp),
@@ -864,7 +830,6 @@ private fun HouseDetailCard(
                     value = ("${ value ?: "" }"),
                     onValueChange = {
                         onValueChanged.invoke(it)
-                        isFormValid.invoke()
                     },
                     placeholder = { Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -881,7 +846,6 @@ private fun AddressDetail(
     state: AddEditState,
     isLargeView:Boolean,
     onCheckAddressClicked:() -> Unit,
-    isFormValid: () -> Unit,
     onNumberChanged: (String?) -> Unit,
     onStreetChanged: (String) -> Unit,
     onExtraChanged: (String) -> Unit,
@@ -905,7 +869,6 @@ private fun AddressDetail(
                     value = ("${ state.number ?: "" }"),
                     onValueChange = {
                         onNumberChanged.invoke(it)
-                        isFormValid.invoke()
                     },
                     placeholder = { Text(text = "number") },
                     modifier = Modifier.padding(4.dp)
@@ -914,7 +877,6 @@ private fun AddressDetail(
                     value = state.extra ?: "",
                     onValueChange = {
                         onExtraChanged.invoke(it)
-                        isFormValid.invoke()
                     },
                     placeholder = { Text(text = "extra") },
                     modifier = Modifier.padding(4.dp)
@@ -923,7 +885,6 @@ private fun AddressDetail(
                     value = state.state ?: "",
                     onValueChange = {
                         onStateChanged.invoke(it)
-                        isFormValid.invoke()
                     },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "state") },
@@ -933,7 +894,6 @@ private fun AddressDetail(
                     value = state.postalCode ?: "",
                     onValueChange = {
                         onPostCodeChanged.invoke(it)
-                        isFormValid.invoke()
                     },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "post code") },
@@ -946,7 +906,6 @@ private fun AddressDetail(
                 value = state.street ?: "",
                 onValueChange = {
                     onStreetChanged.invoke(it)
-                    isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "street") },
@@ -956,7 +915,6 @@ private fun AddressDetail(
                 value = state.city ?: "",
                 onValueChange = {
                     onCityChanged.invoke(it)
-                    isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "city") },
@@ -966,7 +924,6 @@ private fun AddressDetail(
                 value = state.country ?: "",
                 onValueChange = {
                     onCountryChanged.invoke(it)
-                    isFormValid.invoke()
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "country") },
