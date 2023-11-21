@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
@@ -73,14 +75,14 @@ fun MapView(
         is ScreenViewState.Success -> properties = state.properties.data
     }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(43.63079663665069, 6.66194472598945), 10f)
+        position = CameraPosition.fromLatLngZoom(LatLng(43.63079663665069, 6.66194472598945), 18f)
     }
 
     GoogleMap(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 80.dp),
-        cameraPositionState = cameraPositionState
+            .fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        uiSettings = MapUiSettings(zoomControlsEnabled = false)
     ) {
         /*val icon = bitmapDescriptorFromVector(
             LocalContext.current, R.drawable.map_image
@@ -91,48 +93,56 @@ fun MapView(
             val lat = property.address.latitude
             val lng = property.address.longitude
             if (lat != null && lng != null){
-
                 val location = LatLng(lat, lng)
-                MarkerInfoWindow(state = MarkerState(position = location)) {
-
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                shape = RoundedCornerShape(35.dp, 35.dp, 35.dp, 35.dp)
-                            )
-                            .width(500.dp),
-                    ) {
-
-
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-
-
-                        ) {
-                            Text(
-                                text = TextUtils.capitaliseFirstLetter("${property.type}"),
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Text(
-                                text = TextUtils.capitaliseFirstLetter("${property.address.number} ${property.address.street}"),
-                                color = Color.Gray,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Text(
-                                text = "\$${property.price}",
-                                color = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                }
+                HouseMarkers(location = location, property = property)
             }
         }
     }
 }
+
+@Composable
+fun HouseMarkers(
+    location: LatLng,
+    property:PropertyModel
+){
+    MarkerInfoWindow(state = MarkerState(position = location), icon = bitmapDescriptorFromVector(LocalContext.current, R.drawable.property_map_img)) {
+
+        Box(
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    shape = RoundedCornerShape(35.dp, 35.dp, 35.dp, 35.dp)
+                )
+                .width(500.dp),
+        ) {
+
+
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+
+            ) {
+                Text(
+                    text = TextUtils.capitaliseFirstLetter("${property.type}"),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = TextUtils.capitaliseFirstLetter("${property.address.number} ${property.address.street}"),
+                    color = Color.Gray,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = "\$${property.price}",
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+}
+
 
 fun bitmapDescriptorFromVector(
     context: Context,
