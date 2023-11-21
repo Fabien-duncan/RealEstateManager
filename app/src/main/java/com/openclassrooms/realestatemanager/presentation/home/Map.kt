@@ -48,66 +48,85 @@ import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.common.utils.BitmapDescriptorUtils
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
+import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
 fun MapView(
+    state:HomeState,
     modifier: Modifier
 ){
-    val coordinates = listOf(
+    /*val coordinates = listOf(
         LatLng(1.35, 103.87),  // San Francisco
         LatLng(1.35, 103.82),  // Los Angeles
         LatLng(1.40, 103.82)    // New York
         // Add more coordinates as needed
-    )
+    )*/
+    val properties:List<PropertyModel>
+    when(state.properties){
+        is ScreenViewState.Error -> TODO()
+        ScreenViewState.Loading -> TODO()
+        is ScreenViewState.Success -> properties = state.properties.data
+    }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(coordinates[0], 10f)
+        position = CameraPosition.fromLatLngZoom(LatLng(43.63079663665069, 6.66194472598945), 10f)
     }
 
     GoogleMap(
-        modifier = Modifier.fillMaxSize().padding(bottom = 80.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 80.dp),
         cameraPositionState = cameraPositionState
     ) {
         /*val icon = bitmapDescriptorFromVector(
             LocalContext.current, R.drawable.map_image
         )*/
 
-        coordinates.forEach {
-            MarkerInfoWindow(state = MarkerState(position = it)) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            shape = RoundedCornerShape(35.dp, 35.dp, 35.dp, 35.dp)
-                        )
-                        .width(500.dp),
-                ) {
+        properties.forEach {
+            val property = it
+            val lat = property.address.latitude
+            val lng = property.address.longitude
+            if (lat != null && lng != null){
+
+                val location = LatLng(lat, lng)
+                MarkerInfoWindow(state = MarkerState(position = location)) {
+
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                shape = RoundedCornerShape(35.dp, 35.dp, 35.dp, 35.dp)
+                            )
+                            .width(500.dp),
+                    ) {
 
 
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
 
 
                         ) {
-                        Text(
-                            text = "Home",
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Text(
-                            text = "14 Impasse Les Hauts Plans",
-                            color = Color.Gray,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Text(
-                            text = "6 666 666",
-                            color = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                            Text(
+                                text = TextUtils.capitaliseFirstLetter("${property.type}"),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Text(
+                                text = TextUtils.capitaliseFirstLetter("${property.address.number} ${property.address.street}"),
+                                color = Color.Gray,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Text(
+                                text = "\$${property.price}",
+                                color = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }

@@ -107,7 +107,7 @@ fun HomeScreen(
                 }
             ){
                 if (isMapView){
-                    MapView(modifier = modifier.padding(it))
+                    MapView(state = state, modifier = modifier.padding(it))
                 }
                 else{
                     HomePropertyList(
