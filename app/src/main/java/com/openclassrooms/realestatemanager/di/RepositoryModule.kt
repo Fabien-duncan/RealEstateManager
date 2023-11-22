@@ -3,7 +3,7 @@ package com.openclassrooms.realestatemanager.di
 import com.openclassrooms.realestatemanager.data.geocoding.GeocodingRepositoryImp
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepositoryImpl
 import com.openclassrooms.realestatemanager.domain.geocoding.GeocodingRepository
-import com.openclassrooms.realestatemanager.domain.repository.Respository
+import com.openclassrooms.realestatemanager.domain.repository.Repository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
     @Binds
     @Singleton
-    abstract fun bindRepository(propertyRepositoryImpl: PropertyRepositoryImpl):Respository
+    abstract fun bindRepository(propertyRepositoryImpl: PropertyRepositoryImpl):Repository
 
     @Binds
     @Singleton

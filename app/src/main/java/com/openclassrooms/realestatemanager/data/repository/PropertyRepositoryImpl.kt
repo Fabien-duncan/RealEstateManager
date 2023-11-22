@@ -1,5 +1,9 @@
 package com.openclassrooms.realestatemanager.data.repository
 
+import android.annotation.SuppressLint
+import android.location.Location
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.tasks.Task
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.Address
@@ -7,7 +11,7 @@ import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlace
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
-import com.openclassrooms.realestatemanager.domain.repository.Respository
+import com.openclassrooms.realestatemanager.domain.repository.Repository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import kotlinx.coroutines.flow.Flow
@@ -15,11 +19,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.util.Date
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class PropertyRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao,
-    private val propertyMapper: PropertyMapper
-): Respository{
+    private val propertyMapper: PropertyMapper,
+    private val fusedLocationClient: FusedLocationProviderClient
+): Repository{
     override suspend fun insert(property: PropertyModel): Long {
         val propertyRoomEntity = propertyMapper.propertyModelToRoom(property)
         val propertyId = propertyDao.insert(propertyRoomEntity)
@@ -80,6 +88,18 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getPropertyNearbyPlaces(propertyId)
     }
 
+    @SuppressLint("MissingPermission")
+    override suspend fun getCurrentLocation(): Result<Location> {
+        return try {
+            val locationResult = fusedLocationClient.lastLocation.await()
+            locationResult?.let {
+                Result.success(it)
+            } ?: Result.failure(Exception("Location not available"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override fun getFilteredProperties(
         propertyType: PropertyType?,
         minPrice: Double?,
@@ -112,6 +132,14 @@ class PropertyRepositoryImpl @Inject constructor(
             minNumPictures = minNumPictures,
             nearbyPlaceTypes = nearbyPlaceTypes
         )
+    }
+    private suspend fun Task<Location>.await(): Location = suspendCoroutine { continuation ->
+        addOnSuccessListener { location ->
+            continuation.resume(location)
+        }
+        addOnFailureListener { exception ->
+            continuation.resumeWithException(exception)
+        }
     }
 
 }

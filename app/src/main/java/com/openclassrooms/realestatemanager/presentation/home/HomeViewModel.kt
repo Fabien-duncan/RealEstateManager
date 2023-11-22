@@ -11,6 +11,7 @@ import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDeta
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllAvailablePropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
+import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrentLocationUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyAddressUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +29,8 @@ class HomeViewModel @Inject constructor(
     private val getAllAvailablePropertiesUseCase: GetAllAvailablePropertiesUseCase,
     private val getAllPropertiesUseCase: GetAllPropertiesUseCase,
     private val getPropertyAddressUseCase: GetPropertyAddressUseCase,
-    private val getFilteredPropertiesUseCase: GetFilteredPropertiesUseCase
+    private val getFilteredPropertiesUseCase: GetFilteredPropertiesUseCase,
+    private val getCurrentLocationUseCase: GetCurrentLocationUseCase
 ):ViewModel(){
     private val _state:MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
     val state:StateFlow<HomeState> = _state.asStateFlow()
@@ -46,6 +49,9 @@ class HomeViewModel @Inject constructor(
                 _state.value = HomeState(properties = ScreenViewState.Error(it.message))
             }
             .launchIn(viewModelScope)
+    }
+    fun getCurrentLocation() = viewModelScope.launch{
+        getCurrentLocationUseCase.invoke()
     }
 }
 

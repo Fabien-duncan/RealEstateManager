@@ -1,17 +1,17 @@
 package com.openclassrooms.realestatemanager.domain.repository
 
+import android.location.Location
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
-import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
-interface Respository {
+interface Repository {
     suspend fun insert(property: PropertyModel):Long
     suspend fun update(property: Property)
     fun getPropertyWithDetailsById(propertyId: Long): Flow<PropertyModel>
@@ -21,6 +21,7 @@ interface Respository {
     fun getPropertyPhotos(propertyId: Long):Flow<List<PropertyPhotos>>
     fun getPropertyAddress(addressId: Long):Flow<Address>
     fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>
+    suspend fun getCurrentLocation():Result<Location>
     fun getFilteredProperties(
         propertyType: PropertyType?=null,
         minPrice: Double?=null,

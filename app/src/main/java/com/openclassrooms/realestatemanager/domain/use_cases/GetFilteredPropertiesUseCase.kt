@@ -1,7 +1,7 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
 import com.openclassrooms.realestatemanager.data.local.model.Property
-import com.openclassrooms.realestatemanager.domain.repository.Respository
+import com.openclassrooms.realestatemanager.domain.repository.Repository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +9,7 @@ import java.util.Date
 import javax.inject.Inject
 
 class GetFilteredPropertiesUseCase @Inject constructor(
-    private val repository: Respository
+    private val repository: Repository
 ) {
     operator fun invoke(
         propertyType: PropertyType?=null,
