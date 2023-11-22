@@ -1,5 +1,8 @@
 package com.openclassrooms.realestatemanager.presentation.home
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.common.ScreenViewState
@@ -28,6 +31,7 @@ class HomeViewModel @Inject constructor(
 ):ViewModel(){
     private val _state:MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
     val state:StateFlow<HomeState> = _state.asStateFlow()
+    var isMapView by mutableStateOf(false)
 
     init {
         getAllProperty()

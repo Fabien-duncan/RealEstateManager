@@ -1,18 +1,13 @@
 package com.openclassrooms.realestatemanager.presentation.create_edit
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import android.util.Log
-import android.webkit.MimeTypeMap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.ColumnInfo
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.domain.geocoding.LatLongEntity
@@ -20,19 +15,14 @@ import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.domain.use_cases.AddPropertyUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetLatLngFromAddressUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.UpdatePropertyUseCase
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
-import com.openclassrooms.realestatemanager.presentation.detail.DetailSate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.io.File
-import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 
@@ -48,7 +38,7 @@ class AddEditViewModel @Inject constructor(
     private val _isAddOrUpdatePropertyFinished = mutableStateOf(false)
     val isAddOrUpdatePropertyFinished: Boolean
         get() = _isAddOrUpdatePropertyFinished.value
-    var _isFormValid by mutableStateOf(false)
+    var isFormValid by mutableStateOf(false)
         private set
     var mapImageLink by mutableStateOf("")
         private set
@@ -331,7 +321,7 @@ class AddEditViewModel @Inject constructor(
     }
 
     private fun setFormIsValid(){
-        _isFormValid = checkFormIsValid()
+        isFormValid = checkFormIsValid()
     }
     private fun checkFormIsValid():Boolean{
         println("Checking form is valid")

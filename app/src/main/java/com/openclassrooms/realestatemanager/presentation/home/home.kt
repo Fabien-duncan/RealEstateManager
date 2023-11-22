@@ -74,6 +74,7 @@ fun HomeScreen(
     selectedIndex:Int = -1,
     onItemClicked:(index:Int) -> Unit,
     isLargeScreen: Boolean,
+    viewModel: HomeViewModel
 ){
     when(state.properties){
         is ScreenViewState.Loading -> {
@@ -83,16 +84,16 @@ fun HomeScreen(
 
         is ScreenViewState.Success -> {
             val properties = state.properties.data
-            var isMapView by remember { mutableStateOf(false) }
+            //var isMapView by remember { mutableStateOf(false) }
             println("HomeScreen: got data and selected index is $selectedIndex")
             Scaffold(
                 floatingActionButton = {
 
                     FloatingActionButton(
-                        onClick = { isMapView = !isMapView },
+                        onClick = { viewModel.isMapView = !viewModel.isMapView },
                         containerColor = MaterialTheme.colorScheme.secondary,
                     ) {
-                        if (isMapView) {
+                        if (viewModel.isMapView) {
                             Icon(
                                 imageVector = Icons.Default.List ,
                                 contentDescription = "List View"
@@ -106,8 +107,8 @@ fun HomeScreen(
                     }
                 }
             ){
-                if (isMapView){
-                    MapView(state = state, modifier = modifier.padding(it))
+                if (viewModel.isMapView){
+                    MapView(state = state, modifier = modifier.padding(it),onItemClicked = onItemClicked)
                 }
                 else{
                     HomePropertyList(

@@ -107,7 +107,8 @@ fun Navigation(
                         id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[index].id
                         isItemOpened = true
                     },
-                    isLargeScreen = false
+                    isLargeScreen = false,
+                    viewModel = homeViewModel
                 )
             }
 
@@ -134,7 +135,8 @@ fun Navigation(
                     assistedFactory = assistedFactory,
                     modifier = modifier.padding(it),
                     index = index,
-                    id = id
+                    id = id,
+                    viewModel = homeViewModel
                 )
             }
 
@@ -169,6 +171,7 @@ private fun ListAndDetailScreen(
     assistedFactory: DetailAssistedFactory,
     index: Int,
     id:Long,
+    viewModel: HomeViewModel
 ){
     Row(
         modifier = Modifier.fillMaxSize()
@@ -178,7 +181,8 @@ private fun ListAndDetailScreen(
                 state = state,
                 onItemClicked = onItemClicked,
                 selectedIndex = index,
-                isLargeScreen = true
+                isLargeScreen = true,
+                viewModel = viewModel
             )
         }
         Divider(

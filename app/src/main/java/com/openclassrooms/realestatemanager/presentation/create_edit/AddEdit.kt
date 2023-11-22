@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
-import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -76,7 +75,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
@@ -91,7 +89,6 @@ import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import java.io.File
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Date
 import java.util.Objects
 
@@ -511,7 +508,7 @@ private fun AddEditView(
             }
         }
         Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
-            if (!addEditViewModel._isFormValid){
+            if (!addEditViewModel.isFormValid){
                 Text(
                     text = "${if(propertyId > 0) "Nothing has been modified or you" else "you"} need to fill in all the required fields",
                     fontSize = 14.sp,
@@ -529,7 +526,7 @@ private fun AddEditView(
                 },
                 modifier = Modifier
                     .padding(8.dp),
-                enabled = addEditViewModel._isFormValid
+                enabled = addEditViewModel.isFormValid
             ) {
                 Text(text = if (propertyId > 0) "Save Changes" else "Create")
             }
