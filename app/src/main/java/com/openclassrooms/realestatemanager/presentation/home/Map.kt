@@ -48,6 +48,7 @@ import androidx.core.graphics.drawable.toBitmap
 import coil.Coil
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -99,7 +100,11 @@ fun MapView(
             val lng = property.address.longitude
             if (lat != null && lng != null){
                 val location = LatLng(lat, lng)
-                HouseMarkers(location = location, property = property){
+                val image = if (!property.photos.isNullOrEmpty()) Uri.parse(property.photos[0].photoPath) else null
+                println("image url: $image")
+                val request = ImageRequest.Builder(LocalContext.current).data(image).allowHardware(false).build()
+                println("image request: ${request.data.toString()}")
+                HouseMarkers(location = location, property = property, request = request, hasImage = image != null){
                     onItemClicked.invoke(index)
                 }
             }
@@ -111,7 +116,10 @@ fun MapView(
 fun HouseMarkers(
     location: LatLng,
     property:PropertyModel,
+    request: ImageRequest,
+    hasImage:Boolean,
     onItemClicked: () -> Unit
+
 ){
    /* val imageState = remember{ mutableStateOf<BitmapDescriptor?>(null) }
 
@@ -121,8 +129,11 @@ fun HouseMarkers(
         imageState.value = loadBitmapDescriptorFromUrl(context, "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
     })*/
 
-    val image = if (!property.photos.isNullOrEmpty()) Uri.parse(property.photos[0].photoPath) else null
+    /*val image = if (!property.photos.isNullOrEmpty()) Uri.parse(property.photos[0].photoPath) else null
+    println("image url: $image")
     val request = ImageRequest.Builder(LocalContext.current).data(image).allowHardware(false).build()
+    println("image request: ${request.data.toString()}")*/
+
     MarkerInfoWindow(
         state = MarkerState(position = location),
         icon = bitmapDescriptorFromVector(LocalContext.current, R.drawable.property_map_img),
@@ -130,9 +141,6 @@ fun HouseMarkers(
     ) {
         Column(
             modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
                 .padding(12.dp)
                 .clip(MaterialTheme.shapes.small)
                 .border(1.dp, Color.Gray, MaterialTheme.shapes.small),
@@ -140,6 +148,9 @@ fun HouseMarkers(
 
             Row(modifier = Modifier
                 .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
                 .height(120.dp)) {
                 Column(
                     modifier = Modifier
@@ -148,11 +159,14 @@ fun HouseMarkers(
 
 
                 ) {
-                    if (image != null) {
+                    if (hasImage) {
                         AsyncImage(
                             model = request,
                             contentDescription = "",
-                            contentScale = ContentScale.FillHeight
+                            contentScale = ContentScale.FillHeight,
+                            onError = {error -> println("Error Loading Image: $error") },
+                            onSuccess ={success ->  println("Loaded Image: $success ")},
+                            onLoading = {println("Loading Image...")}
                         )
                     }
                     else{
