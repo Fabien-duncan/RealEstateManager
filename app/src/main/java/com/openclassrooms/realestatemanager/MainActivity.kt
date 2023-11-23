@@ -54,8 +54,6 @@ class MainActivity : ComponentActivity() {
 
         Navigation(
             windowSize = windowSize,
-            /*homeViewModel = homeViewModel,
-            state = state,*/
             modifier = modifier,
             assistedFactory = assistedFactory
         )

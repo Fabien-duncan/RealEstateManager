@@ -108,7 +108,7 @@ fun HomeScreen(
                 }
             ){
                 if (viewModel.isMapView){
-                    MapView(state = state, modifier = modifier.padding(it),onItemClicked = onItemClicked)
+                    MapView(state = state, modifier = modifier.padding(it),onItemClicked = onItemClicked, viewModel = viewModel)
                 }
                 else{
                     HomePropertyList(

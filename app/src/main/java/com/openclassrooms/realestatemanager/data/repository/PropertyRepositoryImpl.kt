@@ -90,12 +90,17 @@ class PropertyRepositoryImpl @Inject constructor(
 
     @SuppressLint("MissingPermission")
     override suspend fun getCurrentLocation(): Result<Location> {
+        println("getting location")
         return try {
+            println("before fused Location")
             val locationResult = fusedLocationClient.lastLocation.await()
+            println("After fused Location, location result: ${locationResult == null}")
             locationResult?.let {
+                println("location was retrieve, location: $it")
                 Result.success(it)
             } ?: Result.failure(Exception("Location not available"))
         } catch (e: Exception) {
+            println("failed to retrieve Location")
             Result.failure(e)
         }
     }

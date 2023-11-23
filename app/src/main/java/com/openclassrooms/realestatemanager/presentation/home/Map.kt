@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -64,7 +65,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
-import com.openclassrooms.realestatemanager.common.utils.BitmapDescriptorUtils
+import com.openclassrooms.realestatemanager.common.utils.PermissionHelper
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +73,44 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun MapView(
+    state:HomeState,
+    modifier: Modifier,
+    onItemClicked:(Int) -> Unit,
+    viewModel: HomeViewModel
+){
+    val context = LocalContext.current
+    val permissionHelper = remember { PermissionHelper(context) }
+
+    // Check and request a permission
+    val isPermissionGranted by remember { mutableStateOf(permissionHelper.isPermissionGranted(android.Manifest.permission.ACCESS_FINE_LOCATION)) }
+
+    if (!isPermissionGranted) {
+        println("permission not granted")
+        LaunchedEffect(key1 = permissionHelper) {
+            val result = permissionHelper.requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            if (!result) {
+                println("you have not given permission")
+            }
+            else{
+                println("you have given permission")
+            }
+        }
+    }else{
+        println("permission Granted")
+    }
+    val location by remember {
+        mutableStateOf(viewModel.getCurrentLocation())
+    }
+
+    if (location.isCompleted){
+        Log.d("Map", "Location is: $location")
+        MapWithProperties(state = state, modifier = modifier, onItemClicked = onItemClicked)
+    }else{
+        Log.d("Map", "Location not found!")
+    }
+}
+@Composable
+fun MapWithProperties(
     state:HomeState,
     modifier: Modifier,
     onItemClicked:(Int) -> Unit
