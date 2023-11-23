@@ -59,22 +59,18 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
@@ -121,11 +117,7 @@ private fun AddEditView(
     isLargeView:Boolean,
     addEditViewModel: AddEditViewModel
 ){
-
     val state = addEditViewModel.state
-
-    println("addEdit  View: state.price is ${state.price}")
-
     val scrollState = rememberScrollState()
 
     val configuration = LocalConfiguration.current
@@ -135,8 +127,6 @@ private fun AddEditView(
     var isTypePickerExpanded by remember { mutableStateOf(false) }
     var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
     var textFieldSize by remember { mutableStateOf(Size.Zero)}
-
-    var isFormValid by remember { mutableStateOf(false) }
 
     var isImageSelectChoiceVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -338,7 +328,7 @@ private fun AddEditView(
         if (!isPortrait){
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                 Column(modifier = Modifier.weight(0.5f)){
-                    HouseDetails(
+                    BaseDetails(
                         //state = state,
                         modifier = Modifier
                             .padding(8.dp),
@@ -395,7 +385,7 @@ private fun AddEditView(
             }
         }
         else{
-            HouseDetails(
+            BaseDetails(
                 //state = state,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -542,490 +532,6 @@ private fun AddEditView(
 
             }
         }
-    }
-}
-@Composable
-private fun PhotoSelectPopup(
-    changeIsImageSelectedChoice: () -> Unit,
-    onAddPhotoClicked: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>,
-    context:Context,
-    uri:Uri,
-    takePicture: ManagedActivityResultLauncher<Uri, Boolean>,
-    permissionLauncher: ManagedActivityResultLauncher<String, Boolean>
-){
-
-    Popup(onDismissRequest = { changeIsImageSelectedChoice.invoke()}, alignment = Alignment.CenterEnd ) {
-        Column(){
-            Button(
-                modifier = Modifier.padding(8.dp),
-                onClick = {
-                    // Handle confirm button click
-                    changeIsImageSelectedChoice.invoke()
-                    onAddPhotoClicked.launch(
-                        PickVisualMediaRequest(
-                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                        )
-                    )
-                }
-            ) {
-                Image(painter = painterResource(id = R.drawable.photo_gallery_24), contentDescription = "from gallery", modifier = Modifier.padding(end = 4.dp))
-                Text("from Gallery")
-
-            }
-            Button(
-                modifier = Modifier.padding(8.dp),
-                onClick = {
-                    val permissionCheckResult =
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-
-                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED)
-                    {
-                        println("Launching camera ")
-                        takePicture.launch(uri)
-                    }
-                    else
-                    {
-                        permissionLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                    // Handle confirm button click
-                    changeIsImageSelectedChoice.invoke()
-                }
-            ) {
-                Image(painter = painterResource(id = R.drawable.photo_camera_24), contentDescription = "from camera", modifier = Modifier.padding(end = 4.dp))
-                Text("from Camera")
-
-            }
-        }
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PhotoItem(
-    modifier: Modifier = Modifier,
-    photo: PropertyPhotosModel,
-    onPhotoChanged:(String, Int) -> Unit,
-    index: Int
-){
-    val imageUri = Uri.parse(photo.photoPath)
-
-    val photoDescription =
-        if(photo.caption == null) "A photo with no caption"
-        else "A photo of ${photo.caption}"
-    Box(
-        modifier = Modifier
-            .padding(4.dp)
-            .width(160.dp)
-            .height(160.dp)
-            .clip(MaterialTheme.shapes.extraSmall)
-            .background(MaterialTheme.colorScheme.primary)
-    ) {
-
-        AsyncImage(
-            model = imageUri,
-            contentDescription = photoDescription,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(0.dp)
-        )
-
-
-        OutlinedTextField(
-            value ="${TextUtils.capitaliseFirstLetter(photo.caption ?: "")}" ,
-            textStyle = TextStyle(
-                color = Color.White,
-
-            ),
-            onValueChange = {
-                println("change caption")
-                onPhotoChanged.invoke(it, index)
-            },
-            placeholder = { Text(text = "Enter caption", color = Color.White) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomStart)
-                .background(Color.Black.copy(alpha = 0.5f)),
-        )
-        }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AddPhotoItem(
-    modifier: Modifier = Modifier,
-    onAddPhotoClicked: () -> Unit //ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>
-){
-
-    Box(
-        modifier = Modifier
-            .padding(4.dp)
-            .width(160.dp)
-            .height(160.dp)
-            .clip(MaterialTheme.shapes.extraSmall)
-            .clickable {
-                println("adding a photo")
-                /*onAddPhotoClicked.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                )*/
-
-                onAddPhotoClicked.invoke()
-            }
-            //.border(width = 2.dp, color = Color.LightGray)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.add_image_48),
-            contentDescription = "click to add photos",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(0.dp)
-        )
-        //Text(text = "Add photos", Modifier.fillMaxWidth().align(Alignment.BottomStart), textAlign = TextAlign.Center)
-
-    }
-}
-@Composable
-private fun EmptyPhotoList(){
-    Box(
-        modifier = Modifier
-            .padding(4.dp)
-            .fillMaxWidth()
-            .height(120.dp)
-            .clip(MaterialTheme.shapes.extraSmall)
-            .background(MaterialTheme.colorScheme.secondary)
-    ){
-        Column() {
-            Image(
-                painter = painterResource(id = R.drawable.missing_image),
-                contentDescription = "No Image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .padding(4.dp)
-            )
-            Text(
-                text = "There are no Images for this Property",
-                color = Color.White,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-@Composable
-private fun HouseDetails(
-    //state: DetailSate,
-    modifier: Modifier = Modifier,
-    onAreaChanged: (String?) -> Unit,
-    onRoomsChanged: (String?) -> Unit,
-    onBedroomsChanged: (String?) -> Unit,
-    onBathroomsChanged: (String?) -> Unit,
-    state: AddEditState,
-    isLargeView:Boolean
-){
-
-    if(isLargeView){
-        Column(
-        ) {
-            HouseDetailCard(
-                painter = painterResource(id = R.drawable.area_image),
-                title = "surface in m²",
-                modifier = modifier,
-                onValueChanged = onAreaChanged,
-                value = state.rooms
-            )
-            HouseDetailCard(
-                painter = painterResource(id = R.drawable.number_rooms_image),
-                title = "No. rooms",
-                modifier = modifier,
-                onValueChanged = onRoomsChanged,
-                value = state.rooms
-            )
-            HouseDetailCard(
-                painter = painterResource(id = R.drawable.number_bathrooms_image),
-                title = "No. bathrooms",
-                modifier = modifier,
-                onValueChanged = onBathroomsChanged,
-                value = state.bathrooms
-            )
-            HouseDetailCard(
-                painter = painterResource(id = R.drawable.number_bedrooms_image),
-                title = "No. bedrooms",
-                modifier = modifier,
-                onValueChanged = onBedroomsChanged,
-                value = state.bedrooms
-            )
-        }
-    }
-    else{
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            var modifier = modifier
-                .weight(1f)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-
-                HouseDetailCard(
-                    painter = painterResource(id = R.drawable.area_image),
-                    title = "surface in m²",
-                    modifier = modifier,
-                    onValueChanged = onAreaChanged,
-                    value = state.area
-
-                )
-                HouseDetailCard(
-                    painter = painterResource(id = R.drawable.number_bathrooms_image),
-                    title = "No. bathrooms",
-                    modifier = modifier,
-                    onValueChanged = onBathroomsChanged,
-                    value = state.bathrooms
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                HouseDetailCard(
-                    painter = painterResource(id = R.drawable.number_rooms_image),
-                    title = "No. rooms",
-                    modifier = modifier,
-                    onValueChanged = onRoomsChanged,
-                    value = state.rooms
-                )
-                HouseDetailCard(
-                    painter = painterResource(id = R.drawable.number_bedrooms_image),
-                    title = "No. bedrooms",
-                    modifier = modifier,
-                    onValueChanged = onBedroomsChanged,
-                    value = state.bedrooms
-                )
-            }
-        }
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun HouseDetailCard(
-    painter: Painter,
-    title:String,
-    modifier: Modifier,
-    onValueChanged: (String?) -> Unit,
-    value: Int?,
-){
-    Box(
-        modifier = modifier.padding(top = 8.dp),
-    ) {
-        Row {
-            Image(painter = painter, contentDescription = title, modifier = Modifier.padding(top=14.dp))
-            Column(modifier = Modifier.padding(horizontal = 4.dp)) {
-                OutlinedTextField(
-                    value = ("${ value ?: "" }"),
-                    onValueChange = {
-                        onValueChanged.invoke(it)
-                    },
-                    placeholder = { Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    isError = value == null,
-                )
-            }
-
-        }
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AddressDetail(
-    state: AddEditState,
-    isLargeView:Boolean,
-    onCheckAddressClicked:() -> Unit,
-    onNumberChanged: (String?) -> Unit,
-    onStreetChanged: (String) -> Unit,
-    onExtraChanged: (String) -> Unit,
-    onCityChanged: (String) -> Unit,
-    onStateChanged: (String) -> Unit,
-    onCountryChanged: (String) -> Unit,
-    onPostCodeChanged: (String) -> Unit,
-
-){
-    //var isAddressValidated by remember{ mutableStateOf(false) }
-    Row(
-        modifier = Modifier
-            .padding(top = 8.dp, start = 8.dp, end = 8.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-    ) {
-
-        Column(modifier = Modifier.weight(1f)) {
-            Column() {
-                OutlinedTextField(
-                    value = ("${ state.number ?: "" }"),
-                    onValueChange = {
-                        onNumberChanged.invoke(it)
-                    },
-                    placeholder = { Text(text = "number") },
-                    modifier = Modifier.padding(4.dp)
-                )
-                OutlinedTextField(
-                    value = state.extra ?: "",
-                    onValueChange = {
-                        onExtraChanged.invoke(it)
-                    },
-                    placeholder = { Text(text = "extra") },
-                    modifier = Modifier.padding(4.dp)
-                )
-                OutlinedTextField(
-                    value = state.state ?: "",
-                    onValueChange = {
-                        onStateChanged.invoke(it)
-                    },
-                    //label = { Text(text = "type") },
-                    placeholder = { Text(text = "state") },
-                    modifier = Modifier.padding(4.dp)
-                )
-                OutlinedTextField(
-                    value = state.postalCode ?: "",
-                    onValueChange = {
-                        onPostCodeChanged.invoke(it)
-                    },
-                    //label = { Text(text = "type") },
-                    placeholder = { Text(text = "post code") },
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            OutlinedTextField(
-                value = state.street ?: "",
-                onValueChange = {
-                    onStreetChanged.invoke(it)
-                },
-                //label = { Text(text = "type") },
-                placeholder = { Text(text = "street") },
-                modifier = Modifier.padding(4.dp)
-            )
-            OutlinedTextField(
-                value = state.city ?: "",
-                onValueChange = {
-                    onCityChanged.invoke(it)
-                },
-                //label = { Text(text = "type") },
-                placeholder = { Text(text = "city") },
-                modifier = Modifier.padding(4.dp)
-            )
-            OutlinedTextField(
-                value = state.country ?: "",
-                onValueChange = {
-                    onCountryChanged.invoke(it)
-                },
-                //label = { Text(text = "type") },
-                placeholder = { Text(text = "country") },
-                modifier = Modifier.padding(4.dp)
-            )
-        }
-    }
-    Button(onClick = { onCheckAddressClicked.invoke() }, modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp)) {
-        Text(text = "Check address")
-
-    }
-}
-@Composable
-private fun AddressMapImage(
-    isLargeView:Boolean,
-    isAddressValidated: Boolean,
-    mapImageLink:String,
-    onIsAddressValidChanged: () -> Unit,
-){
-    if(mapImageLink.isNotEmpty()){
-        Box(
-            modifier = if (isLargeView) Modifier
-                .height(380.dp)
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .fillMaxWidth()
-                .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary)
-            else Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .border(width = 2.dp, color = MaterialTheme.colorScheme.secondary),
-        ){
-            AsyncImage(
-                model = Uri.parse(mapImageLink),
-                contentDescription = "map view",
-                modifier = if (isLargeView) Modifier
-                    .height(380.dp)
-                else Modifier
-                    .fillMaxWidth(),
-                contentScale = if (isLargeView) ContentScale.FillHeight else ContentScale.FillWidth,
-            )
-            Row(
-                modifier = Modifier
-                    .height(54.dp)
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(text = "Click to validate Address", fontStyle = FontStyle.Italic)
-                IconToggleButton(
-                    checked = isAddressValidated,
-                    onCheckedChange = { onIsAddressValidChanged.invoke()},
-                    modifier = Modifier
-                        .size(48.dp)
-                        .padding(horizontal = 4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "Radio button icon",
-                        tint = if (isAddressValidated) Color.Green else Color.LightGray,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-        }
-    }
-}
-@Composable
-private fun NearbyAmenities(
-    isLargeView:Boolean,
-    isPortrait: Boolean = false,
-    addEditState: AddEditState,
-    onNearbyPlaceChanged: (NearbyPlacesType) -> Unit,
-){
-    val numberOfColumns = if (!isPortrait) 5 else 2
-    LazyVerticalGrid(
-        modifier = Modifier
-            .heightIn(min = 50.dp, max = 250.dp)
-            .padding(8.dp),
-        columns = GridCells.Fixed(numberOfColumns),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        items(NearbyPlacesType.values()){ nearbyType ->
-            NearbyCheckBox(nearbyPlacesType = nearbyType, addEditState = addEditState, onNearbyPlaceChanged = onNearbyPlaceChanged)
-        }
-    }
-}
-@Composable
-private fun NearbyCheckBox(
-    nearbyPlacesType: NearbyPlacesType,
-    addEditState: AddEditState,
-    onNearbyPlaceChanged: (NearbyPlacesType) -> Unit,
-){
-    val isTicked = if (addEditState.nearbyPlaces != null) addEditState.nearbyPlaces.contains(nearbyPlacesType) else false
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Checkbox(
-            checked = isTicked,
-            onCheckedChange = {
-                onNearbyPlaceChanged.invoke(nearbyPlacesType)
-            }
-        )
-        Text(text = TextUtils.capitaliseFirstLetter(nearbyPlacesType.displayText))
     }
 }
 fun Context.createImageFile(): File {

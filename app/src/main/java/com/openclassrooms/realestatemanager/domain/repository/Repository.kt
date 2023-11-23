@@ -21,7 +21,6 @@ interface Repository {
     fun getPropertyPhotos(propertyId: Long):Flow<List<PropertyPhotos>>
     fun getPropertyAddress(addressId: Long):Flow<Address>
     fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>
-    suspend fun getCurrentLocation():Result<Location>
     fun getFilteredProperties(
         propertyType: PropertyType?=null,
         minPrice: Double?=null,

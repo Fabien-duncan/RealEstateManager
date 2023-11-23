@@ -88,23 +88,6 @@ class PropertyRepositoryImpl @Inject constructor(
         return propertyDao.getPropertyNearbyPlaces(propertyId)
     }
 
-    @SuppressLint("MissingPermission")
-    override suspend fun getCurrentLocation(): Result<Location> {
-        println("getting location")
-        return try {
-            println("before fused Location")
-            val locationResult = fusedLocationClient.lastLocation.await()
-            println("After fused Location, location result: ${locationResult == null}")
-            locationResult?.let {
-                println("location was retrieve, location: $it")
-                Result.success(it)
-            } ?: Result.failure(Exception("Location not available"))
-        } catch (e: Exception) {
-            println("failed to retrieve Location")
-            Result.failure(e)
-        }
-    }
-
     override fun getFilteredProperties(
         propertyType: PropertyType?,
         minPrice: Double?,
@@ -138,13 +121,4 @@ class PropertyRepositoryImpl @Inject constructor(
             nearbyPlaceTypes = nearbyPlaceTypes
         )
     }
-    private suspend fun Task<Location>.await(): Location = suspendCoroutine { continuation ->
-        addOnSuccessListener { location ->
-            continuation.resume(location)
-        }
-        addOnFailureListener { exception ->
-            continuation.resumeWithException(exception)
-        }
-    }
-
 }
