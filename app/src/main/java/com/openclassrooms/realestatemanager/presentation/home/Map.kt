@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.location.Location
 import android.net.Uri
 import android.util.Log
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,11 +56,14 @@ import coil.compose.rememberAsyncImagePainter
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindow
@@ -71,6 +77,7 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MapView(
     state:HomeState,
@@ -78,42 +85,53 @@ fun MapView(
     onItemClicked:(Int) -> Unit,
     viewModel: HomeViewModel
 ){
-    val context = LocalContext.current
-    val permissionHelper = remember { PermissionHelper(context) }
+    val locationPermissions = rememberMultiplePermissionsState(
+        permissions = listOf(
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    )
 
-    // Check and request a permission
-    val isPermissionGranted by remember { mutableStateOf(permissionHelper.isPermissionGranted(android.Manifest.permission.ACCESS_FINE_LOCATION)) }
-
-    if (!isPermissionGranted) {
-        println("permission not granted")
-        LaunchedEffect(key1 = permissionHelper) {
-            val result = permissionHelper.requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
-            if (!result) {
-                println("you have not given permission")
-            }
-            else{
-                println("you have given permission")
-            }
+    LaunchedEffect(key1 = locationPermissions.allPermissionsGranted) {
+        if (locationPermissions.allPermissionsGranted) {
+            viewModel.getCurrentLocation()
         }
-    }else{
-        println("permission Granted")
-    }
-    val location by remember {
-        mutableStateOf(viewModel.getCurrentLocation())
     }
 
-    if (location.isCompleted){
-        Log.d("Map", "Location is: $location")
-        MapWithProperties(state = state, modifier = modifier, onItemClicked = onItemClicked)
-    }else{
-        Log.d("Map", "Location not found!")
+    AnimatedContent(
+        targetState = locationPermissions.allPermissionsGranted, label = "Permissions"
+    ) { areGranted ->
+
+        if (areGranted) {
+            val currentLocation = viewModel.currentLocation
+            if (currentLocation != null ){
+                MapWithProperties(state = state, modifier = modifier, onItemClicked = onItemClicked, currentLatLng = LatLng(currentLocation.latitude, currentLocation.longitude))
+            }
+
+        } else {
+            Column(
+                modifier = modifier,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ){
+                Text(text = "We need location permissions for this application.")
+                Button(
+                    onClick = { locationPermissions.launchMultiplePermissionRequest() }
+                ) {
+                    Text(text = "Accept")
+                }
+            }
+
+        }
     }
+
 }
 @Composable
 fun MapWithProperties(
     state:HomeState,
     modifier: Modifier,
-    onItemClicked:(Int) -> Unit
+    onItemClicked:(Int) -> Unit,
+    currentLatLng: LatLng
 ){
     val properties:List<PropertyModel>
     when(state.properties){
@@ -122,17 +140,17 @@ fun MapWithProperties(
         is ScreenViewState.Success -> properties = state.properties.data
     }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(43.63079663665069, 6.66194472598945), 18f)
+       position = CameraPosition.fromLatLngZoom(currentLatLng, 18f)
     }
 
+    //println("current Location is : $currentLatLng")
     GoogleMap(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         cameraPositionState = cameraPositionState,
-        uiSettings = MapUiSettings(zoomControlsEnabled = false)
+        uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = true),
+        properties = MapProperties(isMyLocationEnabled = true)
     ) {
-
-        Marker(state = MarkerState(position = LatLng(43.63079663665069, 6.66194472598945)))
 
         properties.forEachIndexed{ index, property ->
             val lat = property.address.latitude
@@ -140,9 +158,9 @@ fun MapWithProperties(
             if (lat != null && lng != null){
                 val location = LatLng(lat, lng)
                 val image = if (!property.photos.isNullOrEmpty()) Uri.parse(property.photos[0].photoPath) else null
-                println("image url: $image")
+                //println("image url: $image")
                 val request = ImageRequest.Builder(LocalContext.current).data(image).allowHardware(false).build()
-                println("image request: ${request.data.toString()}")
+                //println("image request: ${request.data.toString()}")
                 HouseMarkers(location = location, property = property, request = request, hasImage = image != null){
                     onItemClicked.invoke(index)
                 }
@@ -160,19 +178,6 @@ fun HouseMarkers(
     onItemClicked: () -> Unit
 
 ){
-   /* val imageState = remember{ mutableStateOf<BitmapDescriptor?>(null) }
-
-    val context = LocalContext.current
-
-    LaunchedEffect(key1 = Unit, block = {
-        imageState.value = loadBitmapDescriptorFromUrl(context, "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
-    })*/
-
-    /*val image = if (!property.photos.isNullOrEmpty()) Uri.parse(property.photos[0].photoPath) else null
-    println("image url: $image")
-    val request = ImageRequest.Builder(LocalContext.current).data(image).allowHardware(false).build()
-    println("image request: ${request.data.toString()}")*/
-
     MarkerInfoWindow(
         state = MarkerState(position = location),
         icon = bitmapDescriptorFromVector(LocalContext.current, R.drawable.property_map_img),

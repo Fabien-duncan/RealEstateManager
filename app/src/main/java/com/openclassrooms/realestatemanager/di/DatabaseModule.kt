@@ -1,11 +1,14 @@
 package com.openclassrooms.realestatemanager.di
 
+import android.app.Application
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.openclassrooms.realestatemanager.data.api.GeocodingApiService
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
+import com.openclassrooms.realestatemanager.data.location.DefaultLocationTracker
+import com.openclassrooms.realestatemanager.domain.location.LocationTracker
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
 import dagger.Module
 import dagger.Provides
@@ -53,4 +56,13 @@ object DatabaseModule {
         return LocationServices.getFusedLocationProviderClient(context)
     }
 
+    @Provides
+    @Singleton
+    fun providesLocationTracker(
+        fusedLocationProviderClient: FusedLocationProviderClient,
+        application: Application
+    ): LocationTracker = DefaultLocationTracker(
+        fusedLocationProviderClient = fusedLocationProviderClient,
+        application = application
+    )
 }

@@ -1,10 +1,11 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
+import com.openclassrooms.realestatemanager.domain.location.LocationTracker
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import javax.inject.Inject
 
 class GetCurrentLocationUseCase@Inject constructor(
-    private val repository: Repository
+    private val locationTracker: LocationTracker
 ) {
-    suspend operator fun invoke() = repository.getCurrentLocation()
+    suspend operator fun invoke() = locationTracker.getCurrentLocation()
 }
