@@ -1,41 +1,29 @@
 package com.openclassrooms.realestatemanager.presentation.create_edit
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -46,7 +34,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -61,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -74,14 +60,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.window.Popup
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
-import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import java.io.File
 import java.text.SimpleDateFormat
@@ -119,17 +100,99 @@ private fun AddEditView(
 ){
     val state = addEditViewModel.state
     val scrollState = rememberScrollState()
-
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
+    val isAddOrUpdatePropertyFinished by rememberUpdatedState(addEditViewModel.isAddOrUpdatePropertyFinished)
 
-    var isTypePickerExpanded by remember { mutableStateOf(false) }
-    var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
-    var textFieldSize by remember { mutableStateOf(Size.Zero)}
+    Column(
+        modifier = modifier
+            .padding(bottom = 0.dp)
+            .fillMaxHeight()
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.SpaceBetween,
+    ) {
+        PriceAndAgentSection(addEditViewModel = addEditViewModel)
 
-    var isImageSelectChoiceVisible by remember { mutableStateOf(false) }
+        MediaSection(addEditViewModel = addEditViewModel)
+
+        DescriptionTypePickerSection(addEditViewModel = addEditViewModel)
+
+        AddressSection(addEditViewModel = addEditViewModel, isPortrait = isPortrait)
+
+        NearbyAmenities(
+            isLargeView = isLargeView,
+            isPortrait = isPortrait,
+            addEditState = state,
+            onNearbyPlaceChanged = {
+                addEditViewModel.onNearbyPlacesChanged(it)
+            }
+        )
+
+        SoldDate(addEditViewModel = addEditViewModel)
+
+        ValidationAndSaveButton(addEditViewModel = addEditViewModel, propertyId = propertyId)
+
+        LaunchedEffect(isAddOrUpdatePropertyFinished) {
+            if (isAddOrUpdatePropertyFinished) {
+                println("Creating Property")
+                addEditViewModel.resetFinishedState()
+
+                if (state.id !=null)onCreatedClicked.invoke(state.id)
+                else onCreatedClicked.invoke(-1L)
+
+
+            }
+        }
+    }
+}
+@Composable
+fun PriceAndAgentSection(addEditViewModel: AddEditViewModel) {
+    val state = addEditViewModel.state
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+    ){
+        OutlinedTextField(
+            value = "${ state.price ?: "" }",
+            onValueChange = {
+                addEditViewModel.onPriceChange(it)
+            },
+            placeholder = { Text(text = "price in $") },
+            modifier = Modifier
+                .padding(8.dp)
+                .weight(1f),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            leadingIcon = {
+                Image(
+                    painter = painterResource(id = R.drawable.dollar_image),
+                    contentDescription = "dollar"
+                )
+            }
+        )
+        OutlinedTextField(
+            value = state.agentName ?: "",
+            onValueChange = {
+                addEditViewModel.onAgentNameChange(it)
+            },
+            placeholder = { Text(text = "Agent Name") },
+            modifier = Modifier
+                .padding(8.dp)
+                .weight(1f),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            leadingIcon = {
+                Image(
+                    painter = painterResource(id = R.drawable.agent_24),
+                    contentDescription = "Agent"
+                )
+            }
+        )
+    }
+}
+@Composable
+fun MediaSection(addEditViewModel: AddEditViewModel) {
+    val state = addEditViewModel.state
     val context = LocalContext.current
+    var isImageSelectChoiceVisible by remember { mutableStateOf(false) }
     val photosPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = {uris ->
@@ -142,7 +205,6 @@ private fun AddEditView(
         context.packageName + ".provider",
         tempFile
     )
-
     val takePicture = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
     ){
@@ -154,7 +216,6 @@ private fun AddEditView(
             println("failed to get uri")
         }
     }
-
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -168,369 +229,310 @@ private fun AddEditView(
         }
     }
 
-    val dateFormat = SimpleDateFormat("dd/MM/yy")
-    var openDialog = remember { mutableStateOf(false) }
+    Text(
+        text = "Media",
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.DarkGray,
+        modifier = Modifier.padding(8.dp)
+    )
 
-    val isAddOrUpdatePropertyFinished by rememberUpdatedState(addEditViewModel.isAddOrUpdatePropertyFinished)
 
+    val addEditProperties = PropertyPhotosModel(id = -1L, photoPath = "", caption = "")//used for creating the button to add add properties
+    //combines the list of properties with the add property button
+    val photosWithAddButton = if(!state.photos.isNullOrEmpty()) {
+        state.photos + addEditProperties
+    }else{
+        mutableListOf(addEditProperties)
+    }
+    LazyRow(modifier = Modifier.padding(4.dp)) {
+        itemsIndexed(photosWithAddButton) { index, photo ->
+            if (photo.id != -1L){
+                PhotoItem(photo = photo, onPhotoChanged = addEditViewModel::onPhotoCaptionChanged, index = index )
+            }
+            else{
+                AddPhotoItem(onAddPhotoClicked = { isImageSelectChoiceVisible = true })
+                if (isImageSelectChoiceVisible) {
+                    PhotoSelectPopup(
+                        changeIsImageSelectedChoice = { isImageSelectChoiceVisible = false },
+                        onAddPhotoClicked = photosPicker,
+                        context = context,
+                        uri = uri,
+                        takePicture = takePicture,
+                        permissionLauncher = permissionLauncher
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DescriptionTypePickerSection(addEditViewModel: AddEditViewModel) {
+    var state = addEditViewModel.state
+    var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
+    var textFieldSize by remember { mutableStateOf(Size.Zero)}
+    var isTypePickerExpanded by remember { mutableStateOf(false) }
     val icon = if (isTypePickerExpanded)
         Icons.Filled.KeyboardArrowUp
     else
         Icons.Filled.KeyboardArrowDown
+
+    Text(
+        text = "Description",
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.DarkGray,
+        modifier = Modifier
+            .padding(8.dp)
+    )
     Column(
-        modifier = modifier
-            .padding(bottom = 0.dp)
-            .fillMaxHeight()
-            .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
     ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-        ){
-            OutlinedTextField(
-                value = "${ state.price ?: "" }",
-                onValueChange = {
-                    addEditViewModel.onPriceChange(it)
+        OutlinedTextField(
+            value = onTypeSelected.name,
+            onValueChange = {},
+            readOnly = true,
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    textFieldSize = coordinates.size.toSize()
                 },
-                placeholder = { Text(text = "price in $") },
-                modifier = Modifier
-                    .padding(8.dp)
-                    .weight(1f),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                leadingIcon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.dollar_image),
-                        contentDescription = "dollar"
-                    )
-                }
-            )
-            OutlinedTextField(
-                value = state.agentName ?: "",
-                onValueChange = {
-                    addEditViewModel.onAgentNameChange(it)
-                },
-                placeholder = { Text(text = "Agent Name") },
-                modifier = Modifier
-                    .padding(8.dp)
-                    .weight(1f),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                leadingIcon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.agent_24),
-                        contentDescription = "Agent"
-                    )
-                }
-            )
-        }
-
-
-        Text(
-            text = "Media",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.DarkGray,
-            modifier = Modifier.padding(8.dp)
+            trailingIcon = {
+                Icon(
+                    icon, "selection arrow",
+                    Modifier.clickable { isTypePickerExpanded = !isTypePickerExpanded },
+                )
+            }
         )
+        DropdownMenu(
+            expanded = isTypePickerExpanded,
+            onDismissRequest = { isTypePickerExpanded = false },
+            modifier = Modifier
+                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+                /*.border(border = BorderStroke(width = 1.dp, color = Color.DarkGray))*/
+                .background(Color.LightGray)
+        ) {
+            PropertyType.values().forEach { type ->
+                DropdownMenuItem(
+                    onClick = {
+                        onTypeSelected = type
+                        isTypePickerExpanded = false
+                        addEditViewModel.onTypeChange(type)
+                    },
+                    text = {Text(text = type.name)}
 
-
-        val addEditProperties = PropertyPhotosModel(id = -1L, photoPath = "", caption = "")//used for creating the button to add add properties
-        //combines the list of properties with the add property button
-        val photosWithAddButton = if(!state.photos.isNullOrEmpty()) {
-            state.photos + addEditProperties
-        }else{
-            mutableListOf(addEditProperties)
-        }
-        LazyRow(modifier = Modifier.padding(4.dp)) {
-            itemsIndexed(photosWithAddButton) { index, photo ->
-                if (photo.id != -1L){
-                    PhotoItem(photo = photo, onPhotoChanged = addEditViewModel::onPhotoCaptionChanged, index = index )
-                }
-                else{
-                    AddPhotoItem(onAddPhotoClicked = { isImageSelectChoiceVisible = true })
-                    if (isImageSelectChoiceVisible) {
-                        PhotoSelectPopup(
-                            changeIsImageSelectedChoice = { isImageSelectChoiceVisible = false },
-                            onAddPhotoClicked = photosPicker,
-                            context = context,
-                            uri = uri,
-                            takePicture = takePicture,
-                            permissionLauncher = permissionLauncher
-                        )
-                    }
-                }
+                )
             }
         }
+    }
 
-        Text(
-            text = "Description",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.DarkGray,
-            modifier = Modifier
-                .padding(8.dp)
-        )
-        Column(
+    OutlinedTextField(
+        value = state.description ?: "",
+        onValueChange = {
+            addEditViewModel.onDescriptionChange(it)
+        },
+        placeholder = { Text(text = "Enter the description") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    )
+}
+
+@Composable
+fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
+    val state = addEditViewModel.state
+    if (!isPortrait){
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+            Column(modifier = Modifier.weight(0.5f)){
+                BaseDetails(
+                    //state = state,
+                    modifier = Modifier
+                        .padding(8.dp),
+                    isLargeView = true,
+                    onAreaChanged = addEditViewModel::onAreaChange,
+                    onBathroomsChanged = addEditViewModel::onBathroomsChange,
+                    onBedroomsChanged = addEditViewModel::onBedroomsChange,
+                    onRoomsChanged = addEditViewModel::onRoomsChange,
+                    state = state
+                )
+            }
+
+            Column(modifier = Modifier
+                .weight(1f)
+                .height(380.dp)
+                .border(width = 1.dp, color = Color.Gray)){
+                Text(
+                    text = "Address",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+                Divider(
+                    color = Color.Gray,
+                    thickness = 1.dp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                AddressDetail(
+                    //address = it.address,
+                    isLargeView = true,
+                    onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
+                    onNumberChanged = addEditViewModel::onNumberChange,
+                    onStreetChanged = addEditViewModel::onStreetChange,
+                    onExtraChanged = addEditViewModel::onExtraChange,
+                    onCityChanged = addEditViewModel::onCityChange,
+                    onStateChanged = addEditViewModel::onStateChange,
+                    onCountryChanged = addEditViewModel::onCountryChange,
+                    onPostCodeChanged = addEditViewModel::onPostalCodeChange,
+                    state = state
+                )
+            }
+            Column(modifier = Modifier.weight(0.8f)) {
+                AddressMapImage(
+                    isLargeView = true,
+                    isAddressValidated = addEditViewModel.isAddressValid,
+                    mapImageLink = addEditViewModel.mapImageLink,
+                    onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged
+                )
+            }
+        }
+    }
+    else{
+        BaseDetails(
+            //state = state,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-        ) {
-            OutlinedTextField(
-                value = onTypeSelected.name,
-                onValueChange = {},
-                readOnly = true,
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onGloballyPositioned { coordinates ->
-                        textFieldSize = coordinates.size.toSize()
-                    },
-                trailingIcon = {
-                    Icon(
-                        icon, "selection arrow",
-                        Modifier.clickable { isTypePickerExpanded = !isTypePickerExpanded },
-                    )
-                }
-            )
-            DropdownMenu(
-                expanded = isTypePickerExpanded,
-                onDismissRequest = { isTypePickerExpanded = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-                    /*.border(border = BorderStroke(width = 1.dp, color = Color.DarkGray))*/
-                    .background(Color.LightGray)
-            ) {
-                PropertyType.values().forEach { type ->
-                    DropdownMenuItem(
-                        onClick = {
-                            onTypeSelected = type
-                            isTypePickerExpanded = false
-                            addEditViewModel.onTypeChange(type)
-                        },
-                        text = {Text(text = type.name)}
-
-                    )
-                }
-            }
-        }
-
-        OutlinedTextField(
-            value = state.description ?: "",
-            onValueChange = {
-                addEditViewModel.onDescriptionChange(it)
-            },
-            placeholder = { Text(text = "Enter the description") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            isLargeView = false,
+            onAreaChanged = addEditViewModel::onAreaChange,
+            onBathroomsChanged = addEditViewModel::onBathroomsChange,
+            onBedroomsChanged = addEditViewModel::onBedroomsChange,
+            onRoomsChanged = addEditViewModel::onRoomsChange,
+            state = state
         )
 
-        if (!isPortrait){
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
-                Column(modifier = Modifier.weight(0.5f)){
-                    BaseDetails(
-                        //state = state,
-                        modifier = Modifier
-                            .padding(8.dp),
-                        isLargeView = true,
-                        onAreaChanged = addEditViewModel::onAreaChange,
-                        onBathroomsChanged = addEditViewModel::onBathroomsChange,
-                        onBedroomsChanged = addEditViewModel::onBedroomsChange,
-                        onRoomsChanged = addEditViewModel::onRoomsChange,
-                        state = state
-                    )
-                }
-
-                Column(modifier = Modifier
-                    .weight(1f)
-                    .height(380.dp)
-                    .border(width = 1.dp, color = Color.Gray)){
-                    Text(
-                        text = "Address",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.DarkGray,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                    Divider(
-                        color = Color.Gray,
-                        thickness = 1.dp,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    AddressDetail(
-                        //address = it.address,
-                        isLargeView = true,
-                        onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
-                        onNumberChanged = addEditViewModel::onNumberChange,
-                        onStreetChanged = addEditViewModel::onStreetChange,
-                        onExtraChanged = addEditViewModel::onExtraChange,
-                        onCityChanged = addEditViewModel::onCityChange,
-                        onStateChanged = addEditViewModel::onStateChange,
-                        onCountryChanged = addEditViewModel::onCountryChange,
-                        onPostCodeChanged = addEditViewModel::onPostalCodeChange,
-                        state = state
-                    )
-                }
-                Column(modifier = Modifier.weight(0.8f)) {
-                    AddressMapImage(
-                        isLargeView = true,
-                        isAddressValidated = addEditViewModel.isAddressValid,
-                        mapImageLink = addEditViewModel.mapImageLink,
-                        onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged
-                    )
-                }
-            }
-        }
-        else{
-            BaseDetails(
-                //state = state,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                isLargeView = false,
-                onAreaChanged = addEditViewModel::onAreaChange,
-                onBathroomsChanged = addEditViewModel::onBathroomsChange,
-                onBedroomsChanged = addEditViewModel::onBedroomsChange,
-                onRoomsChanged = addEditViewModel::onRoomsChange,
-                state = state
-            )
-
-            Text(
-                text = "Address",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.DarkGray,
-                modifier = Modifier.padding(8.dp)
-            )
-
-            AddressDetail(
-                //address = it.address,
-                isLargeView = false,
-                onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
-                onNumberChanged = addEditViewModel::onNumberChange,
-                onStreetChanged = addEditViewModel::onStreetChange,
-                onExtraChanged = addEditViewModel::onExtraChange,
-                onCityChanged = addEditViewModel::onCityChange,
-                onStateChanged = addEditViewModel::onStateChange,
-                onCountryChanged = addEditViewModel::onCountryChange,
-                onPostCodeChanged = addEditViewModel::onPostalCodeChange,
-                state = state
-            )
-            AddressMapImage(
-                isLargeView = false,
-                isAddressValidated = addEditViewModel.isAddressValid,
-                mapImageLink = addEditViewModel.mapImageLink,
-                onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged
-            )
-        }
-
         Text(
-            text = "Nearby Amenities",
+            text = "Address",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
-        NearbyAmenities(
-            isLargeView = isLargeView,
-            isPortrait = isPortrait,
-            addEditState = state,
-            onNearbyPlaceChanged = {
-                addEditViewModel.onNearbyPlacesChanged(it)
-            }
+
+        AddressDetail(
+            //address = it.address,
+            isLargeView = false,
+            onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
+            onNumberChanged = addEditViewModel::onNumberChange,
+            onStreetChanged = addEditViewModel::onStreetChange,
+            onExtraChanged = addEditViewModel::onExtraChange,
+            onCityChanged = addEditViewModel::onCityChange,
+            onStateChanged = addEditViewModel::onStateChange,
+            onCountryChanged = addEditViewModel::onCountryChange,
+            onPostCodeChanged = addEditViewModel::onPostalCodeChange,
+            state = state
         )
-        if(state.id > 0){
-            Divider(
-                color = Color.Gray,
-                thickness = 1.dp,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = state.isSold,
-                        onCheckedChange = {
-                            addEditViewModel.onIsSoldChange()
-                        }
-                    )
-                    Text(text = "Property is sold")
-                }
-                if (state.isSold){
-
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "date",
-                        modifier = Modifier.padding(start = 12.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp)
-                            .padding(8.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = MaterialTheme.shapes.extraSmall
-                            )
-                            .clickable {
-                                openDialog.value = true
-                            },
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            fontStyle = FontStyle.Normal,
-                            text = if(state.soldDate != null )dateFormat.format(state.soldDate) else "Select date",
-                            modifier = Modifier
-                                .padding(start = 12.dp)
-
-                        )
+        AddressMapImage(
+            isLargeView = false,
+            isAddressValidated = addEditViewModel.isAddressValid,
+            mapImageLink = addEditViewModel.mapImageLink,
+            onIsAddressValidChanged = addEditViewModel::onIsAddressValidChanged
+        )
+    }
+}
+@Composable
+fun SoldDate(addEditViewModel: AddEditViewModel) {
+    val state = addEditViewModel.state
+    val dateFormat = SimpleDateFormat("dd/MM/yy")
+    var openDialog = remember { mutableStateOf(false) }
+    if(state.id > 0){
+        Divider(
+            color = Color.Gray,
+            thickness = 1.dp,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = state.isSold,
+                    onCheckedChange = {
+                        addEditViewModel.onIsSoldChange()
                     }
-                    DatePicker(
-                        openDialog = openDialog,
-                        onSoldDateChanged = addEditViewModel::onSoldDateChange,
+                )
+                Text(text = "Property is sold")
+            }
+            if (state.isSold){
+
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "date",
+                    modifier = Modifier.padding(start = 12.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .padding(8.dp)
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = MaterialTheme.shapes.extraSmall
+                        )
+                        .clickable {
+                            openDialog.value = true
+                        },
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        fontStyle = FontStyle.Normal,
+                        text = if(state.soldDate != null )dateFormat.format(state.soldDate) else "Select date",
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+
                     )
                 }
-            }
-        }
-        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
-            if (!addEditViewModel.isFormValid){
-                Text(
-                    text = "${if(propertyId > 0) "Nothing has been modified or you" else "you"} need to fill in all the required fields",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.error,
-                    fontStyle = FontStyle.Italic,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .weight(1f),
+                DatePicker(
+                    openDialog = openDialog,
+                    onSoldDateChanged = addEditViewModel::onSoldDateChange,
                 )
             }
-            Button(
-                onClick = {
-                    addEditViewModel.addOrUpdateProperty()
-                },
-                modifier = Modifier
-                    .padding(8.dp),
-                enabled = addEditViewModel.isFormValid
-            ) {
-                Text(text = if (propertyId > 0) "Save Changes" else "Create")
-            }
         }
-        LaunchedEffect(isAddOrUpdatePropertyFinished) {
-            if (isAddOrUpdatePropertyFinished) {
-                println("Creating Property")
-                addEditViewModel.resetFinishedState()
+    }
+}
 
-                if (state.id !=null)onCreatedClicked.invoke(state.id)
-                else onCreatedClicked.invoke(-1L)
-
-
-            }
+@Composable
+fun ValidationAndSaveButton(addEditViewModel: AddEditViewModel, propertyId: Long) {
+    Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
+        if (!addEditViewModel.isFormValid){
+            Text(
+                text = "${if(propertyId > 0) "Nothing has been modified or you" else "you"} need to fill in all the required fields",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.error,
+                fontStyle = FontStyle.Italic,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(1f),
+            )
+        }
+        Button(
+            onClick = {
+                addEditViewModel.addOrUpdateProperty()
+            },
+            modifier = Modifier
+                .padding(8.dp),
+            enabled = addEditViewModel.isFormValid
+        ) {
+            Text(text = if (propertyId > 0) "Save Changes" else "Create")
         }
     }
 }

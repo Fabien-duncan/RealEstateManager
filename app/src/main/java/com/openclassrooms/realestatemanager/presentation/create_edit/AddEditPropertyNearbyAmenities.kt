@@ -12,7 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 
@@ -23,6 +26,14 @@ fun NearbyAmenities(
     addEditState: AddEditState,
     onNearbyPlaceChanged: (NearbyPlacesType) -> Unit,
 ){
+    Text(
+        text = "Nearby Amenities",
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.DarkGray,
+        modifier = Modifier.padding(8.dp)
+    )
+
     val numberOfColumns = if (!isPortrait) 5 else 2
     LazyVerticalGrid(
         modifier = Modifier
