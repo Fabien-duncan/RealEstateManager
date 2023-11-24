@@ -2,9 +2,11 @@ package com.openclassrooms.realestatemanager.di
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.openclassrooms.realestatemanager.data.api.GeocodingApiService
+import com.openclassrooms.realestatemanager.data.currency_converter.CurrencyRepositoryImpl
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
 import com.openclassrooms.realestatemanager.data.location.DefaultLocationTracker
@@ -65,4 +67,11 @@ object DatabaseModule {
         fusedLocationProviderClient = fusedLocationProviderClient,
         application = application
     )
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("your_shared_preferences_name", Context.MODE_PRIVATE)
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
 import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditScreen
@@ -57,6 +59,8 @@ fun Navigation(
 ) {
     val homeViewModel: HomeViewModel = viewModel()
     val addEditViewModel: AddEditViewModel = viewModel()
+
+    Log.d("navigation", "currency is: ${homeViewModel.getCurrency()}")
 
     val state by homeViewModel.state.collectAsState()
 

@@ -43,6 +43,7 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -131,8 +132,8 @@ fun MapWithProperties(
         modifier = modifier
             .fillMaxSize(),
         cameraPositionState = cameraPositionState,
-        uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = true),
-        properties = MapProperties(isMyLocationEnabled = true)
+        uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = true, mapToolbarEnabled = true),
+        properties = MapProperties(isMyLocationEnabled = true),
     ) {
 
         properties.forEachIndexed{ index, property ->

@@ -13,9 +13,12 @@ import com.openclassrooms.realestatemanager.domain.location.LocationTracker
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllAvailablePropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
+import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrentLocationUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyAddressUseCase
+import com.openclassrooms.realestatemanager.domain.use_cases.SetCurrencyUseCase
+import com.openclassrooms.realestatemanager.enums.CurrencyType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +36,8 @@ class HomeViewModel @Inject constructor(
     private val getPropertyAddressUseCase: GetPropertyAddressUseCase,
     private val getFilteredPropertiesUseCase: GetFilteredPropertiesUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
+    private val setCurrencyUseCase: SetCurrencyUseCase,
+    private val getCurrencyUseCase: GetCurrencyUseCase
 ):ViewModel(){
     private val _state:MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
     val state:StateFlow<HomeState> = _state.asStateFlow()
@@ -58,6 +63,10 @@ class HomeViewModel @Inject constructor(
             currentLocation = getCurrentLocationUseCase.invoke()
         }
     }
+    fun setCurrency(currencyType: CurrencyType){
+        setCurrencyUseCase.invoke(currencyType)
+    }
+    fun getCurrency() = getCurrencyUseCase.invoke()
 }
 
 data class HomeState(
