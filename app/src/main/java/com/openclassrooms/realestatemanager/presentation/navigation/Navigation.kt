@@ -45,9 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.enums.CurrencyType
@@ -60,7 +58,6 @@ import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeState
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
-import okhttp3.internal.wait
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,8 +68,9 @@ fun Navigation(
 ) {
     val homeViewModel: HomeViewModel = viewModel()
     val addEditViewModel: AddEditViewModel = viewModel()
+    val currencyViewModel: CurrencyViewModel = viewModel()
 
-    Log.d("navigation", "currency is: ${homeViewModel.getCurrency()}")
+    Log.d("navigation", "currency is: ${currencyViewModel.getCurrency()}")
 
     val state by homeViewModel.state.collectAsState()
 
@@ -87,12 +85,16 @@ fun Navigation(
     var isAddOpened by remember { mutableStateOf(false) }
     var isEditOpened by remember { mutableStateOf(false) }
 
+    val currentCurrency = currencyViewModel.currentCurrency
+
     var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened, isAddOpened = isAddOpened || isEditOpened)
 
     Scaffold(
         topBar = {
             TopBar(
                 homeViewModel = homeViewModel,
+                currencyViewModel = currencyViewModel,
+                currencyType = currentCurrency,
                 screenType = homeScreenType,
                 onBackArrowPressed = {
                     isItemOpened = it
@@ -125,7 +127,8 @@ fun Navigation(
                         isItemOpened = true
                     },
                     isLargeScreen = false,
-                    viewModel = homeViewModel
+                    viewModel = homeViewModel,
+                    currencyViewModel = currencyViewModel
                 )
             }
 
@@ -153,7 +156,8 @@ fun Navigation(
                     modifier = modifier.padding(it),
                     index = index,
                     id = id,
-                    viewModel = homeViewModel
+                    viewModel = homeViewModel,
+                    currencyViewModel = currencyViewModel
                 )
             }
 
@@ -188,7 +192,8 @@ private fun ListAndDetailScreen(
     assistedFactory: DetailAssistedFactory,
     index: Int,
     id:Long,
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel
 ){
     Row(
         modifier = Modifier.fillMaxSize()
@@ -199,7 +204,8 @@ private fun ListAndDetailScreen(
                 onItemClicked = onItemClicked,
                 selectedIndex = index,
                 isLargeScreen = true,
-                viewModel = viewModel
+                viewModel = viewModel,
+                currencyViewModel = currencyViewModel
             )
         }
         Divider(
@@ -258,15 +264,10 @@ fun LaunchDetailScreenFromState(
 ){
     when(state.properties){
         is ScreenViewState.Loading -> {
-            //println("data loading")
             CircularProgressIndicator()
         }
 
         is ScreenViewState.Success -> {
-            val properties = state.properties.data
-
-            //println("go to data and index is $index")
-
             DetailScreen(
                 propertyId = propertyId,
                 assistedFactory = assistedFactory,
@@ -292,6 +293,8 @@ fun LaunchDetailScreenFromState(
 @Composable
 fun TopBar(
     homeViewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel,
+    currencyType: CurrencyType,
     screenType: ScreenType,
     onBackArrowPressed: (Boolean) -> Unit,
     onEditPressed: () -> Unit,
@@ -305,7 +308,7 @@ fun TopBar(
     val usaFlag = "\uD83C\uDDFA\uD83C\uDDF8"
     // European Union flag emoji
     val europeFlag = "\uD83C\uDDEA\uD83C\uDDFA"
-    val currentCurrencyText = when(homeViewModel.getCurrency())
+    val currentCurrencyText = when(currencyType)
     {
         CurrencyType.Euro -> "EUR $europeFlag"
         CurrencyType.Dollar -> "USD $usaFlag"
@@ -411,6 +414,8 @@ fun TopBar(
     if (showCurrencyPopup) {
         CurrencyPopup(
             homeViewModel = homeViewModel,
+            currencyViewModel = currencyViewModel,
+            currencyType = currencyType,
             onDismiss = { showCurrencyPopup = false }
         )
     }
@@ -418,6 +423,8 @@ fun TopBar(
 @Composable
 fun CurrencyPopup(
     homeViewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel,
+    currencyType: CurrencyType,
     onDismiss: () -> Unit
 ) {
 
@@ -441,9 +448,9 @@ fun CurrencyPopup(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
-                        selected = homeViewModel.getCurrency() == CurrencyType.Dollar,
+                        selected = currencyType == CurrencyType.Dollar,
                         onClick = {
-                            homeViewModel.setCurrency(CurrencyType.Dollar)
+                            currencyViewModel.setCurrency(CurrencyType.Dollar)
                             onDismiss.invoke()
                         }
                     )
@@ -454,9 +461,9 @@ fun CurrencyPopup(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
-                        selected = homeViewModel.getCurrency() == CurrencyType.Euro,
+                        selected = currencyType == CurrencyType.Euro,
                         onClick = {
-                            homeViewModel.setCurrency(CurrencyType.Euro)
+                            currencyViewModel.setCurrency(CurrencyType.Euro)
                             onDismiss.invoke()
                         }
                     )

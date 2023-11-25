@@ -1,5 +1,7 @@
 package com.openclassrooms.realestatemanager.common.utils
 
+import com.openclassrooms.realestatemanager.enums.CurrencyType
+import java.text.DecimalFormat
 import java.util.Locale
 
 object TextUtils {
@@ -11,5 +13,14 @@ object TextUtils {
         } else {
             return input
         }
+    }
+    fun priceFormat(price:Int, currencyType: CurrencyType):String{
+        val formatter = DecimalFormat("#,###")
+
+        val formattedPrice = when(currencyType){
+            CurrencyType.Dollar -> formatter.format(price)
+            CurrencyType.Euro -> formatter.format(price).replace(",", " ")
+        }
+        return formattedPrice
     }
 }

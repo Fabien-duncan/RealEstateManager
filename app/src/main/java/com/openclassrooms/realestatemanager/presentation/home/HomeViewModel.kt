@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.common.ScreenViewState
+import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.location.LocationTracker
@@ -36,13 +38,10 @@ class HomeViewModel @Inject constructor(
     private val getPropertyAddressUseCase: GetPropertyAddressUseCase,
     private val getFilteredPropertiesUseCase: GetFilteredPropertiesUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
-    private val setCurrencyUseCase: SetCurrencyUseCase,
-    private val getCurrencyUseCase: GetCurrencyUseCase
 ):ViewModel(){
     private val _state:MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
     val state:StateFlow<HomeState> = _state.asStateFlow()
     var isMapView by mutableStateOf(false)
-
     var currentLocation by mutableStateOf<Location?>(null)
     init {
         getAllProperty()
@@ -63,10 +62,6 @@ class HomeViewModel @Inject constructor(
             currentLocation = getCurrentLocationUseCase.invoke()
         }
     }
-    fun setCurrency(currencyType: CurrencyType){
-        setCurrencyUseCase.invoke(currencyType)
-    }
-    fun getCurrency() = getCurrencyUseCase.invoke()
 }
 
 data class HomeState(

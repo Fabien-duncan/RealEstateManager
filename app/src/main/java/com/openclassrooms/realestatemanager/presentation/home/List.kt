@@ -37,9 +37,11 @@ import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
 @Composable
 fun HomePropertyList(
+    currencyViewModel: CurrencyViewModel,
     properties: List<PropertyModel>,
     modifier: Modifier,
     selectedIndex: Int,
@@ -49,7 +51,12 @@ fun HomePropertyList(
     LazyColumn(contentPadding = PaddingValues(top = 0.dp), modifier = modifier){
 
         itemsIndexed(properties){ index, property ->
-            PropertyItem(property = property, isSelected = index == selectedIndex, isLargeScreen = isLargeScreen){
+            PropertyItem(
+                currencyViewModel = currencyViewModel,
+                property = property,
+                isSelected = index == selectedIndex,
+                isLargeScreen = isLargeScreen
+            ){
                 onItemClicked.invoke(index)
             }
         }
@@ -59,6 +66,7 @@ fun HomePropertyList(
 
 @Composable
 private fun PropertyItem(
+    currencyViewModel: CurrencyViewModel,
     property: PropertyModel,
     isSelected: Boolean,
     isLargeScreen: Boolean,
@@ -166,7 +174,7 @@ private fun PropertyItem(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = "\$${property.price}",
+                    text = currencyViewModel.getPriceInCurrentCurrency(property.price),
                     color = moneyColor,
                     modifier = Modifier.fillMaxWidth()
                 )
