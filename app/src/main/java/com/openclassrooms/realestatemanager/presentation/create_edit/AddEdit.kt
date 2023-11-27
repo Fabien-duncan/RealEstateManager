@@ -63,7 +63,9 @@ import androidx.compose.ui.unit.toSize
 import androidx.core.content.FileProvider
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
+import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.enums.PropertyType
+import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -71,6 +73,7 @@ import java.util.Objects
 
 @Composable
 fun AddEditScreen(
+    currencyViewModel: CurrencyViewModel,
     modifier: Modifier = Modifier,
     propertyId: Long = -1L,
     isLargeView:Boolean,
@@ -80,9 +83,16 @@ fun AddEditScreen(
 ) {
     println("in addEdit Screen and the property id is $propertyId")
     //val addEditViewModel: AddEditViewModel = viewModel()
-    if (propertyId > 0) addEditViewModel.getPropertyById(propertyId)
+    if (propertyId > 0) addEditViewModel.getPropertyById(propertyId, currencyViewModel.currentCurrency)
 
-    AddEditView(modifier = modifier, propertyId = propertyId, isLargeView = isLargeView, onCreatedClicked = onCreatedClicked, addEditViewModel = addEditViewModel)
+    AddEditView(
+        currencyViewModel = currencyViewModel,
+        modifier = modifier,
+        propertyId = propertyId,
+        isLargeView = isLargeView,
+        onCreatedClicked = onCreatedClicked,
+        addEditViewModel = addEditViewModel
+    )
 
     BackHandler {
         addEditViewModel.resetState()
@@ -92,6 +102,7 @@ fun AddEditScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddEditView(
+    currencyViewModel: CurrencyViewModel,
     modifier: Modifier,
     propertyId: Long,
     onCreatedClicked:(Long) -> Unit,
@@ -112,7 +123,7 @@ private fun AddEditView(
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        PriceAndAgentSection(addEditViewModel = addEditViewModel)
+        PriceAndAgentSection(currencyViewModel = currencyViewModel,addEditViewModel = addEditViewModel)
 
         MediaSection(addEditViewModel = addEditViewModel)
 
@@ -147,7 +158,11 @@ private fun AddEditView(
     }
 }
 @Composable
-fun PriceAndAgentSection(addEditViewModel: AddEditViewModel) {
+fun PriceAndAgentSection(
+    currencyViewModel: CurrencyViewModel,
+    addEditViewModel: AddEditViewModel
+) {
+    currencyViewModel.getCurrency()
     val state = addEditViewModel.state
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -164,7 +179,10 @@ fun PriceAndAgentSection(addEditViewModel: AddEditViewModel) {
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             leadingIcon = {
                 Image(
-                    painter = painterResource(id = R.drawable.dollar_image),
+                    painter = when(currencyViewModel.currentCurrency) {
+                        CurrencyType.Dollar -> painterResource(id = R.drawable.dollar_image)
+                        CurrencyType.Euro -> painterResource(id = R.drawable.euro_image)
+                    },
                     contentDescription = "dollar"
                 )
             }
@@ -510,7 +528,10 @@ fun SoldDate(addEditViewModel: AddEditViewModel) {
 }
 
 @Composable
-fun ValidationAndSaveButton(addEditViewModel: AddEditViewModel, propertyId: Long) {
+fun ValidationAndSaveButton(
+    addEditViewModel: AddEditViewModel,
+    propertyId: Long
+) {
     Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
         if (!addEditViewModel.isFormValid){
             Text(

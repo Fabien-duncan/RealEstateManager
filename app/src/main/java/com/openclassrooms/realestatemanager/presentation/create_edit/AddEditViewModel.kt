@@ -9,14 +9,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.BuildConfig
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.domain.geocoding.LatLongEntity
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.domain.use_cases.AddPropertyUseCase
+import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetLatLngFromAddressUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
+import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +34,7 @@ class AddEditViewModel @Inject constructor(
     val addPropertyUseCase: AddPropertyUseCase,
     val getPropertyByIdUseCase: GetPropertyByIdUseCase,
     val getLatLngFromAddressUseCase: GetLatLngFromAddressUseCase,
+    val getCurrencyUseCase: GetCurrencyUseCase
 ):ViewModel() {
     var state by mutableStateOf(AddEditState())
         private set
@@ -242,8 +246,13 @@ class AddEditViewModel @Inject constructor(
         if (isAddressValid && position.latitude != null && position.longitude != null){
             state = state.copy(latitude = position.latitude, longitude = position.longitude)
         }
+        println("Currency type before saving to db is: ${getCurrencyUseCase.invoke()}")
+        val price = when(getCurrencyUseCase.invoke()){
+            CurrencyType.Dollar -> state.price
+            CurrencyType.Euro -> Utils.convertEuroToDollar(state.price ?: 0)
+        }
+        state = state.copy(price = price)
         val id = addPropertyUseCase(property = property)
-        //getAllPropertiesUseCase
         state = state.copy(id = id)
         _isAddOrUpdatePropertyFinished.value = true
     }
@@ -260,13 +269,16 @@ class AddEditViewModel @Inject constructor(
         }
     }
 
-    fun getPropertyById(propertyId:Long) = viewModelScope.launch {
+    fun getPropertyById(propertyId:Long, currencyType: CurrencyType) = viewModelScope.launch {
         if (state.id != propertyId){
             println("getting property by Id")
             getPropertyByIdUseCase(propertyId).collectLatest { property ->
                 state = state.copy(
                     id = property.id,
-                    price = property.price,
+                    price = when(currencyType) {
+                        CurrencyType.Dollar -> property.price
+                        CurrencyType.Euro -> Utils.convertDollarToEuro(property.price)
+                    },
                     type = property.type,
                     area = property.area!!,
                     rooms = property.rooms!!,

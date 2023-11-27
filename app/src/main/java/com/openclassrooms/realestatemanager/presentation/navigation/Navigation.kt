@@ -111,7 +111,7 @@ fun Navigation(
                 onEditPressed = {
                     isEditOpened = true
                     isItemOpened = false
-
+                    addEditViewModel.resetState()
                 }
             )
         }
@@ -165,6 +165,7 @@ fun Navigation(
                 val propertiesListSize = if (state.properties is ScreenViewState.Success) (state.properties as ScreenViewState.Success<List<PropertyModel>>).data.size else 0
                 println("AddEditPage")
                 AddEditScreen(
+                    currencyViewModel = currencyViewModel,
                     propertyId = if(isEditOpened) id else -1L,
                     isLargeView = isExpanded,
                     addEditViewModel = addEditViewModel,

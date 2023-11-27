@@ -69,6 +69,7 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -78,7 +79,8 @@ fun MapView(
     state:HomeState,
     modifier: Modifier,
     onItemClicked:(Int) -> Unit,
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel
 ){
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -102,7 +104,13 @@ fun MapView(
         if (areGranted) {
             val currentLocation = viewModel.currentLocation
             if (currentLocation != null ){
-                MapWithProperties(state = state, modifier = modifier, onItemClicked = onItemClicked, currentLatLng = LatLng(currentLocation.latitude, currentLocation.longitude))
+                MapWithProperties(
+                    state = state,
+                    modifier = modifier,
+                    onItemClicked = onItemClicked,
+                    currentLatLng = LatLng(currentLocation.latitude, currentLocation.longitude),
+                    currencyViewModel = currencyViewModel
+                )
             }
 
         } else {
@@ -129,7 +137,8 @@ fun MapWithProperties(
     state:HomeState,
     modifier: Modifier,
     onItemClicked:(Int) -> Unit,
-    currentLatLng: LatLng
+    currentLatLng: LatLng,
+    currencyViewModel: CurrencyViewModel
 ){
     var showBottomSheet by remember { mutableStateOf(false) }
     val properties:List<PropertyModel>
@@ -174,7 +183,7 @@ fun MapWithProperties(
             onDismissRequest = { showBottomSheet = false }) {
 
                 if (selectedProperty != null){
-                    BottomSheetPropertyCard(property = selectedProperty!!) {
+                    BottomSheetPropertyCard(property = selectedProperty!!, currencyViewModel = currencyViewModel) {
                         onItemClicked.invoke(selectedPropertyIndex)
                     }
                 }
@@ -200,6 +209,7 @@ fun HouseMarkers(
 }
 @Composable
 fun BottomSheetPropertyCard(
+    currencyViewModel: CurrencyViewModel,
     property:PropertyModel,
     onItemClicked: () -> Unit
 ){
@@ -271,7 +281,7 @@ fun BottomSheetPropertyCard(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = "\$${property.price}",
+                        text = currencyViewModel.getPriceInCurrentCurrency(property.price),
                         color = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.fillMaxWidth()
                     )
