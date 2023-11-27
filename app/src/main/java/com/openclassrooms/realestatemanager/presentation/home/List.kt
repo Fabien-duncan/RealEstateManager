@@ -73,9 +73,6 @@ private fun PropertyItem(
     onItemClicked: () -> Unit,
 
     ){
-    //val imagePath = Environment.getExternalStorageDirectory().path + "media/external/images/media/IMG_20231020_143821/jpg"
-    /*val imagePath = "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-    val imageUri = Uri.parse(imagePath)*/
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 

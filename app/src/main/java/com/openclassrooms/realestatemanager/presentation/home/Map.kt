@@ -10,6 +10,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,11 +19,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +61,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -61,7 +72,7 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MapView(
     state:HomeState,
@@ -81,6 +92,8 @@ fun MapView(
             viewModel.getCurrentLocation()
         }
     }
+
+
 
     AnimatedContent(
         targetState = locationPermissions.allPermissionsGranted, label = "Permissions"
@@ -110,6 +123,7 @@ fun MapView(
     }
 
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapWithProperties(
     state:HomeState,
@@ -117,6 +131,7 @@ fun MapWithProperties(
     onItemClicked:(Int) -> Unit,
     currentLatLng: LatLng
 ){
+    var showBottomSheet by remember { mutableStateOf(false) }
     val properties:List<PropertyModel>
     when(state.properties){
         is ScreenViewState.Error -> TODO()
@@ -126,13 +141,18 @@ fun MapWithProperties(
     val cameraPositionState = rememberCameraPositionState {
        position = CameraPosition.fromLatLngZoom(currentLatLng, 18f)
     }
+    var selectedProperty by remember {
+        mutableStateOf<PropertyModel?>(null)
+    }
+    var selectedPropertyIndex by remember {
+        mutableStateOf(0)
+    }
 
-    //println("current Location is : $currentLatLng")
     GoogleMap(
         modifier = modifier
             .fillMaxSize(),
         cameraPositionState = cameraPositionState,
-        uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = true, mapToolbarEnabled = true),
+        uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = true, mapToolbarEnabled = false),
         properties = MapProperties(isMyLocationEnabled = true),
     ) {
 
@@ -141,14 +161,23 @@ fun MapWithProperties(
             val lng = property.address.longitude
             if (lat != null && lng != null){
                 val location = LatLng(lat, lng)
-                val image = if (!property.photos.isNullOrEmpty()) Uri.parse(property.photos[0].photoPath) else null
-                //println("image url: $image")
-                val request = ImageRequest.Builder(LocalContext.current).data(image).allowHardware(false).build()
-                //println("image request: ${request.data.toString()}")
-                HouseMarkers(location = location, property = property, request = request, hasImage = image != null){
-                    onItemClicked.invoke(index)
+                HouseMarkers(location = location, property = property){
+                    property -> selectedProperty = property
+                    showBottomSheet = true
+                    selectedPropertyIndex = index
                 }
             }
+        }
+    }
+    if (showBottomSheet){
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false }) {
+
+                if (selectedProperty != null){
+                    BottomSheetPropertyCard(property = selectedProperty!!) {
+                        onItemClicked.invoke(selectedPropertyIndex)
+                    }
+                }
         }
     }
 }
@@ -157,44 +186,56 @@ fun MapWithProperties(
 fun HouseMarkers(
     location: LatLng,
     property:PropertyModel,
-    request: ImageRequest,
-    hasImage:Boolean,
-    onItemClicked: () -> Unit
+    onItemClicked: (PropertyModel) -> Unit
 
 ){
-    MarkerInfoWindow(
+    Marker(
         state = MarkerState(position = location),
         icon = bitmapDescriptorFromVector(LocalContext.current, if (property.soldDate != null){ R.drawable.property_map_sold_img }else R.drawable.property_map_available_img),
-        onInfoWindowClick = { onItemClicked.invoke() }
+        onClick = {
+            onItemClicked.invoke(property)
+            false
+        }
+    )
+}
+@Composable
+fun BottomSheetPropertyCard(
+    property:PropertyModel,
+    onItemClicked: () -> Unit
+){
+    val listOfPhotos = property.photos
+    val imageUri = if (!listOfPhotos.isNullOrEmpty()) Uri.parse(listOfPhotos[0].photoPath) else null
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .clip(MaterialTheme.shapes.small)
+            .clickable { onItemClicked.invoke() }
+            .background(Color.Transparent)
     ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp)
-                .clip(MaterialTheme.shapes.small)
-                .border(1.dp, Color.Gray, MaterialTheme.shapes.small),
-        ) {
 
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-                .height(120.dp)) {
-                Column(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .weight(0.5f),
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = Color.Transparent
+            )
+            .height(120.dp)) {
+
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.5f),
 
 
                 ) {
-                    if (hasImage) {
+                    if (imageUri != null){
                         AsyncImage(
-                            model = request,
+                            model = imageUri,
                             contentDescription = "",
+                            placeholder = painterResource(id = R.drawable.missing_image),
                             contentScale = ContentScale.FillHeight,
-                            onError = {error -> println("Error Loading Image: $error") },
-                            onSuccess ={success ->  println("Loaded Image: $success ")},
-                            onLoading = {println("Loading Image...")}
+                            onError = { error -> println("Error Loading Image: $error") },
+                            onSuccess = { success -> println("Loaded Image: $success ") },
+                            onLoading = { println("Loading Image...") }
                         )
                     }
                     else{
@@ -207,6 +248,7 @@ fun HouseMarkers(
                                 .fillMaxSize(),
                         )
                     }
+
                 }
                 Column(
                     modifier = Modifier
@@ -235,10 +277,7 @@ fun HouseMarkers(
                     )
                 }
             }
-
         }
-    }
-
 }
 
 
@@ -260,86 +299,4 @@ fun bitmapDescriptorFromVector(
     val canvas = android.graphics.Canvas(bm)
     drawable.draw(canvas)
     return BitmapDescriptorFactory.fromBitmap(bm)
-}
-suspend fun loadBitmapFromUrl(context: Context, imageUrl: String): Bitmap? {
-    return withContext(Dispatchers.IO) {
-        try {
-            val request = ImageRequest.Builder(context)
-                .data(imageUrl)
-                .build()
-
-            when (val result = request.context.imageLoader.execute(request)) {
-                is SuccessResult -> result.drawable.toBitmap()
-                else -> null
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-}
-suspend fun loadBitmapDescriptorFromUrl(context: Context, imageUrl: String): BitmapDescriptor? {
-    return withContext(Dispatchers.IO) {
-        // Use Coil to load the image
-        val imageLoader = ImageLoader.Builder(context)
-            .crossfade(true)
-            .build()
-
-        val request = ImageRequest.Builder(context)
-            .data(imageUrl)
-            .build()
-
-        when (val result = imageLoader.execute(request)) {
-            is SuccessResult -> {
-                // Convert Coil's Drawable to a Bitmap
-                val drawable = result.drawable
-                val bitmap = (drawable as? BitmapDrawable)?.bitmap
-
-                // Create a BitmapDescriptor from the Bitmap
-                return@withContext if (bitmap!= null)BitmapDescriptorFactory.fromBitmap(bitmap) else null
-            }
-            else -> throw IllegalArgumentException("Failed to load image from $imageUrl")
-        }
-    }
-}
-suspend fun loadImageBitmapFromUrl(context: Context, imageUrl: String): ImageBitmap {
-    // Create an ImageLoader
-    val imageLoader = ImageLoader.Builder(context)
-        .crossfade(true)
-        .build()
-
-    // Create an ImageRequest with the given URL
-    val request = ImageRequest.Builder(context)
-        .data(imageUrl)
-        .build()
-
-    // Execute the request and handle the result
-    return when (val result = imageLoader.execute(request)) {
-        is SuccessResult -> {
-            // Convert Coil's Drawable to a Bitmap
-            val drawable = result.drawable
-            val bitmap = (drawable.toBitmap()) // Extension function to convert to Bitmap
-
-            // Convert the Bitmap to ImageBitmap
-            bitmap.asImageBitmap()
-        }
-        else -> throw IllegalArgumentException("Failed to load image from $imageUrl")
-    }
-}
-
-// Extension function to convert Drawable to Bitmap
-fun Drawable.toBitmap(): Bitmap {
-    if (this is BitmapDrawable) {
-        return bitmap
-    }
-
-    val bitmap = Bitmap.createBitmap(
-        intrinsicWidth.coerceAtLeast(1),
-        intrinsicHeight.coerceAtLeast(1),
-        Bitmap.Config.ARGB_8888
-    )
-    val canvas = Canvas(bitmap)
-    setBounds(0, 0, canvas.width, canvas.height)
-    draw(canvas)
-    return bitmap
 }
