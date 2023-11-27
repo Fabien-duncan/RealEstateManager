@@ -90,8 +90,8 @@ class PropertyRepositoryImpl @Inject constructor(
 
     override fun getFilteredProperties(
         propertyType: PropertyType?,
-        minPrice: Double?,
-        maxPrice: Double?,
+        minPrice: Int?,
+        maxPrice: Int?,
         minSurfaceArea: Int?,
         maxSurfaceArea: Int?,
         minNumRooms: Int?,
@@ -102,10 +102,10 @@ class PropertyRepositoryImpl @Inject constructor(
         minSoldDate: Date?,
         maxSoldDate: Date?,
         minNumPictures: Int?,
-        nearbyPlaceTypes: List<NearbyPlacesType>?
-    ): Flow<List<Property>> {
-        return propertyDao.getFilteredProperties(
-            propertyType = propertyType,
+        /*nearbyPlaceTypes: List<NearbyPlacesType>?*/
+    ): Flow<List<PropertyModel>> {
+        return propertyDao.filterProperties(
+            /*propertyType = propertyType,*/
             minPrice = minPrice,
             maxPrice = maxPrice,
             minSurfaceArea = minSurfaceArea,
@@ -117,8 +117,12 @@ class PropertyRepositoryImpl @Inject constructor(
             isSold = isSold,
             minSoldDate = minSoldDate,
             maxSoldDate = maxSoldDate,
-            minNumPictures = minNumPictures,
-            nearbyPlaceTypes = nearbyPlaceTypes
-        )
+            /*minNumPictures = minNumPictures*/
+            /*nearbyPlaceTypes = nearbyPlaceTypes*/
+        ).map {
+            propertiesWithAllDetails -> propertiesWithAllDetails.mapNotNull { propertyWithAllDetails ->
+                    propertyMapper.mapToDomainModel(propertyWithAllDetails)
+            }
+        }
     }
 }

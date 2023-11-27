@@ -62,6 +62,19 @@ class HomeViewModel @Inject constructor(
             currentLocation = getCurrentLocationUseCase.invoke()
         }
     }
+    fun getFilteredProperties(
+        minPrice:Int,
+        maxPrice: Int,
+    ){
+        getFilteredPropertiesUseCase.invoke(isSold = false)
+            .onEach {
+                _state.value = HomeState(properties = ScreenViewState.Success(it))
+            }
+            .catch {
+                _state.value = HomeState(properties = ScreenViewState.Error(it.message))
+            }
+            .launchIn(viewModelScope)
+    }
 }
 
 data class HomeState(

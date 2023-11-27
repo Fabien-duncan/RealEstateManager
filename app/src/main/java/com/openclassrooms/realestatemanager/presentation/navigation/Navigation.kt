@@ -112,6 +112,9 @@ fun Navigation(
                     isEditOpened = true
                     isItemOpened = false
                     addEditViewModel.resetState()
+                },
+                onSearchedPressed = {
+                    homeViewModel.getFilteredProperties(4000000,5600000)
                 }
             )
         }
@@ -297,6 +300,7 @@ fun TopBar(
     currencyViewModel: CurrencyViewModel,
     currencyType: CurrencyType,
     screenType: ScreenType,
+    onSearchedPressed: () -> Unit,
     onBackArrowPressed: (Boolean) -> Unit,
     onEditPressed: () -> Unit,
     onAddPressed:() -> Unit
@@ -397,7 +401,7 @@ fun TopBar(
 
                     }
                 }
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { onSearchedPressed.invoke() }) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",

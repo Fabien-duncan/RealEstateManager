@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
 import com.openclassrooms.realestatemanager.data.local.model.Property
+import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
@@ -13,8 +14,8 @@ class GetFilteredPropertiesUseCase @Inject constructor(
 ) {
     operator fun invoke(
         propertyType: PropertyType?=null,
-        minPrice: Double?=null,
-        maxPrice: Double?=null,
+        minPrice: Int?=null,
+        maxPrice: Int?=null,
         minSurfaceArea: Int?=null,
         maxSurfaceArea: Int?=null,
         minNumRooms: Int?=null,
@@ -25,8 +26,8 @@ class GetFilteredPropertiesUseCase @Inject constructor(
         minSoldDate: Date?=null,
         maxSoldDate: Date?=null,
         minNumPictures: Int? = null,
-        nearbyPlaceTypes: List<NearbyPlacesType>? = null,
-    ):Flow<List<Property>> = repository.getFilteredProperties(
+        /*nearbyPlaceTypes: List<NearbyPlacesType>? = null,*/
+    ):Flow<List<PropertyModel>> = repository.getFilteredProperties(
         propertyType = propertyType,
         minPrice = minPrice,
         maxPrice = maxPrice,
@@ -40,6 +41,6 @@ class GetFilteredPropertiesUseCase @Inject constructor(
         minSoldDate = minSoldDate,
         maxSoldDate = maxSoldDate,
         minNumPictures = minNumPictures,
-        nearbyPlaceTypes = nearbyPlaceTypes
+        /*nearbyPlaceTypes = nearbyPlaceTypes*/
     )
 }

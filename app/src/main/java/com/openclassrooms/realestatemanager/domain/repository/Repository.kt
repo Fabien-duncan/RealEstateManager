@@ -23,8 +23,8 @@ interface Repository {
     fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>
     fun getFilteredProperties(
         propertyType: PropertyType?=null,
-        minPrice: Double?=null,
-        maxPrice: Double?=null,
+        minPrice: Int?=null,
+        maxPrice: Int?=null,
         minSurfaceArea: Int?=null,
         maxSurfaceArea: Int?=null,
         minNumRooms: Int?=null,
@@ -34,7 +34,7 @@ interface Repository {
         isSold: Boolean?=null,
         minSoldDate: Date?=null,
         maxSoldDate: Date?=null,
-        minNumPictures: Int? = null,
-        nearbyPlaceTypes: List<NearbyPlacesType>? = null,
-    ):Flow<List<Property>>
+        minNumPictures: Int? = null
+        /*nearbyPlaceTypes: List<NearbyPlacesType>? = null,*/
+    ):Flow<List<PropertyModel>>
 }
