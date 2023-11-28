@@ -29,10 +29,9 @@ import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 
 @Composable
 fun PropertyTypePicker(
-    addEditViewModel: AddEditViewModel,
+    onChangedTypePicker: (PropertyType) -> Unit,
     propertyType: PropertyType?
 ){
-    //var onTypeSelected by remember { mutableStateOf(propertyType ?: PropertyType.HOUSE)}
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     var isTypePickerExpanded by remember { mutableStateOf(false) }
     val icon = if (isTypePickerExpanded)
@@ -68,7 +67,7 @@ fun PropertyTypePicker(
             DropdownMenuItem(
                 onClick = {
                     isTypePickerExpanded = false
-                    addEditViewModel.onTypeChange(type)
+                    onChangedTypePicker.invoke(type)
                 },
                 text = { Text(text = type.name) }
 

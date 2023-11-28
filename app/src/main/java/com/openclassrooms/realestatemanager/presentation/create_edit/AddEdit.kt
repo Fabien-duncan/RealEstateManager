@@ -306,7 +306,7 @@ fun DescriptionTypePickerSection(addEditViewModel: AddEditViewModel) {
                 .padding(8.dp)
         )
 
-        PropertyTypePicker(addEditViewModel = addEditViewModel, propertyType = state.type)
+        PropertyTypePicker(onChangedTypePicker = {propertyType -> addEditViewModel.onTypeChange(propertyType) }, propertyType = state.type)
     }
 
     println("property description : ${state.description}")
