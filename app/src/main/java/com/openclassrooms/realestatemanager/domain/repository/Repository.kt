@@ -29,12 +29,16 @@ interface Repository {
         maxSurfaceArea: Int?=null,
         minNumRooms: Int?=null,
         maxNumRooms: Int?=null,
+        minNumBathrooms: Int?=null,
+        maxNumBathrooms: Int?=null,
+        minNumBedrooms: Int?=null,
+        maxNumBedrooms: Int?=null,
         minCreationDate: Date?=null,
         maxCreationDate: Date?=null,
         isSold: Boolean?=null,
         minSoldDate: Date?=null,
         maxSoldDate: Date?=null,
-        minNumPictures: Int? = null
-        /*nearbyPlaceTypes: List<NearbyPlacesType>? = null,*/
+        minNumPictures: Int? = null,
+        nearbyPlaceTypes: List<NearbyPlacesType>? = null
     ):Flow<List<PropertyModel>>
 }

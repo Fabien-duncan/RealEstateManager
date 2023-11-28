@@ -96,30 +96,60 @@ class PropertyRepositoryImpl @Inject constructor(
         maxSurfaceArea: Int?,
         minNumRooms: Int?,
         maxNumRooms: Int?,
+        minNumBathrooms: Int?,
+        maxNumBathrooms: Int?,
+        minNumBedrooms: Int?,
+        maxNumBedrooms: Int?,
         minCreationDate: Date?,
         maxCreationDate: Date?,
         isSold: Boolean?,
         minSoldDate: Date?,
         maxSoldDate: Date?,
         minNumPictures: Int?,
-        /*nearbyPlaceTypes: List<NearbyPlacesType>?*/
+        nearbyPlaceTypes: List<NearbyPlacesType>?
     ): Flow<List<PropertyModel>> {
-        return propertyDao.filterProperties(
-            /*propertyType = propertyType,*/
-            minPrice = minPrice,
-            maxPrice = maxPrice,
-            minSurfaceArea = minSurfaceArea,
-            maxSurfaceArea = maxSurfaceArea,
-            minNumRooms = minNumRooms,
-            maxNumRooms = maxNumRooms,
-            minCreationDate = minCreationDate,
-            maxCreationDate = maxCreationDate,
-            isSold = isSold,
-            minSoldDate = minSoldDate,
-            maxSoldDate = maxSoldDate,
-            /*minNumPictures = minNumPictures*/
-            /*nearbyPlaceTypes = nearbyPlaceTypes*/
-        ).map {
+        return if (nearbyPlaceTypes != null) {
+            propertyDao.getFilterPropertiesWithNearByPlaces(
+                propertyType = propertyType,
+                minPrice = minPrice,
+                maxPrice = maxPrice,
+                minSurfaceArea = minSurfaceArea,
+                maxSurfaceArea = maxSurfaceArea,
+                minNumRooms = minNumRooms,
+                maxNumRooms = maxNumRooms,
+                minNumBathrooms = minNumBathrooms,
+                maxNumBathrooms = maxNumBathrooms,
+                minNumBedrooms = minNumBedrooms,
+                maxNumBedrooms = maxNumBedrooms,
+                minCreationDate = minCreationDate,
+                maxCreationDate = maxCreationDate,
+                isSold = isSold,
+                minSoldDate = minSoldDate,
+                maxSoldDate = maxSoldDate,
+                minNumPictures = minNumPictures,
+                nearbyPlaceTypes = nearbyPlaceTypes
+            )
+        }else{
+            propertyDao.filterProperties(
+                propertyType = propertyType,
+                minPrice = minPrice,
+                maxPrice = maxPrice,
+                minSurfaceArea = minSurfaceArea,
+                maxSurfaceArea = maxSurfaceArea,
+                minNumRooms = minNumRooms,
+                maxNumRooms = maxNumRooms,
+                minNumBathrooms = minNumBathrooms,
+                maxNumBathrooms = maxNumBathrooms,
+                minNumBedrooms = minNumBedrooms,
+                maxNumBedrooms = maxNumBedrooms,
+                minCreationDate = minCreationDate,
+                maxCreationDate = maxCreationDate,
+                isSold = isSold,
+                minSoldDate = minSoldDate,
+                maxSoldDate = maxSoldDate,
+                minNumPictures = minNumPictures,
+            )
+        }.map {
             propertiesWithAllDetails -> propertiesWithAllDetails.mapNotNull { propertyWithAllDetails ->
                     propertyMapper.mapToDomainModel(propertyWithAllDetails)
             }

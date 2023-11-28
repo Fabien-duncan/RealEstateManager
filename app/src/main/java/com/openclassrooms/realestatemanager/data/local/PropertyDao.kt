@@ -96,32 +96,94 @@ interface PropertyDao {
         /*nearbyPlaceTypes: List<NearbyPlacesType>? = null,*/
         ):Flow<List<PropertyWithAllDetails>>
 
-    @Query("SELECT * FROM properties WHERE " +
-            "(:minPrice IS NULL OR price >= :minPrice) " +
+    @Query("SELECT properties.*, COUNT(property_photos.property_id) AS numPhotos FROM properties " +
+            "LEFT JOIN property_photos ON properties.id = property_photos.property_id " +
+            "WHERE " +
+            "(:propertyType IS NULL OR type = :propertyType) " +
+            "AND(:minPrice IS NULL OR price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR price <= :maxPrice)" +
             "AND (:minSurfaceArea IS NULL OR area >= :minSurfaceArea) " +
             "AND (:maxSurfaceArea IS NULL OR area <= :maxSurfaceArea) " +
             "AND (:minNumRooms IS NULL OR rooms >= :minNumRooms) " +
             "AND (:maxNumRooms IS NULL OR rooms <= :maxNumRooms) " +
+            "AND (:minNumBathrooms IS NULL OR rooms >= :minNumBathrooms) " +
+            "AND (:maxNumBathrooms IS NULL OR rooms <= :maxNumBathrooms) " +
+            "AND (:minNumBedrooms IS NULL OR rooms >= :minNumBedrooms) " +
+            "AND (:maxNumBedrooms IS NULL OR rooms <= :maxNumBedrooms) " +
             "AND (:minCreationDate IS NULL OR created_date >= :minCreationDate) " +
             "AND (:maxCreationDate IS NULL OR created_date <= :maxCreationDate) " +
             "AND (:isSold IS NULL OR is_sold = :isSold) " +
             "AND (:minSoldDate IS NULL OR created_date >= :minCreationDate) " +
             "AND (:maxSoldDate IS NULL OR sold_date <= :maxSoldDate) " +
-            "ORDER BY created_date"
+            "GROUP BY properties.id " +
+            "HAVING (:minNumPictures IS NULL OR numPhotos >= :minNumPictures) "
+
+
             )
 
             fun filterProperties(
-                minPrice: Int?,
-                maxPrice: Int?,
+                propertyType: PropertyType?=null,
+                minPrice: Int?=null,
+                maxPrice: Int?=null,
                 minSurfaceArea: Int?=null,
                 maxSurfaceArea: Int?=null,
                 minNumRooms: Int?=null,
                 maxNumRooms: Int?=null,
+                minNumBathrooms: Int?=null,
+                maxNumBathrooms: Int?=null,
+                minNumBedrooms: Int?=null,
+                maxNumBedrooms: Int?=null,
                 minCreationDate: Date?=null,
                 maxCreationDate: Date?=null,
                 isSold: Boolean?=null,
                 minSoldDate: Date?=null,
                 maxSoldDate: Date?=null,
+                minNumPictures: Int? = null,
             ): Flow<List<PropertyWithAllDetails>>
+    @Query("SELECT properties.*, COUNT(property_photos.property_id) AS numPhotos FROM properties " +
+            "LEFT JOIN property_photos ON properties.id = property_photos.property_id " +
+            "LEFT JOIN property_nearby_places ON properties.id = property_nearby_places.property_id " +
+            "WHERE " +
+            "(:propertyType IS NULL OR type = :propertyType) " +
+            "AND(:minPrice IS NULL OR price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR price <= :maxPrice)" +
+            "AND (:minSurfaceArea IS NULL OR area >= :minSurfaceArea) " +
+            "AND (:maxSurfaceArea IS NULL OR area <= :maxSurfaceArea) " +
+            "AND (:minNumRooms IS NULL OR rooms >= :minNumRooms) " +
+            "AND (:maxNumRooms IS NULL OR rooms <= :maxNumRooms) " +
+            "AND (:minNumBathrooms IS NULL OR rooms >= :minNumBathrooms) " +
+            "AND (:maxNumBathrooms IS NULL OR rooms <= :maxNumBathrooms) " +
+            "AND (:minNumBedrooms IS NULL OR rooms >= :minNumBedrooms) " +
+            "AND (:maxNumBedrooms IS NULL OR rooms <= :maxNumBedrooms) " +
+            "AND (:minCreationDate IS NULL OR created_date >= :minCreationDate) " +
+            "AND (:maxCreationDate IS NULL OR created_date <= :maxCreationDate) " +
+            "AND (:isSold IS NULL OR is_sold = :isSold) " +
+            "AND (:minSoldDate IS NULL OR created_date >= :minCreationDate) " +
+            "AND (:maxSoldDate IS NULL OR sold_date <= :maxSoldDate) " +
+            "AND (property_nearby_places.nearby_type IN (:nearbyPlaceTypes)) " +
+            "GROUP BY properties.id " +
+            "HAVING (:minNumPictures IS NULL OR numPhotos >= :minNumPictures) "
+
+
+    )
+    fun getFilterPropertiesWithNearByPlaces(
+        propertyType: PropertyType?=null,
+        minPrice: Int?=null,
+        maxPrice: Int?=null,
+        minSurfaceArea: Int?=null,
+        maxSurfaceArea: Int?=null,
+        minNumRooms: Int?=null,
+        maxNumRooms: Int?=null,
+        minNumBathrooms: Int?=null,
+        maxNumBathrooms: Int?=null,
+        minNumBedrooms: Int?=null,
+        maxNumBedrooms: Int?=null,
+        minCreationDate: Date?=null,
+        maxCreationDate: Date?=null,
+        isSold: Boolean?=null,
+        minSoldDate: Date?=null,
+        maxSoldDate: Date?=null,
+        minNumPictures: Int? = null,
+        nearbyPlaceTypes: List<NearbyPlacesType>? = null,
+    ): Flow<List<PropertyWithAllDetails>>
 }

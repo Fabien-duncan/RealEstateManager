@@ -21,6 +21,8 @@ import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredProperti
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyAddressUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.SetCurrencyUseCase
 import com.openclassrooms.realestatemanager.enums.CurrencyType
+import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
+import com.openclassrooms.realestatemanager.enums.PropertyType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -66,7 +68,8 @@ class HomeViewModel @Inject constructor(
         minPrice:Int,
         maxPrice: Int,
     ){
-        getFilteredPropertiesUseCase.invoke(isSold = false)
+
+        getFilteredPropertiesUseCase.invoke(nearbyPlaceTypes = listOf(NearbyPlacesType.PARC))
             .onEach {
                 _state.value = HomeState(properties = ScreenViewState.Success(it))
             }

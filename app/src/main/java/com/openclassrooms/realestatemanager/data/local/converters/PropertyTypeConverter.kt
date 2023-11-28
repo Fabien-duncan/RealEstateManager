@@ -5,8 +5,8 @@ import com.openclassrooms.realestatemanager.enums.PropertyType
 
 class PropertyTypeConverter {
     @TypeConverter
-    fun fromPropertyType(value: PropertyType): String {
-        return value.name
+    fun fromPropertyType(value: PropertyType?): String? {
+        return value?.name
     }
 
     @TypeConverter

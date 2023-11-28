@@ -20,13 +20,17 @@ class GetFilteredPropertiesUseCase @Inject constructor(
         maxSurfaceArea: Int?=null,
         minNumRooms: Int?=null,
         maxNumRooms: Int?=null,
+        minNumBathrooms: Int?=null,
+        maxNumBathrooms: Int?=null,
+        minNumBedrooms: Int?=null,
+        maxNumBedrooms: Int?=null,
         minCreationDate: Date?=null,
         maxCreationDate: Date?=null,
         isSold: Boolean?=null,
         minSoldDate: Date?=null,
         maxSoldDate: Date?=null,
         minNumPictures: Int? = null,
-        /*nearbyPlaceTypes: List<NearbyPlacesType>? = null,*/
+        nearbyPlaceTypes: List<NearbyPlacesType>? = null,
     ):Flow<List<PropertyModel>> = repository.getFilteredProperties(
         propertyType = propertyType,
         minPrice = minPrice,
@@ -35,12 +39,16 @@ class GetFilteredPropertiesUseCase @Inject constructor(
         maxSurfaceArea = maxSurfaceArea,
         minNumRooms = minNumRooms,
         maxNumRooms = maxNumRooms,
+        minNumBathrooms = minNumBathrooms,
+        maxNumBathrooms = maxNumBathrooms,
+        minNumBedrooms = minNumBedrooms,
+        maxNumBedrooms = maxNumBedrooms,
         minCreationDate = minCreationDate,
         maxCreationDate = maxCreationDate,
         isSold = isSold,
         minSoldDate = minSoldDate,
         maxSoldDate = maxSoldDate,
         minNumPictures = minNumPictures,
-        /*nearbyPlaceTypes = nearbyPlaceTypes*/
+        nearbyPlaceTypes = nearbyPlaceTypes
     )
 }
