@@ -418,7 +418,6 @@ fun TopBar(
     )
     if (showCurrencyPopup) {
         CurrencyPopup(
-            homeViewModel = homeViewModel,
             currencyViewModel = currencyViewModel,
             currencyType = currencyType,
             onDismiss = { showCurrencyPopup = false }
@@ -427,7 +426,6 @@ fun TopBar(
 }
 @Composable
 fun CurrencyPopup(
-    homeViewModel: HomeViewModel,
     currencyViewModel: CurrencyViewModel,
     currencyType: CurrencyType,
     onDismiss: () -> Unit
@@ -479,7 +477,7 @@ fun CurrencyPopup(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = { onDismiss() }) {
-                Text("Close Popup")
+                Text("Cancel")
             }
         }
     }

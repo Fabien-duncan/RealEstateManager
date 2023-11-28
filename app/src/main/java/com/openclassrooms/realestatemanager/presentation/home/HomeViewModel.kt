@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(
         maxPrice: Int,
     ){
 
-        getFilteredPropertiesUseCase.invoke(nearbyPlaceTypes = listOf(NearbyPlacesType.PARC))
+        getFilteredPropertiesUseCase.invoke(isSold = false)
             .onEach {
                 _state.value = HomeState(properties = ScreenViewState.Success(it))
             }
