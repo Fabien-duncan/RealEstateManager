@@ -66,6 +66,7 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
+import com.openclassrooms.realestatemanager.presentation.property_type_picker.PropertyTypePicker
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -172,7 +173,7 @@ fun PriceAndAgentSection(
             onValueChange = {
                 addEditViewModel.onPriceChange(it)
             },
-            placeholder = { Text(text = "price in $") },
+            placeholder = { Text(text = "price") },
             modifier = Modifier
                 .padding(8.dp)
                 .weight(1f),
@@ -288,65 +289,27 @@ fun MediaSection(addEditViewModel: AddEditViewModel) {
 @Composable
 fun DescriptionTypePickerSection(addEditViewModel: AddEditViewModel) {
     var state = addEditViewModel.state
-    var onTypeSelected by remember { mutableStateOf(PropertyType.HOUSE)    }
-    var textFieldSize by remember { mutableStateOf(Size.Zero)}
-    var isTypePickerExpanded by remember { mutableStateOf(false) }
-    val icon = if (isTypePickerExpanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
 
-    Text(
-        text = "Description",
-        fontSize = 22.sp,
-        fontWeight = FontWeight.Bold,
-        color = Color.DarkGray,
-        modifier = Modifier
-            .padding(8.dp)
-    )
+    println("property Type : ${state.type}")
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
     ) {
-        OutlinedTextField(
-            value = onTypeSelected.name,
-            onValueChange = {},
-            readOnly = true,
-            singleLine = true,
+        Text(
+            text = "Description",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.DarkGray,
             modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { coordinates ->
-                    textFieldSize = coordinates.size.toSize()
-                },
-            trailingIcon = {
-                Icon(
-                    icon, "selection arrow",
-                    Modifier.clickable { isTypePickerExpanded = !isTypePickerExpanded },
-                )
-            }
+                .padding(8.dp)
         )
-        DropdownMenu(
-            expanded = isTypePickerExpanded,
-            onDismissRequest = { isTypePickerExpanded = false },
-            modifier = Modifier
-                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-                /*.border(border = BorderStroke(width = 1.dp, color = Color.DarkGray))*/
-                .background(Color.LightGray)
-        ) {
-            PropertyType.values().forEach { type ->
-                DropdownMenuItem(
-                    onClick = {
-                        onTypeSelected = type
-                        isTypePickerExpanded = false
-                        addEditViewModel.onTypeChange(type)
-                    },
-                    text = {Text(text = type.name)}
 
-                )
-            }
-        }
+        PropertyTypePicker(addEditViewModel = addEditViewModel, propertyType = state.type)
     }
+
+    println("property description : ${state.description}")
 
     OutlinedTextField(
         value = state.description ?: "",

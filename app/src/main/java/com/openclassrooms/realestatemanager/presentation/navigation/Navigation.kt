@@ -27,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,6 +56,7 @@ import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditScre
 import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditViewModel
 import com.openclassrooms.realestatemanager.presentation.detail.DetailAssistedFactory
 import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
+import com.openclassrooms.realestatemanager.presentation.home.BottomSheetPropertyCard
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeState
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
@@ -89,6 +91,8 @@ fun Navigation(
 
     var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened, isAddOpened = isAddOpened || isEditOpened)
 
+    var showBottomSheet by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopBar(
@@ -114,7 +118,7 @@ fun Navigation(
                     addEditViewModel.resetState()
                 },
                 onSearchedPressed = {
-                    homeViewModel.getFilteredProperties(4000000,5600000)
+                    showBottomSheet = true
                 }
             )
         }
@@ -183,6 +187,14 @@ fun Navigation(
                 ) {
                     isAddOpened = false
                 }
+            }
+        }
+
+        if (showBottomSheet){
+            ModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false }) {
+
+                BottomSheetFilter()
             }
         }
     }
