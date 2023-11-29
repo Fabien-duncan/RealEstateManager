@@ -38,15 +38,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.enums.CurrencyType
+import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import com.openclassrooms.realestatemanager.presentation.create_edit.DatePicker
+import com.openclassrooms.realestatemanager.presentation.create_edit.NearbyAmenities
 import com.openclassrooms.realestatemanager.presentation.property_type_picker.PropertyTypePicker
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
 fun BottomSheetFilter(
-
+    filterViewModel: FilterViewModel
 ){
     val currentCurrency = CurrencyType.Dollar
     val scrollState = rememberScrollState()
@@ -63,7 +65,7 @@ fun BottomSheetFilter(
                 color = Color.DarkGray,
                 modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
             )
-            PersonFilter()
+            PersonFilter(filterViewModel = filterViewModel)
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -73,8 +75,8 @@ fun BottomSheetFilter(
             ){
                 Text(text = "Type: ")
                 PropertyTypePicker(
-                    onChangedTypePicker = { propertyType -> println("property type now is: $propertyType") },
-                    propertyType = null
+                    onChangedTypePicker = { propertyType -> filterViewModel.onTypeChange(propertyType) },
+                    propertyType = filterViewModel.state.propertyType
                 )
             }
 
@@ -85,40 +87,72 @@ fun BottomSheetFilter(
                     CurrencyType.Dollar -> painterResource(id = R.drawable.dollar_image)
                     CurrencyType.Euro -> painterResource(id = R.drawable.euro_image)
                 },
+                minValue = filterViewModel.state.minPrice,
+                maxValue = filterViewModel.state.maxPrice,
+                onMinValueChanged = {value -> filterViewModel.onMinPriceChange(value)},
+                onMaxValueChanged = {value -> filterViewModel.onMaxPriceChange(value)},
             )
 
             MinMaxFilter(
                 min = "Min m²",
                 max = "Max m²",
                 image = painterResource(id = R.drawable.area_image),
+                minValue = filterViewModel.state.minSurface,
+                maxValue = filterViewModel.state.maxSurface,
+                onMinValueChanged = {value -> filterViewModel.onMinSurfaceChange(value)},
+                onMaxValueChanged = {value -> filterViewModel.onMaxSurfaceChange(value)},
             )
 
             MinMaxFilter(
                 min = "Min Rooms",
                 max = "Max Rooms",
                 image = painterResource(id = R.drawable.number_rooms_image),
+                minValue = filterViewModel.state.minRooms,
+                maxValue = filterViewModel.state.maxRooms,
+                onMinValueChanged = {value -> filterViewModel.onMinRoomsChange(value)},
+                onMaxValueChanged = {value -> filterViewModel.onMaxRoomsChange(value)},
             )
 
             MinMaxFilter(
                 min = "Min Bathrooms",
                 max = "Max Bathroom",
                 image = painterResource(id = R.drawable.number_bathrooms_image),
+                minValue = filterViewModel.state.minBathrooms,
+                maxValue = filterViewModel.state.maxBathrooms,
+                onMinValueChanged = {value -> filterViewModel.onMinBathroomsChange(value)},
+                onMaxValueChanged = {value -> filterViewModel.onMaxBathroomsChange(value)},
             )
 
             MinMaxFilter(
                 min = "Min Bedrooms",
                 max = "Max Bedroom",
                 image = painterResource(id = R.drawable.number_bedrooms_image),
+                minValue = filterViewModel.state.minBedrooms,
+                maxValue = filterViewModel.state.maxBedrooms,
+                onMinValueChanged = {value -> filterViewModel.onMinBedroomsChange(value)},
+                onMaxValueChanged = {value -> filterViewModel.onMaxBedroomsChange(value)},
             )
 
             MinMaxFilter(
                 min = "Min Photos",
                 max = null,
-                image = painterResource(id = R.drawable.photo_image)
+                image = painterResource(id = R.drawable.photo_image),
+                minValue = filterViewModel.state.minPhotos,
+                maxValue = null,
+                onMinValueChanged = {value -> filterViewModel.onMinPhotosChange(value)},
+                onMaxValueChanged = {},
             )
             MinMaxDatePicker(date = null, dateTitle = "Created Date")
 
             MinMaxDatePicker(date = null, dateTitle = "Sold Date")
+
+            var nearbyPlaces = remember { mutableStateOf<List<NearbyPlacesType>>(mutableListOf()) }
+            NearbyAmenities(
+                isPortrait = true, nearbyPlaces = nearbyPlaces.value,
+                onNearbyPlaceChanged = {
+                    nearbyPlaces.value = nearbyPlaces.value + it
+                },
+            )
         }
 
         Row(modifier = Modifier
@@ -126,10 +160,14 @@ fun BottomSheetFilter(
             .height(56.dp)
             .padding(bottom = 8.dp)
         ){
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1F).padding(8.dp)) {
+            Button(onClick = { /*TODO*/ }, modifier = Modifier
+                .weight(1F)
+                .padding(8.dp)) {
                 Text(text = "Cancel")
             }
-            Button(onClick = { /*TODO*/ },modifier = Modifier.weight(1F).padding(8.dp)) {
+            Button(onClick = { /*TODO*/ },modifier = Modifier
+                .weight(1F)
+                .padding(8.dp)) {
                 Text(text = "Filter")
             }
         }
@@ -137,7 +175,7 @@ fun BottomSheetFilter(
 }
 @Composable
 private fun PersonFilter(
-
+    filterViewModel: FilterViewModel
 ){
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 8.dp, top = 0.dp)){
         Image(
@@ -145,16 +183,15 @@ private fun PersonFilter(
             contentDescription = "Agent",
         )
         OutlinedTextField(
-            value = "",
+            value = filterViewModel.state.agentName ?: "",
             onValueChange = {
-
+                filterViewModel.onAgentChanged(it)
             },
             placeholder = { Text(text = "Agent name") },
             label = { Text(text = "Agent name") },
             modifier = Modifier
                 .padding(horizontal = 4.dp)
                 .weight(1F),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             maxLines = 1,
         )
     }
@@ -164,7 +201,11 @@ private fun PersonFilter(
 private fun MinMaxFilter(
     min:String,
     max:String?,
-    image:Painter
+    image:Painter,
+    minValue:Int?,
+    maxValue:Int?,
+    onMinValueChanged:(String?) -> Unit,
+    onMaxValueChanged:(String?) -> Unit
 ){
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 8.dp)) {
         Image(
@@ -172,9 +213,9 @@ private fun MinMaxFilter(
             contentDescription = "dollar"
         )
         OutlinedTextField(
-            value = "",
+            value = "${ minValue ?: "" }",
             onValueChange = {
-
+                onMinValueChanged.invoke(it)
             },
             placeholder = { Text(text = "Min") },
             label = { Text(text = min, maxLines = 1, overflow = TextOverflow.Ellipsis) },
@@ -187,9 +228,9 @@ private fun MinMaxFilter(
         )
         if (max != null){
             OutlinedTextField(
-                value = "",
+                value = "${ maxValue ?: "" }",
                 onValueChange = {
-
+                    onMaxValueChanged.invoke(it)
                 },
                 placeholder = { Text(text = "Max ") },
                 label = { Text(text = max, maxLines = 1, overflow = TextOverflow.Ellipsis) },

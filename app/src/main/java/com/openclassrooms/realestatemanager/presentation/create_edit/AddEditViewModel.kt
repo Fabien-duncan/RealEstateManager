@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
+import com.openclassrooms.realestatemanager.common.utils.NumberUtils
 import com.openclassrooms.realestatemanager.domain.geocoding.LatLongEntity
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
@@ -113,25 +114,25 @@ class AddEditViewModel @Inject constructor(
         setFormIsValid()
     }
     fun onPriceChange(price:String?){
-        state = state.copy(price = convertToIntOrNull(price))
+        state = state.copy(price = NumberUtils.convertToIntOrNull(price))
         setFormIsValid()
     }
     fun onAreaChange(area:String?){
-        state = state.copy(area = convertToIntOrNull(area))
+        state = state.copy(area = NumberUtils.convertToIntOrNull(area))
         setFormIsValid()
     }
     fun onRoomsChange(rooms: String?) {
-        state = state.copy(rooms = convertToIntOrNull(rooms))
+        state = state.copy(rooms = NumberUtils.convertToIntOrNull(rooms))
         setFormIsValid()
     }
 
     fun onBedroomsChange(bedrooms: String?) {
-        state = state.copy(bedrooms = convertToIntOrNull(bedrooms))
+        state = state.copy(bedrooms = NumberUtils.convertToIntOrNull(bedrooms))
         setFormIsValid()
     }
 
     fun onBathroomsChange(bathrooms: String?) {
-        state = state.copy(bathrooms = convertToIntOrNull(bathrooms))
+        state = state.copy(bathrooms = NumberUtils.convertToIntOrNull(bathrooms))
         setFormIsValid()
     }
 
@@ -163,7 +164,7 @@ class AddEditViewModel @Inject constructor(
     }
 
     fun onNumberChange(number: String?) {
-        state = state.copy(number = convertToIntOrNull(number))
+        state = state.copy(number = NumberUtils.convertToIntOrNull(number))
         setFormIsValid()
     }
     fun onStreetChange(street: String) {
@@ -223,20 +224,13 @@ class AddEditViewModel @Inject constructor(
             nearbyPlaces.add(it)
         }
         if (nearbyPlaces != null && nearbyPlaces.contains(nearbyPlace)){
-            println("removing nearby")
             nearbyPlaces.remove(nearbyPlace)
         }else{
-            println("adding nearby")
             nearbyPlaces.add(nearbyPlace)
         }
         state = state.copy(nearbyPlaces = nearbyPlaces)
         setFormIsValid()
-
-        println("These are all the values $state")
     }
-    /*fun onPhotosChanged(photos: List<>){
-        state = state.copy(nearbyPlaces = nearbyPlaces)
-    }*/
     fun onIsAddressValidChanged(){
 
         isAddressValid = !isAddressValid
@@ -310,7 +304,7 @@ class AddEditViewModel @Inject constructor(
 
     }
 
-    private fun convertToIntOrNull(value:String?):Int? {
+    /*private fun convertToIntOrNull(value:String?):Int? {
         return if (value.isNullOrBlank()) null
         else {
             try {
@@ -319,18 +313,8 @@ class AddEditViewModel @Inject constructor(
                 null
             }
         }
-    }
-    private fun convertToDoubleOrNull(value:String?):Double? {
-        return if (value.isNullOrBlank()) null
-        else {
-            try {
-                value.toDouble()
-            } catch (e: NumberFormatException) {
-                null
-            }
-        }
-    }
-    fun resetFinishedState(){
+    }*/
+        fun resetFinishedState(){
         _isAddOrUpdatePropertyFinished.value = false
     }
 

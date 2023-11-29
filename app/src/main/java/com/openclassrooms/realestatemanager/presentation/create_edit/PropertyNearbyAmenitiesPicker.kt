@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
-import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 
 @Composable

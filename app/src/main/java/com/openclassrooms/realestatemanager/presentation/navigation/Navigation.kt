@@ -71,6 +71,7 @@ fun Navigation(
     val homeViewModel: HomeViewModel = viewModel()
     val addEditViewModel: AddEditViewModel = viewModel()
     val currencyViewModel: CurrencyViewModel = viewModel()
+    val filterViewModel: FilterViewModel = viewModel()
 
     Log.d("navigation", "currency is: ${currencyViewModel.getCurrency()}")
 
@@ -194,7 +195,7 @@ fun Navigation(
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false }) {
 
-                BottomSheetFilter()
+                BottomSheetFilter(filterViewModel = filterViewModel)
             }
         }
     }
