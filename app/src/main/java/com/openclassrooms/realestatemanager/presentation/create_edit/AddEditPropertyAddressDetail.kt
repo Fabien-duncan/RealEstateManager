@@ -60,7 +60,8 @@ fun AddressDetail(
                         onNumberChanged.invoke(it)
                     },
                     placeholder = { Text(text = "number") },
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(4.dp),
+                    singleLine = true,
                 )
                 OutlinedTextField(
                     value = state.extra ?: "",
@@ -68,7 +69,8 @@ fun AddressDetail(
                         onExtraChanged.invoke(it)
                     },
                     placeholder = { Text(text = "extra") },
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(4.dp),
+                    singleLine = true,
                 )
                 OutlinedTextField(
                     value = state.state ?: "",
@@ -77,7 +79,8 @@ fun AddressDetail(
                     },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "state") },
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(4.dp),
+                    singleLine = true,
                 )
                 OutlinedTextField(
                     value = state.postalCode ?: "",
@@ -86,7 +89,8 @@ fun AddressDetail(
                     },
                     //label = { Text(text = "type") },
                     placeholder = { Text(text = "post code") },
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(4.dp),
+                    singleLine = true,
                 )
             }
         }
@@ -98,7 +102,8 @@ fun AddressDetail(
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "street") },
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp),
+                singleLine = true,
             )
             OutlinedTextField(
                 value = state.city ?: "",
@@ -107,7 +112,8 @@ fun AddressDetail(
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "city") },
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp),
+                singleLine = true,
             )
             OutlinedTextField(
                 value = state.country ?: "",
@@ -116,7 +122,8 @@ fun AddressDetail(
                 },
                 //label = { Text(text = "type") },
                 placeholder = { Text(text = "country") },
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp),
+                singleLine = true,
             )
         }
     }

@@ -48,9 +48,10 @@ import java.util.Date
 fun BottomSheetFilter(
     filterViewModel: FilterViewModel,
     homeViewModel: HomeViewModel,
+    currencyViewModel: CurrencyViewModel,
     onCloseSheet:()->Unit
 ){
-    val currentCurrency = CurrencyType.Dollar
+    val currentCurrency = currencyViewModel.currentCurrency
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom) {
         Column(

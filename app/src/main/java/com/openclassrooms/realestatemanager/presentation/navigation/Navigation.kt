@@ -196,7 +196,9 @@ fun Navigation(
                 onDismissRequest = { showBottomSheet = false }) {
 
                 BottomSheetFilter(
-                    filterViewModel = filterViewModel, homeViewModel = homeViewModel,
+                    filterViewModel = filterViewModel,
+                    homeViewModel = homeViewModel,
+                    currencyViewModel = currencyViewModel,
                     onCloseSheet = {
                         showBottomSheet = false
                     },
@@ -419,13 +421,15 @@ fun TopBar(
 
                     }
                 }
-                IconButton(onClick = { onSearchedPressed.invoke() }) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = Color.White
-                    )
+                if (screenType == ScreenType.ListWithDetail || screenType == ScreenType.List) {
+                    IconButton(onClick = { onSearchedPressed.invoke() }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = Color.White
+                        )
 
+                    }
                 }
             }
         },

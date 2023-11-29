@@ -6,13 +6,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllAvailablePropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
+import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrentLocationUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyAddressUseCase
+import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.presentation.navigation.FilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private val getPropertyAddressUseCase: GetPropertyAddressUseCase,
     private val getFilteredPropertiesUseCase: GetFilteredPropertiesUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
+    private val getCurrencyUseCase: GetCurrencyUseCase,
 ):ViewModel(){
     private val _state:MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
     val state:StateFlow<HomeState> = _state.asStateFlow()
@@ -58,12 +62,24 @@ class HomeViewModel @Inject constructor(
     fun getFilteredProperties(
         filterState: FilterState
     ){
-        println("Person Name: ${filterState.agentName}")
+        val minPrice: Int?
+        val maxPrice: Int?
+        when(getCurrencyUseCase.invoke()){
+            CurrencyType.Euro -> {
+                minPrice = if (filterState.minPrice == null) null else Utils.convertEuroToDollar(filterState.minPrice)
+                maxPrice = if (filterState.maxPrice == null) null else Utils.convertEuroToDollar(filterState.maxPrice)
+            }
+            CurrencyType.Dollar -> {
+                minPrice = filterState.minPrice
+                maxPrice = filterState.maxPrice
+            }
+        }
+
         getFilteredPropertiesUseCase.invoke(
             agentName = filterState.agentName,
             propertyType = filterState.propertyType,
-            minPrice = filterState.minPrice,
-            maxPrice = filterState.maxPrice,
+            minPrice = minPrice,
+            maxPrice = maxPrice,
             minSurfaceArea = filterState.minSurface,
             maxSurfaceArea = filterState.maxSurface,
             minNumRooms = filterState.minRooms,

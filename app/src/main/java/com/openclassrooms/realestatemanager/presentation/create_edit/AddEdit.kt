@@ -185,7 +185,8 @@ fun PriceAndAgentSection(
                     },
                     contentDescription = "dollar"
                 )
-            }
+            },
+            singleLine = true,
         )
         OutlinedTextField(
             value = state.agentName ?: "",
@@ -202,7 +203,9 @@ fun PriceAndAgentSection(
                     painter = painterResource(id = R.drawable.agent_24),
                     contentDescription = "Agent"
                 )
-            }
+            },
+            singleLine = true,
+
         )
     }
 }
