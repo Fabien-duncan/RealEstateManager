@@ -156,8 +156,8 @@ fun BottomSheetFilter(
                     filterViewModel.onMaxCreatedDateChanged(null)
                 }
             )
-            var isSold = remember { mutableStateOf(false) }
-            var isAvailable  = remember { mutableStateOf(false) }
+            var isSold = remember { mutableStateOf(filterViewModel.state.isSold ?: false)}
+            var isAvailable  = remember { mutableStateOf(if (filterViewModel.state.isSold == null) false else !filterViewModel.state.isSold!!) }
             val updatesStateIsSold = {
                 if (isAvailable.value == isSold.value) filterViewModel.onIsSoldChanged(null)
                 else filterViewModel.onIsSoldChanged(isSold.value)

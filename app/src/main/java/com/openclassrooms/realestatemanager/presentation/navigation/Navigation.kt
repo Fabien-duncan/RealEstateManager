@@ -37,6 +37,8 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -79,9 +81,18 @@ fun Navigation(
 
     val isExpanded = windowSize == WindowSizeType.Expanded
 
-    var index by remember{ mutableStateOf(0) }
+    var index by remember{ mutableIntStateOf(0) }
 
-    var id by remember{ mutableStateOf(1L) }
+    var id by remember{ mutableLongStateOf(
+            when(state.properties){
+                is ScreenViewState.Error -> 1L
+                ScreenViewState.Loading -> 1L
+                is ScreenViewState.Success -> {
+                        (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].id
+                }
+            }
+        )
+    }
 
     var isItemOpened by remember { mutableStateOf(false) }
 
@@ -121,6 +132,7 @@ fun Navigation(
                 onSearchedPressed = {
                     showBottomSheet = true
                 }
+
             )
         }
     ) {
@@ -201,6 +213,7 @@ fun Navigation(
                     currencyViewModel = currencyViewModel,
                     onCloseSheet = {
                         showBottomSheet = false
+                        id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].id //needs to wait until the properties has been updated
                     },
                 )
             }
