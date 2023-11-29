@@ -37,9 +37,10 @@ class PropertyRepositoryImpl @Inject constructor(
 
         propertyDao.insert(addressRoomEntity)
 
-        property.nearbyPlaces?.let {
-            val nearbyPlace =propertyMapper.nearbyPlacesToRoomEntities(it, propertyId)
-            propertyDao.insertNearbyPlaces(nearbyPlace)
+        property.nearbyPlaces?.let { nearbyPlacesType ->
+            val nearbyPlace =propertyMapper.nearbyPlacesToRoomEntities(nearbyPlacesType, propertyId)
+            val nearbyPlacesIds = propertyDao.insertNearbyPlaces(nearbyPlace)
+            propertyDao.clearNearbyPlacesForProperty(propertyId, nearbyPlacesIds)
         }
 
         property.photos?.let {

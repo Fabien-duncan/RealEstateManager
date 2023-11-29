@@ -17,13 +17,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
+import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 
 @Composable
 fun NearbyAmenities(
-    isLargeView:Boolean,
     isPortrait: Boolean = false,
-    addEditState: AddEditState,
+    nearbyPlaces: List<NearbyPlacesType>?,
     onNearbyPlaceChanged: (NearbyPlacesType) -> Unit,
 ){
     Text(
@@ -43,17 +43,17 @@ fun NearbyAmenities(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         items(NearbyPlacesType.values()){ nearbyType ->
-            NearbyCheckBox(nearbyPlacesType = nearbyType, addEditState = addEditState, onNearbyPlaceChanged = onNearbyPlaceChanged)
+            NearbyCheckBox(nearbyPlacesType = nearbyType, nearbyPlaces = nearbyPlaces, onNearbyPlaceChanged = onNearbyPlaceChanged)
         }
     }
 }
 @Composable
 private fun NearbyCheckBox(
     nearbyPlacesType: NearbyPlacesType,
-    addEditState: AddEditState,
+    nearbyPlaces: List<NearbyPlacesType>?,
     onNearbyPlaceChanged: (NearbyPlacesType) -> Unit,
 ){
-    val isTicked = if (addEditState.nearbyPlaces != null) addEditState.nearbyPlaces.contains(nearbyPlacesType) else false
+    val isTicked = nearbyPlaces?.contains(nearbyPlacesType) ?: false
 
     Row(
         verticalAlignment = Alignment.CenterVertically

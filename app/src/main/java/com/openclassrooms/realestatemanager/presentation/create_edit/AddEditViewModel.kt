@@ -223,8 +223,10 @@ class AddEditViewModel @Inject constructor(
             nearbyPlaces.add(it)
         }
         if (nearbyPlaces != null && nearbyPlaces.contains(nearbyPlace)){
+            println("removing nearby")
             nearbyPlaces.remove(nearbyPlace)
         }else{
+            println("adding nearby")
             nearbyPlaces.add(nearbyPlace)
         }
         state = state.copy(nearbyPlaces = nearbyPlaces)

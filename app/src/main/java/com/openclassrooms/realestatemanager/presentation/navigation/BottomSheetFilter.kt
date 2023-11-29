@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
@@ -47,9 +49,13 @@ fun BottomSheetFilter(
 
 ){
     val currentCurrency = CurrencyType.Dollar
+    val scrollState = rememberScrollState()
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom) {
-        Column(modifier = Modifier
-            .weight(0.5F)) {
+        Column(
+            modifier = Modifier
+                .weight(0.5F)
+                .verticalScroll(state = scrollState),
+        ) {
             Text(
                 text = "Filter Options",
                 fontSize = 22.sp,
@@ -117,11 +123,13 @@ fun BottomSheetFilter(
 
         Row(modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)){
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1F)) {
+            .height(56.dp)
+            .padding(bottom = 8.dp)
+        ){
+            Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1F).padding(8.dp)) {
                 Text(text = "Cancel")
             }
-            Button(onClick = { /*TODO*/ },modifier = Modifier.weight(1F)) {
+            Button(onClick = { /*TODO*/ },modifier = Modifier.weight(1F).padding(8.dp)) {
                 Text(text = "Filter")
             }
         }
@@ -237,7 +245,7 @@ private fun MinMaxDatePicker(
             println("tempDate is : $tempMinDate")
             Text(
                 fontStyle = FontStyle.Normal,
-                text = if (tempMinDate.value != null) dateFormat.format(tempMinDate.value) else "Select max date",
+                text = if (tempMinDate.value != null) dateFormat.format(tempMinDate.value) else "Select min date",
                 modifier = Modifier
                     .padding(start = 12.dp)
 
@@ -263,7 +271,7 @@ private fun MinMaxDatePicker(
             println("tempDate is : $tempMaxDate")
             Text(
                 fontStyle = FontStyle.Normal,
-                text = if (tempMaxDate.value != null) dateFormat.format(tempMaxDate.value) else "Select min date",
+                text = if (tempMaxDate.value != null) dateFormat.format(tempMaxDate.value) else "Select max date",
                 modifier = Modifier
                     .padding(start = 12.dp)
 

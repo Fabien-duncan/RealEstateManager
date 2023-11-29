@@ -133,9 +133,8 @@ private fun AddEditView(
         AddressSection(addEditViewModel = addEditViewModel, isPortrait = isPortrait)
 
         NearbyAmenities(
-            isLargeView = isLargeView,
             isPortrait = isPortrait,
-            addEditState = state,
+            nearbyPlaces = state.nearbyPlaces,
             onNearbyPlaceChanged = {
                 addEditViewModel.onNearbyPlacesChanged(it)
             }

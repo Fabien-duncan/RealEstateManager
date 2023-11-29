@@ -27,10 +27,13 @@ interface PropertyDao {
     fun insert(photos: List<PropertyPhotos>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertNearbyPlaces(nearbyPlaces: List<PropertyNearbyPlaces>)
+    fun insertNearbyPlaces(nearbyPlaces: List<PropertyNearbyPlaces>):List<Long>
 
     @Update(onConflict =  OnConflictStrategy.REPLACE)
     fun update(property: Property)
+
+    @Query("DELETE FROM property_nearby_places WHERE property_id = :propertyId AND id NOT IN (:ids)")
+    fun clearNearbyPlacesForProperty(propertyId:Long, ids:List<Long>)
 
     @Query("SELECT * FROM properties WHERE id = :propertyId")
     fun getPropertyById(propertyId: Long): Flow<Property>
