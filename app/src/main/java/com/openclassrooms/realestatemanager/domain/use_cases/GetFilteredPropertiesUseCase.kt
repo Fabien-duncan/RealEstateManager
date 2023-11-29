@@ -13,6 +13,7 @@ class GetFilteredPropertiesUseCase @Inject constructor(
     private val repository: Repository
 ) {
     operator fun invoke(
+        agentName:String? = null,
         propertyType: PropertyType?=null,
         minPrice: Int?=null,
         maxPrice: Int?=null,
@@ -32,6 +33,7 @@ class GetFilteredPropertiesUseCase @Inject constructor(
         minNumPictures: Int? = null,
         nearbyPlaceTypes: List<NearbyPlacesType>? = null,
     ):Flow<List<PropertyModel>> = repository.getFilteredProperties(
+        agentName = agentName,
         propertyType = propertyType,
         minPrice = minPrice,
         maxPrice = maxPrice,

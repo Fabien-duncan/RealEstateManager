@@ -90,6 +90,7 @@ class PropertyRepositoryImpl @Inject constructor(
     }
 
     override fun getFilteredProperties(
+        agentName: String?,
         propertyType: PropertyType?,
         minPrice: Int?,
         maxPrice: Int?,
@@ -111,6 +112,7 @@ class PropertyRepositoryImpl @Inject constructor(
     ): Flow<List<PropertyModel>> {
         return if (nearbyPlaceTypes != null) {
             propertyDao.getFilterPropertiesWithNearByPlaces(
+                agentName = agentName,
                 propertyType = propertyType,
                 minPrice = minPrice,
                 maxPrice = maxPrice,
@@ -132,6 +134,7 @@ class PropertyRepositoryImpl @Inject constructor(
             )
         }else{
             propertyDao.filterProperties(
+                agentName = agentName,
                 propertyType = propertyType,
                 minPrice = minPrice,
                 maxPrice = maxPrice,

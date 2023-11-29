@@ -62,6 +62,9 @@ class FilterViewModel:ViewModel() {
         state = state.copy(maxCreationDate = date)
         return checkCreatedDatesAreValid()
     }
+    fun onIsSoldChanged(isSold: Boolean?){
+        state = state.copy(isSold = isSold)
+    }
     fun onMinSoldDateChanged(date: Date?):Boolean{
         state = state.copy(minSoldDate = date)
         return checkSoldDatesAreValid()
@@ -107,6 +110,7 @@ data class FilterState(
     val minPictures:Int?=null,
     val minCreationDate:Date?=null,
     val maxCreationDate:Date?=null,
+    val isSold:Boolean?=null,
     val minSoldDate:Date?=null,
     val maxSoldDate:Date?=null,
     val nearbyPlaces:List<NearbyPlacesType>?=null,

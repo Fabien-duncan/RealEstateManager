@@ -58,7 +58,9 @@ class HomeViewModel @Inject constructor(
     fun getFilteredProperties(
         filterState: FilterState
     ){
+        println("Person Name: ${filterState.agentName}")
         getFilteredPropertiesUseCase.invoke(
+            agentName = filterState.agentName,
             propertyType = filterState.propertyType,
             minPrice = filterState.minPrice,
             maxPrice = filterState.maxPrice,
@@ -73,6 +75,7 @@ class HomeViewModel @Inject constructor(
             minNumPictures = filterState.minPictures,
             minCreationDate = filterState.minCreationDate,
             maxCreationDate = filterState.maxCreationDate,
+            isSold = filterState.isSold,
             minSoldDate = filterState.minSoldDate,
             maxSoldDate = filterState.maxSoldDate,
             nearbyPlaceTypes = filterState.nearbyPlaces

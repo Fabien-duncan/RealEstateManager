@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -46,7 +47,8 @@ import java.util.Date
 @Composable
 fun BottomSheetFilter(
     filterViewModel: FilterViewModel,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    onCloseSheet:()->Unit
 ){
     val currentCurrency = CurrencyType.Dollar
     val scrollState = rememberScrollState()
@@ -153,18 +155,47 @@ fun BottomSheetFilter(
                     filterViewModel.onMaxCreatedDateChanged(null)
                 }
             )
-
-            MinMaxDatePicker(
-                mindate = filterViewModel.state.minSoldDate,
-                maxdate = filterViewModel.state.maxSoldDate,
-                onMinDateChanged = {filterViewModel.onMinSoldDateChanged(it)},
-                onMaxDateChanged = {filterViewModel.onMaxSoldDateChanged(it)},
-                dateTitle = "Sold Date",
-                onClearClicked = {
-                    filterViewModel.onMinSoldDateChanged(null)
-                    filterViewModel.onMaxSoldDateChanged(null)
-                }
-            )
+            var isSold = remember { mutableStateOf(false) }
+            var isAvailable  = remember { mutableStateOf(false) }
+            val updatesStateIsSold = {
+                if (isAvailable.value == isSold.value) filterViewModel.onIsSoldChanged(null)
+                else filterViewModel.onIsSoldChanged(isSold.value)
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
+            ){
+                Text(text = "Is Sold")
+                Checkbox(
+                    checked = isSold.value,
+                    onCheckedChange = {
+                        isSold.value = !isSold.value
+                        updatesStateIsSold.invoke()
+                    }
+                )
+                Text(text = "Is Available")
+                Checkbox(
+                    checked = isAvailable.value,
+                    onCheckedChange = {
+                        isAvailable.value = !isAvailable.value
+                        updatesStateIsSold.invoke()
+                    }
+                )
+            }
+            if (isSold.value){
+                MinMaxDatePicker(
+                    mindate = filterViewModel.state.minSoldDate,
+                    maxdate = filterViewModel.state.maxSoldDate,
+                    onMinDateChanged = { filterViewModel.onMinSoldDateChanged(it) },
+                    onMaxDateChanged = { filterViewModel.onMaxSoldDateChanged(it) },
+                    dateTitle = "Sold Date",
+                    onClearClicked = {
+                        filterViewModel.onMinSoldDateChanged(null)
+                        filterViewModel.onMaxSoldDateChanged(null)
+                    }
+                )
+            }
 
             //var nearbyPlaces = remember { mutableStateOf<List<NearbyPlacesType>>(mutableListOf()) }
             NearbyAmenities(
@@ -180,21 +211,36 @@ fun BottomSheetFilter(
             .height(56.dp)
             .padding(bottom = 8.dp)
         ){
-            Button(onClick = {
-
-            }, modifier = Modifier
-                .weight(1F)
-                .padding(8.dp)) {
+            Button(
+                onClick = {
+                    onCloseSheet.invoke()
+                },
+                modifier = Modifier
+                    .weight(1F)
+                    .padding(8.dp),
+            ) {
                 Text(text = "Cancel")
             }
-            Button(onClick = { homeViewModel.getFilteredProperties(filterViewModel.state)},modifier = Modifier
-                .weight(1F)
-                .padding(8.dp)) {
+            Button(
+                onClick = {
+                    homeViewModel.getFilteredProperties(filterViewModel.state)
+                    onCloseSheet.invoke()
+                },
+                modifier = Modifier
+                    .weight(1F)
+                    .padding(8.dp),
+            ) {
                 Text(text = "Filter")
             }
-            Button(onClick = { homeViewModel.getAllProperty()},modifier = Modifier
-                .weight(1F)
-                .padding(8.dp)) {
+            Button(
+                onClick = {
+                    homeViewModel.getAllProperty()
+                    onCloseSheet.invoke()
+                },
+                modifier = Modifier
+                    .weight(1F)
+                    .padding(8.dp),
+            ) {
                 Text(text = "Clear")
             }
         }
@@ -345,7 +391,9 @@ private fun MinMaxDatePicker(
 
             )
         }
-        Button(onClick = { onClearClicked.invoke() }, modifier = Modifier.weight(0.8f).padding(4.dp)) {
+        Button(onClick = { onClearClicked.invoke() }, modifier = Modifier
+            .weight(0.8f)
+            .padding(4.dp)) {
             Text(text = "Clear")
         }
         DatePicker(

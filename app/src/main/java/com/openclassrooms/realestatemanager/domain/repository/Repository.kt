@@ -22,6 +22,7 @@ interface Repository {
     fun getPropertyAddress(addressId: Long):Flow<Address>
     fun getPropertyNearbyPlaces(propertyId: Long):Flow<List<PropertyNearbyPlaces>>
     fun getFilteredProperties(
+        agentName: String? = null,
         propertyType: PropertyType?=null,
         minPrice: Int?=null,
         maxPrice: Int?=null,
