@@ -29,8 +29,9 @@ import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 
 @Composable
 fun PropertyTypePicker(
-    onChangedTypePicker: (PropertyType) -> Unit,
-    propertyType: PropertyType?
+    onChangedTypePicker: (PropertyType?) -> Unit,
+    propertyType: PropertyType?,
+    hasNoTypeChoice:Boolean
 ){
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     var isTypePickerExpanded by remember { mutableStateOf(false) }
@@ -39,7 +40,7 @@ fun PropertyTypePicker(
     else
         Icons.Filled.KeyboardArrowDown
     OutlinedTextField(
-        value = propertyType?.name ?: PropertyType.HOUSE.name,
+        value = propertyType?.name ?: "Select Type",
         onValueChange = {},
         readOnly = true,
         singleLine = true,
@@ -70,7 +71,15 @@ fun PropertyTypePicker(
                     onChangedTypePicker.invoke(type)
                 },
                 text = { Text(text = type.name) }
-
+            )
+        }
+        if(hasNoTypeChoice){
+            DropdownMenuItem(
+                onClick = {
+                    isTypePickerExpanded = false
+                    onChangedTypePicker.invoke(null)
+                },
+                text = { Text(text = "NO TYPE") }
             )
         }
     }

@@ -1,10 +1,8 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,17 +36,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.enums.CurrencyType
-import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
-import com.openclassrooms.realestatemanager.enums.PropertyType
 import com.openclassrooms.realestatemanager.presentation.create_edit.DatePicker
 import com.openclassrooms.realestatemanager.presentation.create_edit.NearbyAmenities
+import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 import com.openclassrooms.realestatemanager.presentation.property_type_picker.PropertyTypePicker
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
 fun BottomSheetFilter(
-    filterViewModel: FilterViewModel
+    filterViewModel: FilterViewModel,
+    homeViewModel: HomeViewModel
 ){
     val currentCurrency = CurrencyType.Dollar
     val scrollState = rememberScrollState()
@@ -75,8 +73,10 @@ fun BottomSheetFilter(
             ){
                 Text(text = "Type: ")
                 PropertyTypePicker(
-                    onChangedTypePicker = { propertyType -> filterViewModel.onTypeChange(propertyType) },
-                    propertyType = filterViewModel.state.propertyType
+                    onChangedTypePicker = { propertyType -> filterViewModel.onTypeChange(propertyType)
+                    },
+                    propertyType = filterViewModel.state.propertyType,
+                    hasNoTypeChoice = true
                 )
             }
 
@@ -137,20 +137,40 @@ fun BottomSheetFilter(
                 min = "Min Photos",
                 max = null,
                 image = painterResource(id = R.drawable.photo_image),
-                minValue = filterViewModel.state.minPhotos,
+                minValue = filterViewModel.state.minPictures,
                 maxValue = null,
                 onMinValueChanged = {value -> filterViewModel.onMinPhotosChange(value)},
                 onMaxValueChanged = {},
             )
-            MinMaxDatePicker(date = null, dateTitle = "Created Date")
+            MinMaxDatePicker(
+                mindate = filterViewModel.state.minCreationDate,
+                maxdate = filterViewModel.state.maxCreationDate,
+                onMinDateChanged = {filterViewModel.onMinCreatedDateChanged(it)},
+                onMaxDateChanged = {filterViewModel.onMaxCreatedDateChanged(it)},
+                dateTitle = "Created Date",
+                onClearClicked = {
+                    filterViewModel.onMinCreatedDateChanged(null)
+                    filterViewModel.onMaxCreatedDateChanged(null)
+                }
+            )
 
-            MinMaxDatePicker(date = null, dateTitle = "Sold Date")
+            MinMaxDatePicker(
+                mindate = filterViewModel.state.minSoldDate,
+                maxdate = filterViewModel.state.maxSoldDate,
+                onMinDateChanged = {filterViewModel.onMinSoldDateChanged(it)},
+                onMaxDateChanged = {filterViewModel.onMaxSoldDateChanged(it)},
+                dateTitle = "Sold Date",
+                onClearClicked = {
+                    filterViewModel.onMinSoldDateChanged(null)
+                    filterViewModel.onMaxSoldDateChanged(null)
+                }
+            )
 
-            var nearbyPlaces = remember { mutableStateOf<List<NearbyPlacesType>>(mutableListOf()) }
+            //var nearbyPlaces = remember { mutableStateOf<List<NearbyPlacesType>>(mutableListOf()) }
             NearbyAmenities(
-                isPortrait = true, nearbyPlaces = nearbyPlaces.value,
+                isPortrait = true, nearbyPlaces = filterViewModel.state.nearbyPlaces,
                 onNearbyPlaceChanged = {
-                    nearbyPlaces.value = nearbyPlaces.value + it
+                    filterViewModel.onNearbyPlacesChanged(it)
                 },
             )
         }
@@ -160,15 +180,22 @@ fun BottomSheetFilter(
             .height(56.dp)
             .padding(bottom = 8.dp)
         ){
-            Button(onClick = { /*TODO*/ }, modifier = Modifier
+            Button(onClick = {
+
+            }, modifier = Modifier
                 .weight(1F)
                 .padding(8.dp)) {
                 Text(text = "Cancel")
             }
-            Button(onClick = { /*TODO*/ },modifier = Modifier
+            Button(onClick = { homeViewModel.getFilteredProperties(filterViewModel.state)},modifier = Modifier
                 .weight(1F)
                 .padding(8.dp)) {
                 Text(text = "Filter")
+            }
+            Button(onClick = { homeViewModel.getAllProperty()},modifier = Modifier
+                .weight(1F)
+                .padding(8.dp)) {
+                Text(text = "Clear")
             }
         }
     }
@@ -244,13 +271,15 @@ private fun MinMaxFilter(
 }
 @Composable
 private fun MinMaxDatePicker(
-    date: Date?,
+    mindate: Date?,
+    maxdate: Date?,
+    onMinDateChanged: (Date) -> Unit,
+    onMaxDateChanged: (Date) -> Unit,
+    onClearClicked:() -> Unit,
     dateTitle:String
 ){
     val dateFormat = SimpleDateFormat("dd/MM/yy")
     var openDialog = remember { mutableStateOf(false) }
-    var tempMinDate = remember { mutableStateOf<Date?>(null) }
-    var tempMaxDate = remember { mutableStateOf<Date?>(null) }
     var isMin = remember { mutableStateOf(true)}
 
     Text(
@@ -283,10 +312,9 @@ private fun MinMaxDatePicker(
                 },
             verticalArrangement = Arrangement.Center
         ) {
-            println("tempDate is : $tempMinDate")
             Text(
                 fontStyle = FontStyle.Normal,
-                text = if (tempMinDate.value != null) dateFormat.format(tempMinDate.value) else "Select min date",
+                text = if (mindate != null) dateFormat.format(mindate) else "Date min",
                 modifier = Modifier
                     .padding(start = 12.dp)
 
@@ -309,18 +337,20 @@ private fun MinMaxDatePicker(
                 },
             verticalArrangement = Arrangement.Center
         ) {
-            println("tempDate is : $tempMaxDate")
             Text(
                 fontStyle = FontStyle.Normal,
-                text = if (tempMaxDate.value != null) dateFormat.format(tempMaxDate.value) else "Select max date",
+                text = if (maxdate != null) dateFormat.format(maxdate) else "Date max",
                 modifier = Modifier
                     .padding(start = 12.dp)
 
             )
         }
+        Button(onClick = { onClearClicked.invoke() }, modifier = Modifier.weight(0.8f).padding(4.dp)) {
+            Text(text = "Clear")
+        }
         DatePicker(
             openDialog = openDialog,
-            onSoldDateChanged = { date -> if (isMin.value) tempMinDate.value = date  else  tempMaxDate.value = date },
+            onSoldDateChanged = { date -> if (isMin.value) onMinDateChanged.invoke(date)  else  onMaxDateChanged.invoke(date)},
         )
     }
 }

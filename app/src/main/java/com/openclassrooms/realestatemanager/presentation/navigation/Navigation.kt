@@ -195,7 +195,7 @@ fun Navigation(
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false }) {
 
-                BottomSheetFilter(filterViewModel = filterViewModel)
+                BottomSheetFilter(filterViewModel = filterViewModel, homeViewModel = homeViewModel)
             }
         }
     }

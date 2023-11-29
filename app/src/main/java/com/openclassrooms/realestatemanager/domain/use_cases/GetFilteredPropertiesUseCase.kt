@@ -49,6 +49,12 @@ class GetFilteredPropertiesUseCase @Inject constructor(
         minSoldDate = minSoldDate,
         maxSoldDate = maxSoldDate,
         minNumPictures = minNumPictures,
-        nearbyPlaceTypes = nearbyPlaceTypes
+        nearbyPlaceTypes =
+            if (nearbyPlaceTypes != null) {
+                if (nearbyPlaceTypes.isNotEmpty())nearbyPlaceTypes
+                else null
+            }
+            else null
+
     )
 }

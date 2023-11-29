@@ -6,23 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.common.ScreenViewState
-import com.openclassrooms.realestatemanager.common.utils.TextUtils
-import com.openclassrooms.realestatemanager.data.local.model.Property
-import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
-import com.openclassrooms.realestatemanager.domain.location.LocationTracker
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllAvailablePropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrentLocationUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyAddressUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.SetCurrencyUseCase
-import com.openclassrooms.realestatemanager.enums.CurrencyType
-import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
-import com.openclassrooms.realestatemanager.enums.PropertyType
+import com.openclassrooms.realestatemanager.presentation.navigation.FilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,7 +40,7 @@ class HomeViewModel @Inject constructor(
         getAllProperty()
     }
 
-    private fun getAllProperty(){
+    fun getAllProperty(){
         getAllPropertiesUseCase()
             .onEach {
                 _state.value = HomeState(properties = ScreenViewState.Success(it))
@@ -65,11 +56,27 @@ class HomeViewModel @Inject constructor(
         }
     }
     fun getFilteredProperties(
-        minPrice:Int,
-        maxPrice: Int,
+        filterState: FilterState
     ){
-
-        getFilteredPropertiesUseCase.invoke(isSold = false)
+        getFilteredPropertiesUseCase.invoke(
+            propertyType = filterState.propertyType,
+            minPrice = filterState.minPrice,
+            maxPrice = filterState.maxPrice,
+            minSurfaceArea = filterState.minSurface,
+            maxSurfaceArea = filterState.maxSurface,
+            minNumRooms = filterState.minRooms,
+            maxNumRooms = filterState.maxRooms,
+            minNumBathrooms = filterState.minBathrooms,
+            maxNumBathrooms = filterState.maxBathrooms,
+            minNumBedrooms = filterState.minBedrooms,
+            maxNumBedrooms = filterState.maxBedrooms,
+            minNumPictures = filterState.minPictures,
+            minCreationDate = filterState.minCreationDate,
+            maxCreationDate = filterState.maxCreationDate,
+            minSoldDate = filterState.minSoldDate,
+            maxSoldDate = filterState.maxSoldDate,
+            nearbyPlaceTypes = filterState.nearbyPlaces
+        )
             .onEach {
                 _state.value = HomeState(properties = ScreenViewState.Success(it))
             }
