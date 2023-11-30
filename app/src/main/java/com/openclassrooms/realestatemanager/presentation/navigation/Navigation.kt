@@ -35,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -58,7 +59,6 @@ import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditScre
 import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditViewModel
 import com.openclassrooms.realestatemanager.presentation.detail.DetailAssistedFactory
 import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
-import com.openclassrooms.realestatemanager.presentation.home.BottomSheetPropertyCard
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeState
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
@@ -104,6 +104,16 @@ fun Navigation(
     var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened, isAddOpened = isAddOpened || isEditOpened)
 
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state){
+        when(state.properties){
+            is ScreenViewState.Error -> 1L
+            ScreenViewState.Loading -> 1L
+            is ScreenViewState.Success -> {
+                id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].id
+            }
+        }
+    }
 
     Scaffold(
         topBar = {

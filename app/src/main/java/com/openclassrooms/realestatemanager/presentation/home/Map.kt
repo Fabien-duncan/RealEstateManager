@@ -2,58 +2,30 @@ package com.openclassrooms.realestatemanager.presentation.home
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.net.Uri
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.imageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -62,16 +34,12 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
-import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +50,8 @@ fun MapView(
     viewModel: HomeViewModel,
     currencyViewModel: CurrencyViewModel
 ){
+    val openMapPermissionDialog = remember { mutableStateOf(false) }
+
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -114,7 +84,8 @@ fun MapView(
             }
 
         } else {
-            Column(
+            openMapPermissionDialog.value = true
+            /*Column(
                 modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -125,10 +96,22 @@ fun MapView(
                 ) {
                     Text(text = "Accept")
                 }
+            }*/
+            if (openMapPermissionDialog.value){
+                AlertLocationPermissionDialog(
+                    onDismissRequest = { openMapPermissionDialog.value = false },
+                    onConfirmation = {
+                        locationPermissions.launchMultiplePermissionRequest()
+                        openMapPermissionDialog.value = false
+                    },
+                    dialogTitle = "Access location permission",
+                    dialogText = "We need location permissions for this application in order to display the properties on a map, please accept them to continue.",
+                    icon = Icons.Default.Info
+                )
             }
-
         }
     }
+
 
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,7 +166,13 @@ fun MapWithProperties(
             onDismissRequest = { showBottomSheet = false }) {
 
                 if (selectedProperty != null){
-                    BottomSheetPropertyCard(property = selectedProperty!!, currencyViewModel = currencyViewModel) {
+                    PropertyItemCard(
+                        currencyViewModel = currencyViewModel,
+                        property = selectedProperty!!,
+                        isSelected = false,
+                        isLargeScreen = false,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    ) {
                         onItemClicked.invoke(selectedPropertyIndex)
                     }
                 }
@@ -208,86 +197,45 @@ fun HouseMarkers(
     )
 }
 @Composable
-fun BottomSheetPropertyCard(
-    currencyViewModel: CurrencyViewModel,
-    property:PropertyModel,
-    onItemClicked: () -> Unit
-){
-    val listOfPhotos = property.photos
-    val imageUri = if (!listOfPhotos.isNullOrEmpty()) Uri.parse(listOfPhotos[0].photoPath) else null
-    Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .clip(MaterialTheme.shapes.small)
-            .clickable { onItemClicked.invoke() }
-            .background(Color.Transparent)
-    ) {
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = Color.Transparent
-            )
-            .height(120.dp)) {
-
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .weight(0.5f),
-
-
-                ) {
-                    if (imageUri != null){
-                        AsyncImage(
-                            model = imageUri,
-                            contentDescription = "",
-                            placeholder = painterResource(id = R.drawable.missing_image),
-                            contentScale = ContentScale.FillHeight,
-                            onError = { error -> println("Error Loading Image: $error") },
-                            onSuccess = { success -> println("Loaded Image: $success ") },
-                            onLoading = { println("Loading Image...") }
-                        )
-                    }
-                    else{
-                        Image(
-                            painter = painterResource(id = R.drawable.missing_image),
-                            contentDescription = "No Image",
-                            contentScale = ContentScale.FillBounds,
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.secondary)
-                                .fillMaxSize(),
-                        )
-                    }
-
+fun AlertLocationPermissionDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector,
+) {
+    AlertDialog(
+        icon = {
+            Icon(icon, contentDescription = "Example Icon")
+        },
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Text(text = dialogText)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
                 }
-                Column(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .weight(1f)
-                        .fillMaxHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceEvenly
-
-
-                ) {
-                    Text(
-                        text = TextUtils.capitaliseFirstLetter("${property.type}"),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = TextUtils.capitaliseFirstLetter("${property.address.number} ${property.address.street}"),
-                        color = Color.Gray,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = currencyViewModel.getPriceInCurrentCurrency(property.price),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
                 }
+            ) {
+                Text("Dismiss")
             }
         }
+    )
 }
 
 
