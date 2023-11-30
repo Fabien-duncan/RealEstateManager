@@ -1,16 +1,30 @@
 package com.openclassrooms.realestatemanager.presentation.home
 
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.media.audiofx.BassBoost
+import android.net.Uri
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -19,11 +33,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -65,54 +81,26 @@ fun MapView(
         }
     }
 
-
-
-    AnimatedContent(
-        targetState = locationPermissions.allPermissionsGranted, label = "Permissions"
-    ) { areGranted ->
-
-        if (areGranted) {
-            val currentLocation = viewModel.currentLocation
-            if (currentLocation != null ){
-                MapWithProperties(
-                    state = state,
-                    modifier = modifier,
-                    onItemClicked = onItemClicked,
-                    currentLatLng = LatLng(currentLocation.latitude, currentLocation.longitude),
-                    currencyViewModel = currencyViewModel
-                )
+    when {
+       locationPermissions.allPermissionsGranted -> {
+           val currentLocation = viewModel.currentLocation
+           if (currentLocation != null ){
+               MapWithProperties(
+                   state = state,
+                   modifier = modifier,
+                   onItemClicked = onItemClicked,
+                   currentLatLng = LatLng(currentLocation.latitude, currentLocation.longitude),
+                   currencyViewModel = currencyViewModel
+               )
+           }
+       }
+        else -> {
+            LaunchedEffect(Unit) {
+                locationPermissions.launchMultiplePermissionRequest()
             }
-
-        } else {
-            openMapPermissionDialog.value = true
-            /*Column(
-                modifier = modifier,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ){
-                Text(text = "We need location permissions for this application.")
-                Button(
-                    onClick = { locationPermissions.launchMultiplePermissionRequest() }
-                ) {
-                    Text(text = "Accept")
-                }
-            }*/
-            if (openMapPermissionDialog.value){
-                AlertLocationPermissionDialog(
-                    onDismissRequest = { openMapPermissionDialog.value = false },
-                    onConfirmation = {
-                        locationPermissions.launchMultiplePermissionRequest()
-                        openMapPermissionDialog.value = false
-                    },
-                    dialogTitle = "Access location permission",
-                    dialogText = "We need location permissions for this application in order to display the properties on a map, please accept them to continue.",
-                    icon = Icons.Default.Info
-                )
-            }
+            MissingPermissionScreen()
         }
     }
-
-
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -196,46 +184,39 @@ fun HouseMarkers(
         }
     )
 }
+
 @Composable
-fun AlertLocationPermissionDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-    icon: ImageVector,
-) {
-    AlertDialog(
-        icon = {
-            Icon(icon, contentDescription = "Example Icon")
-        },
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Text(text = dialogText)
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirmation()
-                }
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text("Dismiss")
-            }
+fun MissingPermissionScreen(
+
+){
+    Box(Modifier
+        .fillMaxSize()
+    ) {
+        Column(Modifier.padding(vertical = 120.dp, horizontal = 16.dp)) {
+            Icon(Icons.Default.LocationOn,
+                contentDescription = null)
+            Spacer(Modifier.height(8.dp))
+            Text("Location permission required", style = MaterialTheme.typography.headlineMedium)
+            Spacer(Modifier.height(4.dp))
+            Text("This is required in order for the app to take display properties on the map")
         }
-    )
+        val context = LocalContext.current
+
+        Button(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(16.dp),
+            onClick = {
+                val intent =
+                    Intent(ACCESS_FINE_LOCATION).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                context.startActivity(intent)
+            }) {
+            Text("Go to settings")
+        }
+    }
 }
 
 
