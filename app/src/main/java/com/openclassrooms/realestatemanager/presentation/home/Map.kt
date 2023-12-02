@@ -1,32 +1,29 @@
 package com.openclassrooms.realestatemanager.presentation.home
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
+
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.audiofx.BassBoost
 import android.net.Uri
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.background
+import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -66,8 +62,7 @@ fun MapView(
     viewModel: HomeViewModel,
     currencyViewModel: CurrencyViewModel
 ){
-    val openMapPermissionDialog = remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -82,7 +77,7 @@ fun MapView(
     }
 
     when {
-       locationPermissions.allPermissionsGranted -> {
+       locationPermissions.allPermissionsGranted-> {
            val currentLocation = viewModel.currentLocation
            if (currentLocation != null ){
                MapWithProperties(
@@ -98,7 +93,28 @@ fun MapView(
             LaunchedEffect(Unit) {
                 locationPermissions.launchMultiplePermissionRequest()
             }
-            MissingPermissionScreen()
+            val address = when(state.properties){
+                is ScreenViewState.Error -> null
+                ScreenViewState.Loading -> null
+                is ScreenViewState.Success ->  (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].address
+            }
+            val lat:Double?
+            val lng:Double?
+            if (address != null){
+                lat = address.latitude
+                lng = address.longitude
+            }else{
+                lat = null
+                lng = null
+            }
+            MissingPermissionScreen(
+                state = state,
+                modifier = modifier,
+                onItemClicked = onItemClicked,
+                currentLatLng = LatLng(lat ?: 46.4, lng ?: 2.1),
+                currencyViewModel = currencyViewModel,
+                context = context
+            )
         }
     }
 }
@@ -187,36 +203,74 @@ fun HouseMarkers(
 
 @Composable
 fun MissingPermissionScreen(
-
+    state:HomeState,
+    modifier: Modifier,
+    onItemClicked:(Int) -> Unit,
+    currentLatLng: LatLng,
+    currencyViewModel: CurrencyViewModel,
+    context: Context
 ){
-    Box(Modifier
-        .fillMaxSize()
-    ) {
-        Column(Modifier.padding(vertical = 120.dp, horizontal = 16.dp)) {
-            Icon(Icons.Default.LocationOn,
-                contentDescription = null)
-            Spacer(Modifier.height(8.dp))
-            Text("Location permission required", style = MaterialTheme.typography.headlineMedium)
-            Spacer(Modifier.height(4.dp))
-            Text("This is required in order for the app to take display properties on the map")
-        }
-        val context = LocalContext.current
+    var isPermissionIgnored = remember {false}
+        Box(
+            Modifier
+                .fillMaxSize()
+        ) {
+            Column(Modifier.padding(vertical = 120.dp, horizontal = 16.dp)) {
+                Icon(
+                    Icons.Default.LocationOn,
+                    contentDescription = null
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Location permission required",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                Spacer(Modifier.height(4.dp))
+                Text("This is required in order for the app to take display properties on the map")
+            }
 
-        Button(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(16.dp),
-            onClick = {
-                val intent =
-                    Intent(ACCESS_FINE_LOCATION).apply {
-                        data = Uri.fromParts("package", context.packageName, null)
-                    }
-                context.startActivity(intent)
-            }) {
-            Text("Go to settings")
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Button(
+                    modifier = Modifier
+                        .weight(1F)
+                        .padding(8.dp),
+                    onClick = {
+                        val uid = android.os.Process.myUid()
+                        Log.d("MyApp", "User UID: $uid")
+                        val intent =
+                            Intent(ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        context.startActivity(intent)
+                    }) {
+                    Text("Go to settings")
+                }
+                Button(
+                    modifier = Modifier
+                        .weight(1F)
+                        .padding(8.dp),
+                    onClick = {
+                        println("changing ispermissionIgnored to ${!isPermissionIgnored}")
+                        isPermissionIgnored = true
+                    }) {
+                    Text("Go to map anyway")
+                }
+            }
         }
-    }
+    /*}else{
+        MapWithProperties(
+            state = state,
+            modifier = modifier,
+            onItemClicked = onItemClicked,
+            currentLatLng = currentLatLng,
+            currencyViewModel = currencyViewModel
+        )
+    }*/
+
 }
 
 
