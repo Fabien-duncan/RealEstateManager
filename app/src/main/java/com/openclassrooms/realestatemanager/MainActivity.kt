@@ -2,7 +2,11 @@
 
 package com.openclassrooms.realestatemanager
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 val windowSize = rememberWindowSizeClass()
 
-                RealEstateApp(windowSize = windowSize)
+                RealEstateApp(windowSize = windowSize, onGoToAppSettingsClicked = ::openAppSettings)
 
                 /*Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     TopBar()
@@ -50,15 +54,22 @@ class MainActivity : ComponentActivity() {
         }
     }
     @Composable
-    fun RealEstateApp(modifier: Modifier = Modifier, windowSize:WindowSizeType){
+    fun RealEstateApp(modifier: Modifier = Modifier, windowSize:WindowSizeType, onGoToAppSettingsClicked: () -> Unit,){
 
         Navigation(
             windowSize = windowSize,
             modifier = modifier,
-            assistedFactory = assistedFactory
+            assistedFactory = assistedFactory,
+            onGoToAppSettingsClicked = onGoToAppSettingsClicked,
         )
 
     }
+}
+fun Activity.openAppSettings() {
+    Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", packageName, null)
+    ).also(::startActivity)
 }
 
 

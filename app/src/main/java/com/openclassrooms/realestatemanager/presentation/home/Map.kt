@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.presentation.home
 
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -60,7 +61,8 @@ fun MapView(
     modifier: Modifier,
     onItemClicked:(Int) -> Unit,
     viewModel: HomeViewModel,
-    currencyViewModel: CurrencyViewModel
+    currencyViewModel: CurrencyViewModel,
+    onGoToAppSettingsClicked: () -> Unit,
 ){
     val context = LocalContext.current
     val locationPermissions = rememberMultiplePermissionsState(
@@ -75,6 +77,7 @@ fun MapView(
             viewModel.getCurrentLocation()
         }
     }
+    var isPermissionIgnored = remember { mutableStateOf(false) }
 
     when {
        locationPermissions.allPermissionsGranted-> {
@@ -96,7 +99,11 @@ fun MapView(
             val address = when(state.properties){
                 is ScreenViewState.Error -> null
                 ScreenViewState.Loading -> null
-                is ScreenViewState.Success ->  (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].address
+                is ScreenViewState.Success -> {
+                    if(state.properties.data.isNotEmpty()){
+                        state.properties.data[0].address
+                    }else null
+                }
             }
             val lat:Double?
             val lng:Double?
@@ -107,14 +114,29 @@ fun MapView(
                 lat = null
                 lng = null
             }
-            MissingPermissionScreen(
-                state = state,
-                modifier = modifier,
-                onItemClicked = onItemClicked,
-                currentLatLng = LatLng(lat ?: 46.4, lng ?: 2.1),
-                currencyViewModel = currencyViewModel,
-                context = context
-            )
+            if (isPermissionIgnored.value){
+                MapWithProperties(
+                    state = state,
+                    modifier = modifier,
+                    onItemClicked = onItemClicked,
+                    currentLatLng = LatLng(lat ?: 46.4, lng ?: 2.1),
+                    currencyViewModel = currencyViewModel,
+                    isLocationGranted = false,
+                    zoomLevel = if (address != null) 10F else 1F
+                )
+            }
+            else{
+                MissingPermissionScreen(
+                    state = state,
+                    modifier = modifier,
+                    onItemClicked = onItemClicked,
+                    currentLatLng = LatLng(lat ?: 46.4, lng ?: 2.1),
+                    currencyViewModel = currencyViewModel,
+                    context = context,
+                    onGoToAppSettingsClicked = onGoToAppSettingsClicked,
+                    onPermissionIgnoredClicked = { isPermissionIgnored.value = true }
+                )
+            }
         }
     }
 }
@@ -122,9 +144,11 @@ fun MapView(
 @Composable
 fun MapWithProperties(
     state:HomeState,
+    isLocationGranted:Boolean = true,
     modifier: Modifier,
     onItemClicked:(Int) -> Unit,
     currentLatLng: LatLng,
+    zoomLevel: Float = 18f,
     currencyViewModel: CurrencyViewModel
 ){
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -135,7 +159,7 @@ fun MapWithProperties(
         is ScreenViewState.Success -> properties = state.properties.data
     }
     val cameraPositionState = rememberCameraPositionState {
-       position = CameraPosition.fromLatLngZoom(currentLatLng, 18f)
+       position = CameraPosition.fromLatLngZoom(currentLatLng, zoomLevel)
     }
     var selectedProperty by remember {
         mutableStateOf<PropertyModel?>(null)
@@ -148,8 +172,8 @@ fun MapWithProperties(
         modifier = modifier
             .fillMaxSize(),
         cameraPositionState = cameraPositionState,
-        uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = true, mapToolbarEnabled = false),
-        properties = MapProperties(isMyLocationEnabled = true),
+        uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = isLocationGranted, mapToolbarEnabled = false),
+        properties = MapProperties(isMyLocationEnabled = isLocationGranted),
     ) {
 
         properties.forEachIndexed{ index, property ->
@@ -208,7 +232,9 @@ fun MissingPermissionScreen(
     onItemClicked:(Int) -> Unit,
     currentLatLng: LatLng,
     currencyViewModel: CurrencyViewModel,
-    context: Context
+    context: Context,
+    onGoToAppSettingsClicked: () -> Unit,
+    onPermissionIgnoredClicked: () -> Unit
 ){
     var isPermissionIgnored = remember {false}
         Box(
@@ -240,13 +266,16 @@ fun MissingPermissionScreen(
                         .weight(1F)
                         .padding(8.dp),
                     onClick = {
+                        println("package name: ${context.packageName}")
+                        onGoToAppSettingsClicked.invoke()
+                    }/*{
                         val uid = android.os.Process.myUid()
                         Log.d("MyApp", "User UID: $uid")
                         val intent =
                             Intent(ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         context.startActivity(intent)
-                    }) {
+                    }*/) {
                     Text("Go to settings")
                 }
                 Button(
@@ -255,7 +284,7 @@ fun MissingPermissionScreen(
                         .padding(8.dp),
                     onClick = {
                         println("changing ispermissionIgnored to ${!isPermissionIgnored}")
-                        isPermissionIgnored = true
+                        onPermissionIgnoredClicked.invoke()
                     }) {
                     Text("Go to map anyway")
                 }

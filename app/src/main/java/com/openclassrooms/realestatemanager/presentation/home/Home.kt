@@ -27,6 +27,7 @@ fun HomeScreen(
     onItemClicked:(index:Int) -> Unit,
     isLargeScreen: Boolean,
     viewModel: HomeViewModel,
+    onGoToAppSettingsClicked: () -> Unit,
     currencyViewModel: CurrencyViewModel
 ){
     when(state.properties){
@@ -67,7 +68,8 @@ fun HomeScreen(
                         modifier = modifier.padding(it),
                         onItemClicked = onItemClicked,
                         viewModel = viewModel,
-                        currencyViewModel = currencyViewModel
+                        currencyViewModel = currencyViewModel,
+                        onGoToAppSettingsClicked = onGoToAppSettingsClicked
                     )
                 }
                 else{

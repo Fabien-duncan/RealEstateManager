@@ -69,6 +69,7 @@ fun Navigation(
     windowSize: WindowSizeType,
     modifier: Modifier = Modifier,
     assistedFactory: DetailAssistedFactory,
+    onGoToAppSettingsClicked: () -> Unit,
 ) {
     val homeViewModel: HomeViewModel = viewModel()
     val addEditViewModel: AddEditViewModel = viewModel()
@@ -110,7 +111,9 @@ fun Navigation(
             is ScreenViewState.Error -> 1L
             ScreenViewState.Loading -> 1L
             is ScreenViewState.Success -> {
-                id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].id
+                if((state.properties as ScreenViewState.Success<List<PropertyModel>>).data.isNotEmpty()){
+                    id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].id
+                }
             }
         }
     }
@@ -158,7 +161,8 @@ fun Navigation(
                     },
                     isLargeScreen = false,
                     viewModel = homeViewModel,
-                    currencyViewModel = currencyViewModel
+                    currencyViewModel = currencyViewModel,
+                    onGoToAppSettingsClicked = onGoToAppSettingsClicked
                 )
             }
 
@@ -187,7 +191,8 @@ fun Navigation(
                     index = index,
                     id = id,
                     viewModel = homeViewModel,
-                    currencyViewModel = currencyViewModel
+                    currencyViewModel = currencyViewModel,
+                    onGoToAppSettingsClicked = onGoToAppSettingsClicked
                 )
             }
 
@@ -240,6 +245,7 @@ private fun ListAndDetailScreen(
     index: Int,
     id:Long,
     viewModel: HomeViewModel,
+    onGoToAppSettingsClicked: () -> Unit,
     currencyViewModel: CurrencyViewModel
 ){
     Row(
@@ -252,7 +258,8 @@ private fun ListAndDetailScreen(
                 selectedIndex = index,
                 isLargeScreen = true,
                 viewModel = viewModel,
-                currencyViewModel = currencyViewModel
+                currencyViewModel = currencyViewModel,
+                onGoToAppSettingsClicked = onGoToAppSettingsClicked
             )
         }
         Divider(
