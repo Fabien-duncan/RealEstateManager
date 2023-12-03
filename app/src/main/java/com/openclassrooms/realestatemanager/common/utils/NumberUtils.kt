@@ -11,4 +11,14 @@ object NumberUtils {
             }
         }
     }
+    fun convertToDoubleOrNull(value:String?):Double? {
+        return if (value.isNullOrBlank()) null
+        else {
+            try {
+                value.toDouble()
+            } catch (e: NumberFormatException) {
+                null
+            }
+        }
+    }
 }
