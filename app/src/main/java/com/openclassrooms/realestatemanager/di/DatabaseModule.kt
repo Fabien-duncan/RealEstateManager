@@ -12,6 +12,7 @@ import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
 import com.openclassrooms.realestatemanager.data.location.DefaultLocationTracker
 import com.openclassrooms.realestatemanager.domain.location.LocationTracker
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
+import com.openclassrooms.realestatemanager.domain.use_cases.CalculateLoanUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -72,6 +73,12 @@ object DatabaseModule {
     @Singleton
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return context.getSharedPreferences("your_shared_preferences_name", Context.MODE_PRIVATE)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCalculateLoanUseCase(): CalculateLoanUseCase {
+        return CalculateLoanUseCase()
     }
 
 }

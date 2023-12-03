@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -46,10 +48,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.enums.CurrencyType
@@ -62,6 +66,8 @@ import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeState
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
+import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanCalculatorViewModel
+import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanForm
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +81,7 @@ fun Navigation(
     val addEditViewModel: AddEditViewModel = viewModel()
     val currencyViewModel: CurrencyViewModel = viewModel()
     val filterViewModel: FilterViewModel = viewModel()
+    val loanCalculatorViewModel: LoanCalculatorViewModel = viewModel()
 
     Log.d("navigation", "currency is: ${currencyViewModel.getCurrency()}")
 
@@ -99,6 +106,8 @@ fun Navigation(
 
     var isAddOpened by remember { mutableStateOf(false) }
     var isEditOpened by remember { mutableStateOf(false) }
+
+    var isLoanPopUpOpened by remember { mutableStateOf(false) }
 
     val currentCurrency = currencyViewModel.currentCurrency
 
@@ -144,6 +153,9 @@ fun Navigation(
                 },
                 onSearchedPressed = {
                     showBottomSheet = true
+                },
+                onLoanCalculatorPressed = {
+                    isLoanPopUpOpened = true
                 }
 
             )
@@ -233,7 +245,19 @@ fun Navigation(
                 )
             }
         }
+        if (isLoanPopUpOpened){
+            Dialog(
+                onDismissRequest = {
+                    isLoanPopUpOpened = false
+                },
+            ) {
+                LoanForm(loanCalculatorViewModel = loanCalculatorViewModel)
+            }
+
+        }
+
     }
+
 }
 
 @Composable
@@ -353,6 +377,7 @@ fun TopBar(
     onSearchedPressed: () -> Unit,
     onBackArrowPressed: (Boolean) -> Unit,
     onEditPressed: () -> Unit,
+    onLoanCalculatorPressed: () -> Unit,
     onAddPressed:() -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -406,9 +431,16 @@ fun TopBar(
                         onClick = {
                             selectedMenuItem = "Item 2"
                             expanded = false
+                            onLoanCalculatorPressed.invoke()
                         },
                         text = {
-                            Text(text = "item2")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "Simulate Loan")
+                                Image(
+                                    painter = painterResource(id = R.drawable.loan_image),
+                                    contentDescription = "loan"
+                                )
+                            }
                         }
                     )
                 }

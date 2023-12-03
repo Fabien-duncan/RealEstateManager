@@ -10,9 +10,10 @@ import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.common.utils.NumberUtils
 import com.openclassrooms.realestatemanager.domain.model.LoanModel
 import com.openclassrooms.realestatemanager.domain.use_cases.CalculateLoanUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 import javax.inject.Inject
-
+@HiltViewModel
 class LoanCalculatorViewModel @Inject constructor(
     private val calculateLoanUseCase: CalculateLoanUseCase
 ) : ViewModel() {
@@ -21,6 +22,10 @@ class LoanCalculatorViewModel @Inject constructor(
 
     private val _monthlyPayment = MutableLiveData<Double>()
     val monthlyPayment: LiveData<Double> get() = _monthlyPayment
+
+    fun setLoanAmount(amount: Double){
+        state = state.copy(loanAmount = amount)
+    }
     fun calculateLoan(loanEntity: LoanModel) {
         val result = calculateLoanUseCase.calculateLoan(loanEntity)
         _monthlyPayment.value = result
@@ -28,24 +33,32 @@ class LoanCalculatorViewModel @Inject constructor(
     fun onLoanAmountChanged(amount:String){
         val doubleAmount = NumberUtils.convertToDoubleOrNull(amount)
 
-        state = state.copy(loanAmount = doubleAmount)
+        if (amount.isNotEmpty() && doubleAmount != null) {
+            state = state.copy(loanAmount = doubleAmount)
+        }
     }
     fun onInterestRateChanged(amount:String){
         val doubleAmount = NumberUtils.convertToDoubleOrNull(amount)
 
-        state = state.copy(interestRate = doubleAmount)
+        if (amount.isNotEmpty() && doubleAmount != null) {
+            state = state.copy(interestRate = doubleAmount)
+        }
     }
     fun onLoanTermChanged(amount:String){
         val intAmount = NumberUtils.convertToIntOrNull(amount)
 
-        state = state.copy(loanTerm = intAmount)
+        if (amount.isNotEmpty() && intAmount != null) {
+            state = state.copy(loanTerm = intAmount)
+        }
     }
 
     fun checkDoubleAmountIsValid(amount:Double?):Boolean{
-        return amount != null && amount >= 0
+        println("double amount is valid: ${amount != null && amount >= 0}")
+        return amount != null && amount > 0
     }
     fun checkIntAmountIsValid(amount:Int?):Boolean{
-        return amount != null && amount >= 0
+        println("int amount is valid: ${amount != null && amount >= 0}")
+        return amount != null && amount > 0
     }
 }
 data class LoanState(
