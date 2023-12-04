@@ -9,6 +9,7 @@ import android.media.audiofx.BassBoost
 import android.net.Uri
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -52,6 +55,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.presentation.navigation.CheckConnectionViewModel
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
@@ -127,11 +131,6 @@ fun MapView(
             }
             else{
                 MissingPermissionScreen(
-                    state = state,
-                    modifier = modifier,
-                    onItemClicked = onItemClicked,
-                    currentLatLng = LatLng(lat ?: 46.4, lng ?: 2.1),
-                    currencyViewModel = currencyViewModel,
                     context = context,
                     onGoToAppSettingsClicked = onGoToAppSettingsClicked,
                     onPermissionIgnoredClicked = { isPermissionIgnored.value = true }
@@ -167,27 +166,38 @@ fun MapWithProperties(
     var selectedPropertyIndex by remember {
         mutableStateOf(0)
     }
+    val checkConnectionViewModel: CheckConnectionViewModel = viewModel()
 
-    GoogleMap(
-        modifier = modifier
-            .fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = isLocationGranted, mapToolbarEnabled = false),
-        properties = MapProperties(isMyLocationEnabled = isLocationGranted),
-    ) {
 
-        properties.forEachIndexed{ index, property ->
-            val lat = property.address.latitude
-            val lng = property.address.longitude
-            if (lat != null && lng != null){
-                val location = LatLng(lat, lng)
-                HouseMarkers(location = location, property = property){
-                    property -> selectedProperty = property
-                    showBottomSheet = true
-                    selectedPropertyIndex = index
+    if (checkConnectionViewModel.isInternetOn()){
+        GoogleMap(
+            modifier = modifier
+                .fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            uiSettings = MapUiSettings(
+                zoomControlsEnabled = false,
+                myLocationButtonEnabled = isLocationGranted,
+                mapToolbarEnabled = false
+            ),
+            properties = MapProperties(isMyLocationEnabled = isLocationGranted),
+        ) {
+
+            properties.forEachIndexed { index, property ->
+                val lat = property.address.latitude
+                val lng = property.address.longitude
+                if (lat != null && lng != null) {
+                    val location = LatLng(lat, lng)
+                    HouseMarkers(location = location, property = property) { property ->
+                        selectedProperty = property
+                        showBottomSheet = true
+                        selectedPropertyIndex = index
+                    }
                 }
             }
         }
+    }else{
+        println("no internet for map")
+        MissingInternetConnection()
     }
     if (showBottomSheet){
         ModalBottomSheet(
@@ -226,12 +236,27 @@ fun HouseMarkers(
 }
 
 @Composable
+fun MissingInternetConnection(
+
+){
+    Column(modifier = Modifier.padding(vertical = 120.dp, horizontal = 16.dp)) {
+        Icon(
+            imageVector = Icons.Default.Warning,
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "Internet connection required",
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(Modifier.height(4.dp))
+        Text("This feature requires an internet connection. Please activate your internet connection, or wait until you have access to the internet.")
+    }
+}
+
+@Composable
 fun MissingPermissionScreen(
-    state:HomeState,
-    modifier: Modifier,
-    onItemClicked:(Int) -> Unit,
-    currentLatLng: LatLng,
-    currencyViewModel: CurrencyViewModel,
     context: Context,
     onGoToAppSettingsClicked: () -> Unit,
     onPermissionIgnoredClicked: () -> Unit
@@ -243,8 +268,9 @@ fun MissingPermissionScreen(
         ) {
             Column(Modifier.padding(vertical = 120.dp, horizontal = 16.dp)) {
                 Icon(
-                    Icons.Default.LocationOn,
-                    contentDescription = null
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = null,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
