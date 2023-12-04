@@ -186,6 +186,7 @@ fun Navigation(
                     assistedFactory = assistedFactory,
                     isLargeView = false,
                     propertyId = id,
+                    currencyViewModel= currencyViewModel,
                 ) {
                     isItemOpened = false
                 }
@@ -298,6 +299,7 @@ private fun ListAndDetailScreen(
         Column(modifier = modifier.weight(1f)){
             LaunchDetailScreenFromState(
                 loanCalculatorViewModel = loanCalculatorViewModel,
+                currencyViewModel = currencyViewModel,
                 state = state,
                 assistedFactory = assistedFactory,
                 isLargeView = true,
@@ -338,6 +340,7 @@ fun getScreenType(
 @Composable
 fun LaunchDetailScreenFromState(
     loanCalculatorViewModel: LoanCalculatorViewModel,
+    currencyViewModel: CurrencyViewModel,
     state: HomeState,
     modifier: Modifier = Modifier,
     assistedFactory: DetailAssistedFactory,

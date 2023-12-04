@@ -32,4 +32,12 @@ class CurrencyViewModel @Inject constructor(
         currentCurrency = getCurrencyUseCase.invoke()
     }
     fun getPriceInCurrentCurrency(price:Int) = getPriceInCurrentCurrencyUseCase.invoke(price)
+    fun getPriceInCurrentCurrency(price:Double):Double{
+        val priceInt = price.toInt()
+        return when(currentCurrency) {
+            CurrencyType.Euro -> Utils.convertDollarToEuro(priceInt).toDouble()
+            CurrencyType.Dollar -> price
+        }
+
+    }
 }

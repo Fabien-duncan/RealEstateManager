@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.presentation.loan_simulator
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,6 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.enums.CurrencyType
+import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
 @Composable
 fun LoanForm(
@@ -37,7 +43,9 @@ fun LoanForm(
     modifier: Modifier = Modifier,
     loanAmount: Double = 0.0,
 ){
-    if (loanAmount > 0) loanCalculatorViewModel.setLoanAmount(loanAmount)
+    val currencyViewModel: CurrencyViewModel = viewModel()
+
+    if (loanAmount > 0) loanCalculatorViewModel.setLoanAmount(currencyViewModel.getPriceInCurrentCurrency(loanAmount))
 
     val state = loanCalculatorViewModel.state
     val loan = loanCalculatorViewModel.monthlyPayment
@@ -61,7 +69,8 @@ fun LoanForm(
             value = state.loanAmount.toString(),
             onValueChange = { loanCalculatorViewModel.onLoanAmountChanged(it)},
             keyboardType = KeyboardType.Number,
-            isInputValid = { loanCalculatorViewModel.checkDoubleAmountIsValid(state.loanAmount) }
+            isInputValid = { loanCalculatorViewModel.checkDoubleAmountIsValid(state.loanAmount) },
+            currencyType = currencyViewModel.currentCurrency,
         )
         LoanInput(
             label = "Interest Rate",
@@ -100,7 +109,8 @@ fun LoanInput(
     value: String,
     onValueChange: (String) -> Unit,
     isInputValid: () -> Boolean,
-    keyboardType: KeyboardType
+    keyboardType: KeyboardType,
+    currencyType: CurrencyType? = null,
 ) {
 
 
@@ -121,7 +131,18 @@ fun LoanInput(
                 .fillMaxWidth(),
             placeholder = { Text(text = label) },
             label = { Text(text = label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-            isError = !isInputValid.invoke()
+            isError = !isInputValid.invoke(),
+            leadingIcon = {
+                if (currencyType != null){
+                    Image(
+                        painter = when (currencyType) {
+                            CurrencyType.Dollar -> painterResource(id = R.drawable.dollar_image)
+                            CurrencyType.Euro -> painterResource(id = R.drawable.euro_image)
+                        },
+                        contentDescription = "dollar"
+                    )
+                }
+            }
         )
     }
 }

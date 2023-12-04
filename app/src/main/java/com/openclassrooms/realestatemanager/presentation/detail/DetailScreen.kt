@@ -39,6 +39,7 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanCalculatorViewModel
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanForm
+import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
 @Composable
 fun DetailScreen(
@@ -84,7 +85,7 @@ fun DetailScreen(
             state.property?.price?.let {
                 LoanForm(
                     loanCalculatorViewModel = loanCalculatorViewModel,
-                    loanAmount = it.toDouble()
+                    loanAmount = it.toDouble(),
                 )
             }
         }
