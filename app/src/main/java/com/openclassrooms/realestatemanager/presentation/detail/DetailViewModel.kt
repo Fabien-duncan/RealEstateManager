@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.domain.use_cases.CheckInternetConnectionUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class DetailViewModel @AssistedInject constructor(
     private val getPropertyByIdUseCase: GetPropertyByIdUseCase,
+    private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase,
     @Assisted private val propertyId: Long
 ):ViewModel() {
     var state by mutableStateOf(DetailSate(null))
@@ -30,13 +32,13 @@ class DetailViewModel @AssistedInject constructor(
     private fun getPropertyById() = viewModelScope.launch {
         getPropertyByIdUseCase(propertyId).collectLatest {property ->
             state = state.copy(property = property)
-            mapImageLink = getMapImage(property.address.latitude, property.address.longitude)
+            mapImageLink = if(checkInternetConnectionUseCase.invoke())getMapImage(property.address.latitude, property.address.longitude) else "no internet"
         }
     }
     fun updatePropertyById(id:Long) = viewModelScope.launch {
         getPropertyByIdUseCase(id).collectLatest {property ->
             state = state.copy(property = property)
-            mapImageLink = getMapImage(property.address.latitude, property.address.longitude)
+            mapImageLink = if(checkInternetConnectionUseCase.invoke())getMapImage(property.address.latitude, property.address.longitude) else "no internet"
         }
     }
 }

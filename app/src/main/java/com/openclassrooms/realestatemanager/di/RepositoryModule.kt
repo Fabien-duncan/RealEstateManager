@@ -1,8 +1,10 @@
 package com.openclassrooms.realestatemanager.di
 
+import com.openclassrooms.realestatemanager.data.Connection.ConnectionCheckerRepositoryImpl
 import com.openclassrooms.realestatemanager.data.currency_converter.CurrencyRepositoryImpl
 import com.openclassrooms.realestatemanager.data.geocoding.GeocodingRepositoryImp
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepositoryImpl
+import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.currency_converter.CurrencyRepository
 import com.openclassrooms.realestatemanager.domain.geocoding.GeocodingRepository
 import com.openclassrooms.realestatemanager.domain.repository.Repository
@@ -26,4 +28,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCurrencyRepository(currencyRepositoryImpl: CurrencyRepositoryImpl):CurrencyRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindConnectionRepository(connectionCheckerRepositoryImpl: ConnectionCheckerRepositoryImpl):ConnectionCheckerRepository
 }

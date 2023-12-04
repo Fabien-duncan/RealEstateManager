@@ -3,13 +3,16 @@ package com.openclassrooms.realestatemanager.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.openclassrooms.realestatemanager.data.Connection.ConnectionCheckerRepositoryImpl
 import com.openclassrooms.realestatemanager.data.api.GeocodingApiService
 import com.openclassrooms.realestatemanager.data.currency_converter.CurrencyRepositoryImpl
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
 import com.openclassrooms.realestatemanager.data.location.DefaultLocationTracker
+import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.location.LocationTracker
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
 import com.openclassrooms.realestatemanager.domain.use_cases.CalculateLoanUseCase
@@ -80,5 +83,9 @@ object DatabaseModule {
     fun provideCalculateLoanUseCase(): CalculateLoanUseCase {
         return CalculateLoanUseCase()
     }
-
+    @Provides
+    @Singleton
+    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
+        return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
 }

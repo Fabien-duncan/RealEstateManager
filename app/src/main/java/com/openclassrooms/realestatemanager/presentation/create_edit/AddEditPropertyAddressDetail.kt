@@ -26,8 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.openclassrooms.realestatemanager.presentation.navigation.CheckConnectionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +47,7 @@ fun AddressDetail(
     onPostCodeChanged: (String) -> Unit,
 
     ){
-    //var isAddressValidated by remember{ mutableStateOf(false) }
+    val checkConnectionViewModel: CheckConnectionViewModel = viewModel()
     Row(
         modifier = Modifier
             .padding(top = 8.dp, start = 8.dp, end = 8.dp)
@@ -127,12 +130,26 @@ fun AddressDetail(
             )
         }
     }
-    Button(onClick = { onCheckAddressClicked.invoke() }, modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp)) {
+    Button(
+        onClick = { onCheckAddressClicked.invoke() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        enabled = checkConnectionViewModel.isInternetOn()
+    ) {
         Text(text = "Check address")
-
+        if (!checkConnectionViewModel.isInternetOn()){
+            Text(
+                text = "No internet, please turn it on.",
+                color = MaterialTheme.colorScheme.error,
+                fontStyle = FontStyle.Italic,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+            )
+        }
     }
+
 }
 @Composable
 fun AddressMapImage(

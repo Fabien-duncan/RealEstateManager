@@ -32,8 +32,9 @@ fun AddressDetail(
     modifier: Modifier = Modifier,
     address: AddressModel,
     isLargeView:Boolean,
-    mapImageLink: String
+    mapImageLink: String,
 ){
+    val imageErrorText = if(mapImageLink == "no internet") "No internet connection, please turn it on" else "The address has not been verified yet! please verify"
     val padding = if(isLargeView) 8.dp else 8.dp
     Row(modifier = Modifier
         .padding(top = 16.dp, start = padding, end = 8.dp)
@@ -53,7 +54,7 @@ fun AddressDetail(
             }
         }
 
-        if (mapImageLink.isNotEmpty()) {
+        if (mapImageLink.isNotEmpty() && mapImageLink != "no internet") {
             Column(modifier = Modifier.fillMaxWidth().padding(4.dp).weight(if (isLargeView) 2.5f else 1f), horizontalAlignment = Alignment.End) {
                 AsyncImage(
                     model = Uri.parse(mapImageLink),
@@ -89,7 +90,7 @@ fun AddressDetail(
                         .padding(4.dp)
                 )
                 Text(
-                    text = "The address has not been verified yet! Click to verify",
+                    text = imageErrorText,
                     color = Color.White,
                     fontStyle = FontStyle.Italic,
                     textAlign = TextAlign.Center,

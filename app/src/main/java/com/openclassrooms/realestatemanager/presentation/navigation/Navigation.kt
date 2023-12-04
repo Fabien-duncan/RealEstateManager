@@ -82,8 +82,9 @@ fun Navigation(
     val currencyViewModel: CurrencyViewModel = viewModel()
     val filterViewModel: FilterViewModel = viewModel()
     val loanCalculatorViewModel: LoanCalculatorViewModel = viewModel()
+    val checkConnectionViewModel: CheckConnectionViewModel = viewModel()
 
-    Log.d("navigation", "currency is: ${currencyViewModel.getCurrency()}")
+    Log.d("navigation", "your are connected: ${checkConnectionViewModel.isInternetOn()}")
 
     val state by homeViewModel.state.collectAsState()
 
@@ -352,7 +353,6 @@ fun LaunchDetailScreenFromState(
         is ScreenViewState.Loading -> {
             CircularProgressIndicator()
         }
-
         is ScreenViewState.Success -> {
             DetailScreen(
                 loanCalculatorViewModel = loanCalculatorViewModel,
@@ -364,16 +364,13 @@ fun LaunchDetailScreenFromState(
             )
 
         }
-
         is ScreenViewState.Error -> {
-            println("error: $state.properties.message")
             Text(
                 text = state.properties.message ?: "Unknown Error",
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
+                modifier = modifier
             )
         }
-
-        else -> {}
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
