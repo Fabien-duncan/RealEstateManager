@@ -8,5 +8,5 @@ import javax.inject.Inject
 class GetAllPropertiesUseCase @Inject constructor(
     private val repository: Repository
 ) {
-    operator fun invoke(): Flow<List<PropertyModel>> = repository.getAllProperties()
+    operator fun invoke(): Flow<List<PropertyModel>> = repository.getAllPropertiesWithDetails()
 }

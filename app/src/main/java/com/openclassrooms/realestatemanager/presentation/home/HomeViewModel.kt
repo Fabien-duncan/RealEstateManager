@@ -9,12 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.Utils
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
-import com.openclassrooms.realestatemanager.domain.use_cases.GetAllAvailablePropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrentLocationUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyAddressUseCase
 import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.presentation.navigation.FilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,9 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getAllAvailablePropertiesUseCase: GetAllAvailablePropertiesUseCase,
     private val getAllPropertiesUseCase: GetAllPropertiesUseCase,
-    private val getPropertyAddressUseCase: GetPropertyAddressUseCase,
     private val getFilteredPropertiesUseCase: GetFilteredPropertiesUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     private val getCurrencyUseCase: GetCurrencyUseCase,

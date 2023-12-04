@@ -63,46 +63,6 @@ interface PropertyDao {
 
     @Query("SELECT properties.*, COUNT(property_photos.property_id) AS numPhotos FROM properties " +
             "LEFT JOIN property_photos ON properties.id = property_photos.property_id " +
-            "LEFT JOIN property_nearby_places ON properties.id = property_nearby_places.property_id " +
-            "WHERE " +
-            "(COALESCE(:propertyType, '') = '' OR type = :propertyType) " +
-            "AND (:agentName IS NULL OR agent_name LIKE '%' || :agentName || '%') " +
-            "AND (:minPrice IS NULL OR price >= :minPrice) " +
-            "AND (:maxPrice IS NULL OR price <= :maxPrice) " +
-            "AND (:minSurfaceArea IS NULL OR area >= :minSurfaceArea) " +
-            "AND (:maxSurfaceArea IS NULL OR area <= :maxSurfaceArea) " +
-            "AND (:minNumRooms IS NULL OR rooms >= :minNumRooms) " +
-            "AND (:maxNumRooms IS NULL OR rooms <= :maxNumRooms) " +
-            "AND (:minCreationDate IS NULL OR created_date >= :minCreationDate) " +
-            "AND (:maxCreationDate IS NULL OR created_date <= :maxCreationDate) " +
-            "AND (:isSold IS NULL OR is_sold = :isSold) " +
-            "AND (:minSoldDate IS NULL OR created_date >= :minCreationDate) " +
-            "AND (:maxSoldDate IS NULL OR sold_date <= :maxSoldDate) " +
-            "GROUP BY properties.id " +
-            "HAVING (:minNumPictures IS NULL OR numPhotos >= :minNumPictures) " +
-            /*"AND (:nearbyPlaceTypes IS NULL OR property_nearby_places.nearby_type IN (:nearbyPlaceTypes)) " +*/
-            "ORDER BY created_date"
-    )
-    fun getFilteredProperties(
-        agentName:String? = null,
-        propertyType: PropertyType?=null,
-        minPrice: Int?=null,
-        maxPrice: Int?=null,
-        minSurfaceArea: Int?=null,
-        maxSurfaceArea: Int?=null,
-        minNumRooms: Int?=null,
-        maxNumRooms: Int?=null,
-        minCreationDate: Date?=null,
-        maxCreationDate: Date?=null,
-        isSold: Boolean?=null,
-        minSoldDate: Date?=null,
-        maxSoldDate: Date?=null,
-        minNumPictures: Int? = null,
-        /*nearbyPlaceTypes: List<NearbyPlacesType>? = null,*/
-        ):Flow<List<PropertyWithAllDetails>>
-
-    @Query("SELECT properties.*, COUNT(property_photos.property_id) AS numPhotos FROM properties " +
-            "LEFT JOIN property_photos ON properties.id = property_photos.property_id " +
             "WHERE " +
             "(:propertyType IS NULL OR type = :propertyType) " +
             "AND (:agentName IS NULL OR agent_name LIKE '%' || :agentName || '%') " +
@@ -124,8 +84,7 @@ interface PropertyDao {
             "GROUP BY properties.id " +
             "HAVING (:minNumPictures IS NULL OR numPhotos >= :minNumPictures) "
     )
-
-    fun filterProperties(
+    fun getFilterProperties(
         agentName:String? = null,
         propertyType: PropertyType?=null,
         minPrice: Int?=null,

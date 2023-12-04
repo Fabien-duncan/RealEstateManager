@@ -12,8 +12,6 @@ import java.util.Date
 class FilterViewModel:ViewModel() {
     var state by mutableStateOf(FilterState())
         private set
-    var isFormValid by mutableStateOf(false)
-        private set
 
     fun onAgentChanged(agentName: String?){
         state = state.copy(agentName = agentName)

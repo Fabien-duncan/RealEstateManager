@@ -32,10 +32,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditViewModel @Inject constructor(
-    val addPropertyUseCase: AddPropertyUseCase,
-    val getPropertyByIdUseCase: GetPropertyByIdUseCase,
-    val getLatLngFromAddressUseCase: GetLatLngFromAddressUseCase,
-    val getCurrencyUseCase: GetCurrencyUseCase
+    private val addPropertyUseCase: AddPropertyUseCase,
+    private val getPropertyByIdUseCase: GetPropertyByIdUseCase,
+    private val getLatLngFromAddressUseCase: GetLatLngFromAddressUseCase,
+    private val getCurrencyUseCase: GetCurrencyUseCase
 ):ViewModel() {
     var state by mutableStateOf(AddEditState())
         private set
