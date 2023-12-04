@@ -23,8 +23,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,6 +40,7 @@ fun LoanForm(
     if (loanAmount > 0) loanCalculatorViewModel.setLoanAmount(loanAmount)
 
     val state = loanCalculatorViewModel.state
+    val loan = loanCalculatorViewModel.monthlyPayment
 
     Column(
         modifier = Modifier
@@ -76,10 +79,17 @@ fun LoanForm(
         )
 
         LoanOutput(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp),
+            monthlyPayment = loan,
+            loanInterest =
+                if (state.loanAmount != null && loan != null && state.loanTerm != null) {
+                    (state.loanTerm * loan) - state.loanAmount
+                }else{
+                    null
+                }
         )
         LoanButtons(
-
+            loanCalculatorViewModel = loanCalculatorViewModel
         )
     }
 }
@@ -117,7 +127,7 @@ fun LoanInput(
 }
 @Composable
 fun LoanButtons(
-
+    loanCalculatorViewModel: LoanCalculatorViewModel,
 ){
     Row(
         modifier = Modifier
@@ -126,26 +136,51 @@ fun LoanButtons(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
-            onClick = { /*TODO*/ }
-
+            onClick = { loanCalculatorViewModel.clearLoanState() }
         ) {
             Text(text = "Clear")
         }
-        Button(onClick = { /*TODO*/ }) {
+        Button(
+            onClick = { loanCalculatorViewModel.calculateLoan() },
+            enabled = loanCalculatorViewModel.isFormValid
+        ) {
             Text(text = "Calculate")
         }
-
+    }
+    if (!loanCalculatorViewModel.isFormValid){
+        Text(
+            text = "You need to fill in all the required fields",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.error,
+            fontStyle = FontStyle.Italic,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .padding(8.dp)
+        )
     }
 }
 @Composable
 fun LoanOutput(
     modifier: Modifier,
+    monthlyPayment: Double?,
+    loanInterest: Double?,
 ){
+    val monthlyPaymentFormatted =
+        if (monthlyPayment!=null){
+            String.format("%.2f", monthlyPayment).toDouble()
+        }else{
+            ""
+        }
+    val loanInterestFormatted =
+        if (loanInterest!=null){
+            String.format("%.2f", loanInterest).toDouble()
+        }else{
+            ""
+        }
     Row(modifier = modifier) {
-        Text(text = "Monthly amount: ")
+        Text(text = "Monthly amount: $monthlyPaymentFormatted")
     }
     Row(modifier = modifier)  {
-        Text(text = "Interest Total: ")
+        Text(text = "Interest Total: $loanInterestFormatted")
     }
-
 }

@@ -180,11 +180,12 @@ fun Navigation(
 
             ScreenType.Detail -> {
                 LaunchDetailScreenFromState(
+                    loanCalculatorViewModel = loanCalculatorViewModel,
                     state = state,
                     modifier = modifier.padding(it),
                     assistedFactory = assistedFactory,
                     isLargeView = false,
-                    propertyId = id
+                    propertyId = id,
                 ) {
                     isItemOpened = false
                 }
@@ -193,6 +194,7 @@ fun Navigation(
             ScreenType.ListWithDetail -> {
                 println("tablet mode index is $index")
                 ListAndDetailScreen(
+                    loanCalculatorViewModel = loanCalculatorViewModel,
                     state = state,
                     onItemClicked = {
                         index = it
@@ -262,6 +264,7 @@ fun Navigation(
 
 @Composable
 private fun ListAndDetailScreen(
+    loanCalculatorViewModel:LoanCalculatorViewModel,
     modifier: Modifier = Modifier,
     state: HomeState,
     onItemClicked:(index:Int) -> Unit,
@@ -294,6 +297,7 @@ private fun ListAndDetailScreen(
         )
         Column(modifier = modifier.weight(1f)){
             LaunchDetailScreenFromState(
+                loanCalculatorViewModel = loanCalculatorViewModel,
                 state = state,
                 assistedFactory = assistedFactory,
                 isLargeView = true,
@@ -333,6 +337,7 @@ fun getScreenType(
 
 @Composable
 fun LaunchDetailScreenFromState(
+    loanCalculatorViewModel: LoanCalculatorViewModel,
     state: HomeState,
     modifier: Modifier = Modifier,
     assistedFactory: DetailAssistedFactory,
@@ -347,6 +352,7 @@ fun LaunchDetailScreenFromState(
 
         is ScreenViewState.Success -> {
             DetailScreen(
+                loanCalculatorViewModel = loanCalculatorViewModel,
                 propertyId = propertyId,
                 assistedFactory = assistedFactory,
                 modifier = modifier,

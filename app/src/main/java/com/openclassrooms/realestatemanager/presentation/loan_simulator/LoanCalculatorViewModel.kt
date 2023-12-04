@@ -11,6 +11,7 @@ import com.openclassrooms.realestatemanager.common.utils.NumberUtils
 import com.openclassrooms.realestatemanager.domain.model.LoanModel
 import com.openclassrooms.realestatemanager.domain.use_cases.CalculateLoanUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 import javax.inject.Inject
 @HiltViewModel
@@ -20,15 +21,27 @@ class LoanCalculatorViewModel @Inject constructor(
     var state by mutableStateOf(LoanState())
         private set
 
-    private val _monthlyPayment = MutableLiveData<Double>()
-    val monthlyPayment: LiveData<Double> get() = _monthlyPayment
+    var isFormValid by mutableStateOf(false)
+        private set
+
+    var monthlyPayment by mutableStateOf<Double?>(null)
+        private set
+
+    private val loanModel: LoanModel
+        get() = state.run {
+            LoanModel(
+                loanAmount = loanAmount!!,
+                interestRate = interestRate!!,
+                loanTerm = loanTerm!!
+            )
+        }
+
+    fun clearLoanState(){
+        state = LoanState()
+    }
 
     fun setLoanAmount(amount: Double){
         state = state.copy(loanAmount = amount)
-    }
-    fun calculateLoan(loanEntity: LoanModel) {
-        val result = calculateLoanUseCase.calculateLoan(loanEntity)
-        _monthlyPayment.value = result
     }
     fun onLoanAmountChanged(amount:String){
         val doubleAmount = NumberUtils.convertToDoubleOrNull(amount)
@@ -36,6 +49,7 @@ class LoanCalculatorViewModel @Inject constructor(
         if (amount.isNotEmpty() && doubleAmount != null) {
             state = state.copy(loanAmount = doubleAmount)
         }
+        setIsFormValid()
     }
     fun onInterestRateChanged(amount:String){
         val doubleAmount = NumberUtils.convertToDoubleOrNull(amount)
@@ -43,6 +57,7 @@ class LoanCalculatorViewModel @Inject constructor(
         if (amount.isNotEmpty() && doubleAmount != null) {
             state = state.copy(interestRate = doubleAmount)
         }
+        setIsFormValid()
     }
     fun onLoanTermChanged(amount:String){
         val intAmount = NumberUtils.convertToIntOrNull(amount)
@@ -50,15 +65,21 @@ class LoanCalculatorViewModel @Inject constructor(
         if (amount.isNotEmpty() && intAmount != null) {
             state = state.copy(loanTerm = intAmount)
         }
+        setIsFormValid()
     }
 
     fun checkDoubleAmountIsValid(amount:Double?):Boolean{
-        println("double amount is valid: ${amount != null && amount >= 0}")
         return amount != null && amount > 0
     }
     fun checkIntAmountIsValid(amount:Int?):Boolean{
-        println("int amount is valid: ${amount != null && amount >= 0}")
         return amount != null && amount > 0
+    }
+    private fun setIsFormValid(){
+        isFormValid = validateLoanState()
+    }
+    private fun validateLoanState() = state.loanAmount != null && state.loanTerm != null && state.interestRate != null
+    fun calculateLoan(){
+        monthlyPayment= calculateLoanUseCase.calculateLoan(loanModel)
     }
 }
 data class LoanState(
