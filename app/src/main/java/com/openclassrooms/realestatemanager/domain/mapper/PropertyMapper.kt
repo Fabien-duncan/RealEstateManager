@@ -11,13 +11,6 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 
 class PropertyMapper{
-    fun mapToRoomEntity(property: PropertyModel) = PropertyWithAllDetails(
-        property = propertyModelToRoom(property),
-        address = addressModelToRoom(property.address, 0),
-        nearbyPlaces = null,
-        photos = null,
-    )
-
     fun mapToDomainModel(property: PropertyWithAllDetails) = PropertyModel(
         id = property.property.id,
         type = property.property.type,
@@ -116,7 +109,7 @@ class PropertyMapper{
         caption = propertyPhoto.caption
     )
 
-    public fun listOfPropertyPhotosModelToRoom(propertyPhotos:List<PropertyPhotosModel>, propertyId: Long):List<PropertyPhotos> {
+    fun listOfPropertyPhotosModelToRoom(propertyPhotos:List<PropertyPhotosModel>, propertyId: Long):List<PropertyPhotos> {
         var photos = mutableListOf<PropertyPhotos>()
 
         propertyPhotos.forEach {
