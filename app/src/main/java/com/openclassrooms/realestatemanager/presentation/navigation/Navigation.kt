@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,51 +84,15 @@ fun Navigation(
     val currencyViewModel: CurrencyViewModel = viewModel()
     val filterViewModel: FilterViewModel = viewModel()
     val loanCalculatorViewModel: LoanCalculatorViewModel = viewModel()
-    val checkConnectionViewModel: CheckConnectionViewModel = viewModel()
 
-    Log.d("navigation", "your are connected: ${checkConnectionViewModel.isInternetOn()}")
 
     val state by homeViewModel.state.collectAsState()
-
     val isExpanded = windowSize == WindowSizeType.Expanded
-
-    var index by remember{ mutableIntStateOf(0) }
-
-    var id by remember{ mutableLongStateOf(
-            when(state.properties){
-                is ScreenViewState.Error -> 1L
-                ScreenViewState.Loading -> 1L
-                is ScreenViewState.Success -> {
-                        (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].id
-                }
-            }
-        )
-    }
-
-    var isItemOpened by remember { mutableStateOf(false) }
-
-    var isAddOpened by remember { mutableStateOf(false) }
-    var isEditOpened by remember { mutableStateOf(false) }
-
-    var isLoanPopUpOpened by remember { mutableStateOf(false) }
-
     val currentCurrency = currencyViewModel.currentCurrency
-
-    var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = isItemOpened, isAddOpened = isAddOpened || isEditOpened)
+    var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = homeViewModel.isItemOpened, isAddOpened = homeViewModel.isAddOpened || homeViewModel.isEditOpened)
 
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    LaunchedEffect(state){
-        when(state.properties){
-            is ScreenViewState.Error -> 1L
-            ScreenViewState.Loading -> 1L
-            is ScreenViewState.Success -> {
-                if((state.properties as ScreenViewState.Success<List<PropertyModel>>).data.isNotEmpty()){
-                    id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].id
-                }
-            }
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -136,27 +102,27 @@ fun Navigation(
                 currencyType = currentCurrency,
                 screenType = homeScreenType,
                 onBackArrowPressed = {
-                    isItemOpened = it
-                    isAddOpened = false
-                    isEditOpened = false
+                    homeViewModel.isItemOpened = it
+                    homeViewModel.isAddOpened = false
+                    homeViewModel.isEditOpened = false
 
                 },
                 onAddPressed = {
-                    isAddOpened = true
-                    isItemOpened = false
-                    isEditOpened = false
+                    homeViewModel.isAddOpened = true
+                    homeViewModel.isItemOpened = false
+                    homeViewModel.isEditOpened = false
                     addEditViewModel.resetState()
                 },
                 onEditPressed = {
-                    isEditOpened = true
-                    isItemOpened = false
+                    homeViewModel.isEditOpened = true
+                    homeViewModel.isItemOpened = false
                     addEditViewModel.resetState()
                 },
                 onSearchedPressed = {
                     showBottomSheet = true
                 },
                 onLoanCalculatorPressed = {
-                    isLoanPopUpOpened = true
+                    homeViewModel.isLoanPopUpOpened = true
                 }
 
             )
@@ -168,9 +134,9 @@ fun Navigation(
                     state = state,
                     modifier = modifier.padding(it),
                     onItemClicked = {
-                        index = it
-                        id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[index].id
-                        isItemOpened = true
+                        homeViewModel.propertyIndex = it
+                        homeViewModel.currentId = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[homeViewModel.propertyIndex].id
+                        homeViewModel.isItemOpened = true
                     },
                     isLargeScreen = false,
                     viewModel = homeViewModel,
@@ -186,29 +152,29 @@ fun Navigation(
                     modifier = modifier.padding(it),
                     assistedFactory = assistedFactory,
                     isLargeView = false,
-                    propertyId = id,
-                    currencyViewModel= currencyViewModel,
+                    propertyId = homeViewModel.currentId,
                 ) {
-                    isItemOpened = false
+                    homeViewModel.isItemOpened = false
                 }
             }
 
             ScreenType.ListWithDetail -> {
-                println("tablet mode index is $index")
+                println("tablet mode index is ${homeViewModel.propertyIndex}")
                 ListAndDetailScreen(
                     loanCalculatorViewModel = loanCalculatorViewModel,
                     state = state,
                     onItemClicked = {
-                        index = it
-                        id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[index].id
+                        homeViewModel.propertyIndex = it
+                        homeViewModel.currentId = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[homeViewModel.propertyIndex].id
                     },
                     assistedFactory = assistedFactory,
                     modifier = modifier.padding(it),
-                    index = index,
-                    id = id,
+                    index = homeViewModel.propertyIndex,
+                    id = homeViewModel.currentId,
                     viewModel = homeViewModel,
                     currencyViewModel = currencyViewModel,
-                    onGoToAppSettingsClicked = onGoToAppSettingsClicked
+                    onGoToAppSettingsClicked = onGoToAppSettingsClicked,
+
                 )
             }
 
@@ -217,19 +183,19 @@ fun Navigation(
                 println("AddEditPage")
                 AddEditScreen(
                     currencyViewModel = currencyViewModel,
-                    propertyId = if(isEditOpened) id else -1L,
+                    propertyId = if(homeViewModel.isEditOpened) homeViewModel.currentId else -1L,
                     isLargeView = isExpanded,
                     addEditViewModel = addEditViewModel,
                     modifier = modifier.padding(it),
                     onCreatedClicked = { newId->
-                        id = newId
-                        index = propertiesListSize-1
-                        isItemOpened = true
-                        isAddOpened = false
-                        isEditOpened = false
+                        homeViewModel.currentId = newId
+                        homeViewModel.propertyIndex = propertiesListSize-1
+                        homeViewModel.isItemOpened = true
+                        homeViewModel.isAddOpened = false
+                        homeViewModel.isEditOpened = false
                     },
                 ) {
-                    isAddOpened = false
+                    homeViewModel.isAddOpened = false
                 }
             }
         }
@@ -245,15 +211,15 @@ fun Navigation(
                     currencyViewModel = currencyViewModel,
                     onCloseSheet = {
                         showBottomSheet = false
-                        id = if(properties.isEmpty()) -1L else properties[0].id
+                        homeViewModel.currentId = if(properties.isEmpty()) -1L else properties[0].id
                     },
                 )
             }
         }
-        if (isLoanPopUpOpened){
+        if (homeViewModel.isLoanPopUpOpened){
             Dialog(
                 onDismissRequest = {
-                    isLoanPopUpOpened = false
+                    homeViewModel.isLoanPopUpOpened = false
                 },
             ) {
                 LoanForm(loanCalculatorViewModel = loanCalculatorViewModel)
@@ -278,10 +244,12 @@ private fun ListAndDetailScreen(
     onGoToAppSettingsClicked: () -> Unit,
     currencyViewModel: CurrencyViewModel
 ){
+    val configuration = LocalConfiguration.current
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(modifier = modifier.weight(0.4f)){
+        Column(modifier = modifier.weight(if (isPortrait)0.7F else 0.4f)){
             HomeScreen(
                 state = state,
                 onItemClicked = onItemClicked,
@@ -301,7 +269,6 @@ private fun ListAndDetailScreen(
         Column(modifier = modifier.weight(1f)){
             LaunchDetailScreenFromState(
                 loanCalculatorViewModel = loanCalculatorViewModel,
-                currencyViewModel = currencyViewModel,
                 state = state,
                 assistedFactory = assistedFactory,
                 isLargeView = true,
@@ -342,7 +309,6 @@ fun getScreenType(
 @Composable
 fun LaunchDetailScreenFromState(
     loanCalculatorViewModel: LoanCalculatorViewModel,
-    currencyViewModel: CurrencyViewModel,
     state: HomeState,
     modifier: Modifier = Modifier,
     assistedFactory: DetailAssistedFactory,

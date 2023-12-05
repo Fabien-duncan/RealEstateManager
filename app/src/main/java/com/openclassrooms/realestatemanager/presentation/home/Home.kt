@@ -39,7 +39,6 @@ fun HomeScreen(
         is ScreenViewState.Success -> {
             val properties = state.properties.data
             //var isMapView by remember { mutableStateOf(false) }
-            println("HomeScreen: got data and selected index is $selectedIndex")
             Scaffold(
                 floatingActionButton = {
 

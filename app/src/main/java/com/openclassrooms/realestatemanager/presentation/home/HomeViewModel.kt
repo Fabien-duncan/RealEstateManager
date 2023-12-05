@@ -2,7 +2,10 @@ package com.openclassrooms.realestatemanager.presentation.home
 
 import android.location.Location
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +17,7 @@ import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrentLocationUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
 import com.openclassrooms.realestatemanager.enums.CurrencyType
+import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.presentation.navigation.FilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +39,15 @@ class HomeViewModel @Inject constructor(
     private val _state:MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
     val state:StateFlow<HomeState> = _state.asStateFlow()
     var isMapView by mutableStateOf(false)
+
+    var isItemOpened by  mutableStateOf(false)
+    var isAddOpened by mutableStateOf(false)
+    var isEditOpened by mutableStateOf(false)
+    var isLoanPopUpOpened by mutableStateOf(false)
+    var currentId by mutableLongStateOf(1L)
+    var propertyIndex by mutableIntStateOf(0)
     var currentLocation by mutableStateOf<Location?>(null)
+
     init {
         getAllProperty()
     }
@@ -44,6 +56,8 @@ class HomeViewModel @Inject constructor(
         getAllPropertiesUseCase()
             .onEach {
                 _state.value = HomeState(properties = ScreenViewState.Success(it))
+                currentId = it[0].id
+                propertyIndex = 0
             }
             .catch {
                 _state.value = HomeState(properties = ScreenViewState.Error(it.message))
@@ -94,6 +108,8 @@ class HomeViewModel @Inject constructor(
         )
             .onEach {
                 _state.value = HomeState(properties = ScreenViewState.Success(it))
+                currentId = it[0].id
+                propertyIndex = 0
             }
             .catch {
                 _state.value = HomeState(properties = ScreenViewState.Error(it.message))
