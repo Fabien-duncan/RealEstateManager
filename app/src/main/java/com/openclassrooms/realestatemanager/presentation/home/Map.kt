@@ -196,7 +196,6 @@ fun MapWithProperties(
             }
         }
     }else{
-        println("no internet for map")
         MissingInternetConnection()
     }
     if (showBottomSheet){
@@ -292,16 +291,9 @@ fun MissingPermissionScreen(
                         .weight(1F)
                         .padding(8.dp),
                     onClick = {
-                        println("package name: ${context.packageName}")
                         onGoToAppSettingsClicked.invoke()
-                    }/*{
-                        val uid = android.os.Process.myUid()
-                        Log.d("MyApp", "User UID: $uid")
-                        val intent =
-                            Intent(ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    }*/) {
+                    }
+                ) {
                     Text("Go to settings")
                 }
                 Button(
@@ -316,15 +308,6 @@ fun MissingPermissionScreen(
                 }
             }
         }
-    /*}else{
-        MapWithProperties(
-            state = state,
-            modifier = modifier,
-            onItemClicked = onItemClicked,
-            currentLatLng = currentLatLng,
-            currencyViewModel = currencyViewModel
-        )
-    }*/
 
 }
 

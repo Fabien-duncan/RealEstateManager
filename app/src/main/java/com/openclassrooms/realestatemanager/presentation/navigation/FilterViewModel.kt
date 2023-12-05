@@ -13,6 +13,9 @@ class FilterViewModel:ViewModel() {
     var state by mutableStateOf(FilterState())
         private set
 
+    fun clearFilterState(){
+        state = FilterState()
+    }
     fun onAgentChanged(agentName: String?){
         state = state.copy(agentName = agentName)
     }

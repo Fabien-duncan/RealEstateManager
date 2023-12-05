@@ -235,6 +235,7 @@ fun Navigation(
         }
 
         if (showBottomSheet){
+            val properties = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false }) {
 
@@ -244,7 +245,7 @@ fun Navigation(
                     currencyViewModel = currencyViewModel,
                     onCloseSheet = {
                         showBottomSheet = false
-                        id = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[0].id //needs to wait until the properties has been updated
+                        id = if(properties.isEmpty()) -1L else properties[0].id
                     },
                 )
             }

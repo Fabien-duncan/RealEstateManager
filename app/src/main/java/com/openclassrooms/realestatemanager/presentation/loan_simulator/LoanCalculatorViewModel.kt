@@ -38,6 +38,8 @@ class LoanCalculatorViewModel @Inject constructor(
 
     fun clearLoanState(){
         state = LoanState()
+        isFormValid = false
+        monthlyPayment = null
     }
 
     fun setLoanAmount(amount: Double){
@@ -57,22 +59,30 @@ class LoanCalculatorViewModel @Inject constructor(
         if (amount.isNotEmpty() && doubleAmount != null) {
             state = state.copy(interestRate = doubleAmount)
         }
+
         setIsFormValid()
     }
     fun onLoanTermChanged(amount:String){
         val intAmount = NumberUtils.convertToIntOrNull(amount)
 
-        if (amount.isNotEmpty() && intAmount != null) {
-            state = state.copy(loanTerm = intAmount)
-        }
+        state = state.copy(loanTerm = intAmount)
+
         setIsFormValid()
     }
 
     fun checkDoubleAmountIsValid(amount:Double?):Boolean{
-        return amount != null && amount > 0
+        return if (amount != null && amount > 0) true
+        else{
+            isFormValid = false
+            false
+        }
     }
     fun checkIntAmountIsValid(amount:Int?):Boolean{
-        return amount != null && amount > 0
+        return if (amount != null && amount > 0) true
+        else{
+            isFormValid = false
+            false
+        }
     }
     private fun setIsFormValid(){
         isFormValid = validateLoanState()

@@ -237,6 +237,7 @@ fun BottomSheetFilter(
                 onClick = {
                     homeViewModel.getAllProperty()
                     onCloseSheet.invoke()
+                    filterViewModel.clearFilterState()
                 },
                 modifier = Modifier
                     .weight(1F)

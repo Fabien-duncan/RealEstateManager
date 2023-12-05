@@ -31,5 +31,4 @@ class CheckInternetConnectionUseCaseTest {
         coVerify { mockRepository.isInternetConnected() }
         TestCase.assertEquals(true, isInternetConnected)
     }
-
 }
