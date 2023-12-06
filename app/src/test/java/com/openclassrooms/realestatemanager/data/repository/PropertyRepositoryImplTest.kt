@@ -5,16 +5,19 @@ import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
+import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
 import com.openclassrooms.realestatemanager.domain.mapper.AddressMapper
 import com.openclassrooms.realestatemanager.domain.mapper.NearbyPlacesMapper
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyPhotosMapper
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.enums.PropertyType
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -62,5 +65,46 @@ class PropertyRepositoryImplTest{
 
         assertEquals(1L, result)
     }
+    @Test
+    fun `getPropertyWithDetailsById should return property`() = runBlocking {
+        val mockPropertyRoomWithDetails = mockk<PropertyWithAllDetails>(relaxed = true)
+        val mockPropertyModel = mockk<PropertyModel>(relaxed = true)
 
+        coEvery { mockPropertyDao.getPropertyWithDetailsById(any()) } returns flowOf(mockPropertyRoomWithDetails)
+        coEvery { mockPropertyMapper.mapToDomainModel(any()) } returns mockPropertyModel
+
+        val resultFlow = propertyRepository.getPropertyWithDetailsById(1L)
+
+        resultFlow.collect { result -> assertEquals(mockPropertyModel, result)}
+    }
+    @Test
+    fun `getAllPropertiesWithDetails should return list of properties`() = runBlocking {
+        val mockPropertyRoomWithDetailsList = listOf(mockk<PropertyWithAllDetails>(relaxed = true))
+        val mockPropertyModelList = listOf(mockk<PropertyModel>(relaxed = true))
+
+        coEvery { mockPropertyDao.getAllProperties() } returns flowOf(mockPropertyRoomWithDetailsList)
+        coEvery { mockPropertyMapper.mapToDomainModel(any()) } returnsMany mockPropertyModelList
+
+        val resultFlow = propertyRepository.getAllPropertiesWithDetails()
+
+        resultFlow.collect { result -> assertEquals(mockPropertyModelList, result) }
+    }
+
+    @Test
+    fun `getFilteredProperties should return filtered properties`() = runBlocking {
+        val mockPropertyRoomWithDetailsList = listOf(mockk<PropertyWithAllDetails>(relaxed = true))
+        val mockPropertyModelList = listOf(mockk<PropertyModel>(relaxed = true))
+
+        coEvery { mockPropertyDao.getFilterProperties(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns flowOf(mockPropertyRoomWithDetailsList)
+        coEvery { mockPropertyMapper.mapToDomainModel(any()) } returnsMany mockPropertyModelList
+
+        val resultFlow = propertyRepository.getFilteredProperties(
+            agentName = "test Agent",
+            propertyType = PropertyType.APARTMENT,
+            minPrice = 100000,
+            maxPrice = 200000,
+        )
+
+        resultFlow.collect { result -> assertEquals(mockPropertyModelList, result)}
+    }
 }
