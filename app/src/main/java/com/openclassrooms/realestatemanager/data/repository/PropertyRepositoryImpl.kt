@@ -1,8 +1,10 @@
 package com.openclassrooms.realestatemanager.data.repository
 
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
+import com.openclassrooms.realestatemanager.domain.mapper.AddressMapper
+import com.openclassrooms.realestatemanager.domain.mapper.NearbyPlacesMapper
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
+import com.openclassrooms.realestatemanager.domain.mapper.PropertyPhotosMapper
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
@@ -16,25 +18,27 @@ import javax.inject.Inject
 class PropertyRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao,
     private val propertyMapper: PropertyMapper,
-    private val fusedLocationClient: FusedLocationProviderClient
+    private val addressMapper: AddressMapper,
+    private val nearbyPlacesMapper: NearbyPlacesMapper,
+    private val propertyPhotosMapper: PropertyPhotosMapper
 ): Repository{
     override suspend fun insert(property: PropertyModel): Long {
-        val propertyRoomEntity = propertyMapper.propertyModelToRoom(property)
+        val propertyRoomEntity = propertyMapper.mapToRoomEntity(property)
         val propertyId = propertyDao.insert(propertyRoomEntity)
 
-        val addressRoomEntity = propertyMapper.addressModelToRoom(property.address, propertyId)
+        val addressRoomEntity = addressMapper.mapToRoomEntity(property.address, propertyId)
 
 
         propertyDao.insert(addressRoomEntity)
 
         property.nearbyPlaces?.let { nearbyPlacesType ->
-            val nearbyPlace =propertyMapper.nearbyPlacesToRoomEntities(nearbyPlacesType, propertyId)
+            val nearbyPlace =nearbyPlacesMapper.mapToRoomEntities(nearbyPlacesType, propertyId)
             val nearbyPlacesIds = propertyDao.insertNearbyPlaces(nearbyPlace)
             propertyDao.clearNearbyPlacesForProperty(propertyId, nearbyPlacesIds)
         }
 
         property.photos?.let {
-            val photos = propertyMapper.listOfPropertyPhotosModelToRoom(it, propertyId)
+            val photos = propertyPhotosMapper.mapToRoomEntities(it, propertyId)
             propertyDao.insert(photos)
         }
 

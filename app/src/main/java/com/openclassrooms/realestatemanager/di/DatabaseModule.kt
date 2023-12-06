@@ -14,7 +14,10 @@ import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
 import com.openclassrooms.realestatemanager.data.location.DefaultLocationTracker
 import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.location.LocationTracker
+import com.openclassrooms.realestatemanager.domain.mapper.AddressMapper
+import com.openclassrooms.realestatemanager.domain.mapper.NearbyPlacesMapper
 import com.openclassrooms.realestatemanager.domain.mapper.PropertyMapper
+import com.openclassrooms.realestatemanager.domain.mapper.PropertyPhotosMapper
 import com.openclassrooms.realestatemanager.domain.use_cases.CalculateLoanUseCase
 import dagger.Module
 import dagger.Provides
@@ -40,7 +43,16 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun providePropertyMapper() = PropertyMapper()
+    fun provideAddressMapper() = AddressMapper()
+    @Provides
+    @Singleton
+    fun provideNearbyPlacesMapper() = NearbyPlacesMapper()
+    @Provides
+    @Singleton
+    fun providePropertyPhotosMapper() = PropertyPhotosMapper()
+    @Provides
+    @Singleton
+    fun providePropertyMapper() = PropertyMapper(propertyPhotosMapper = providePropertyPhotosMapper(), nearbyPlacesMapper = provideNearbyPlacesMapper(), addressMapper = provideAddressMapper())
 
     @Provides
     @Singleton
