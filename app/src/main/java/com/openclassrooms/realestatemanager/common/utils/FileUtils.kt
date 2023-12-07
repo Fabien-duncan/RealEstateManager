@@ -32,14 +32,12 @@ object FileUtils {
     private fun getFileNameFromUri(contentResolver: ContentResolver, uri: Uri): String? {
         val cursor = contentResolver.query(uri, null, null, null, null)
 
-        return try {
+        return cursor.use { cursor ->
             cursor?.let {
                 val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                 it.moveToFirst()
                 it.getString(nameIndex)
             }
-        } finally {
-            cursor?.close()
         }
     }
 }

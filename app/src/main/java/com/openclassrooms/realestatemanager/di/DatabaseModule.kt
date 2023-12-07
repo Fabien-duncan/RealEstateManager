@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.openclassrooms.realestatemanager.common.utils.VersionProvider
 import com.openclassrooms.realestatemanager.data.Connection.ConnectionCheckerRepositoryImpl
 import com.openclassrooms.realestatemanager.data.api.GeocodingApiService
 import com.openclassrooms.realestatemanager.data.currency_converter.CurrencyRepositoryImpl
@@ -99,5 +100,10 @@ object DatabaseModule {
     @Singleton
     fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
         return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
+    @Provides
+    @Singleton
+    fun provideVersionProvider(): VersionProvider {
+        return VersionProvider()
     }
 }

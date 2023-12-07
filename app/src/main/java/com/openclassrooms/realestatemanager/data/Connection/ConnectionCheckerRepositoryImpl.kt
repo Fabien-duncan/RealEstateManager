@@ -1,20 +1,25 @@
 package com.openclassrooms.realestatemanager.data.Connection
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import androidx.annotation.RequiresApi
+import com.openclassrooms.realestatemanager.common.utils.VersionProvider
 import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import javax.inject.Inject
 
 class ConnectionCheckerRepositoryImpl @Inject constructor(
-    private val  connectivityManager:ConnectivityManager
+    private val  connectivityManager:ConnectivityManager,
+    private val versionProvider: VersionProvider
 ): ConnectionCheckerRepository {
-    override fun isInternetConnected(): Boolean {
-        //val connectivityManager = application.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    @SuppressLint("NewApi")
+    override fun isInternetConnected(): Boolean {
+
+        if (versionProvider.getSdkInt() >= Build.VERSION_CODES.M) {
             // Returns a Network object corresponding to
             // the currently active default data network.
             val network = connectivityManager.activeNetwork ?: return false
@@ -37,9 +42,5 @@ class ConnectionCheckerRepositoryImpl @Inject constructor(
             @Suppress("DEPRECATION")
             return networkInfo.isConnected
         }
-    }
-
-    override fun isGpsOn(): Boolean {
-        TODO("Not yet implemented")
     }
 }
