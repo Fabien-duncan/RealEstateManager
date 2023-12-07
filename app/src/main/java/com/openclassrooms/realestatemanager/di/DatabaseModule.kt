@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.openclassrooms.realestatemanager.common.utils.PermissionCheckProvider
 import com.openclassrooms.realestatemanager.common.utils.VersionProvider
 import com.openclassrooms.realestatemanager.data.Connection.ConnectionCheckerRepositoryImpl
 import com.openclassrooms.realestatemanager.data.api.GeocodingApiService
@@ -79,10 +80,11 @@ object DatabaseModule {
     @Singleton
     fun providesLocationTracker(
         fusedLocationProviderClient: FusedLocationProviderClient,
-        application: Application
+        application: Application,
     ): LocationTracker = DefaultLocationTracker(
         fusedLocationProviderClient = fusedLocationProviderClient,
-        application = application
+        application = application,
+        permissionCheckProvider = PermissionCheckProvider()
     )
 
     @Provides
