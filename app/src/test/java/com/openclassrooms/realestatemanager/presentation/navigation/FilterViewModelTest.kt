@@ -94,7 +94,7 @@ class FilterViewModelTest{
         assertEquals(5, state.maxRooms)
     }
     @Test
-    fun `onMinBathroomsChange should update minRooms in state`() {
+    fun `onMinBathroomsChange should update minBathrooms in state`() {
         val number = "2"
 
         viewModel.onMinBathroomsChange(number)
@@ -104,7 +104,7 @@ class FilterViewModelTest{
     }
 
     @Test
-    fun `onMaxBathroomsChange should update maxRooms in state`() {
+    fun `onMaxBathroomsChange should update maxBathrooms in state`() {
         val number = "5"
 
         viewModel.onMaxBathroomsChange(number)
@@ -113,7 +113,7 @@ class FilterViewModelTest{
         assertEquals(5, state.maxBathrooms)
     }
     @Test
-    fun `onMinBedroomsChange should update minRooms in state`() {
+    fun `onMinBedroomsChange should update minBedrooms in state`() {
         val number = "2"
 
         viewModel.onMinBathroomsChange(number)
@@ -123,7 +123,7 @@ class FilterViewModelTest{
     }
 
     @Test
-    fun `onMaxBedroomsChange should update maxRooms in state`() {
+    fun `onMaxBedroomsChange should update maxBedrooms in state`() {
         val number = "5"
 
         viewModel.onMaxBedroomsChange(number)

@@ -2,7 +2,6 @@ package com.openclassrooms.realestatemanager.presentation.create_edit
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -107,7 +106,6 @@ class AddEditViewModel @Inject constructor(
             nearbyPlaces = null,
             photos = null
         )
-        println("reset state: state.price is now ${state.price}")
     }
     fun onTypeChange(type:PropertyType){
         state = state.copy(type = type)
@@ -232,9 +230,7 @@ class AddEditViewModel @Inject constructor(
         setFormIsValid()
     }
     fun onIsAddressValidChanged(){
-
         isAddressValid = !isAddressValid
-        Log.d("addEditViewModel", "changed isAddressValid to $isAddressValid")
         setFormIsValid()
     }
 
@@ -242,7 +238,6 @@ class AddEditViewModel @Inject constructor(
         if (isAddressValid && position.latitude != null && position.longitude != null){
             state = state.copy(latitude = position.latitude, longitude = position.longitude)
         }
-        println("Currency type before saving to db is: ${getCurrencyUseCase.invoke()}")
         val price = when(getCurrencyUseCase.invoke()){
             CurrencyType.Dollar -> state.price
             CurrencyType.Euro -> Utils.convertEuroToDollar(state.price ?: 0)
@@ -261,13 +256,11 @@ class AddEditViewModel @Inject constructor(
                 position = result
                 mapImageLink = getMapImage(result.latitude, result.longitude)
             }
-            Log.d("addEditViewModel","your lat long is $position and the link to the image is $mapImageLink")
         }
     }
 
     fun getPropertyById(propertyId:Long, currencyType: CurrencyType) = viewModelScope.launch {
         if (state.id != propertyId){
-            println("getting property by Id")
             getPropertyByIdUseCase(propertyId).collectLatest { property ->
                 state = state.copy(
                     id = property.id,
@@ -304,17 +297,7 @@ class AddEditViewModel @Inject constructor(
 
     }
 
-    /*private fun convertToIntOrNull(value:String?):Int? {
-        return if (value.isNullOrBlank()) null
-        else {
-            try {
-                value.toInt()
-            } catch (e: NumberFormatException) {
-                null
-            }
-        }
-    }*/
-        fun resetFinishedState(){
+    fun resetFinishedState(){
         _isAddOrUpdatePropertyFinished.value = false
     }
 
@@ -322,7 +305,6 @@ class AddEditViewModel @Inject constructor(
         isFormValid = checkFormIsValid()
     }
     private fun checkFormIsValid():Boolean{
-        println("Checking form is valid")
         if (state.type == null) return false
         if (state.price == null || state.price!! <= 0.0) return false
         if (state.area == null || state.area!! <= 0) return false
