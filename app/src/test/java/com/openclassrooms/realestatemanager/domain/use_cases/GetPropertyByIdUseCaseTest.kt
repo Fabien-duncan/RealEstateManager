@@ -1,12 +1,11 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
-import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
+import com.openclassrooms.realestatemanager.ProvideTestProperties
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single

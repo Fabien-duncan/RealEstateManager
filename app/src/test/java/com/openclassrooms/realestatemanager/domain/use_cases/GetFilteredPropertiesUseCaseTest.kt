@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
+import com.openclassrooms.realestatemanager.ProvideTestProperties
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery

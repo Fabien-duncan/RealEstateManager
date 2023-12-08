@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.domain.use_cases
+package com.openclassrooms.realestatemanager
 
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
