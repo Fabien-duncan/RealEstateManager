@@ -13,6 +13,8 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -41,5 +43,37 @@ class LoanCalculatorViewModelTest{
         viewModel.calculateLoan()
 
         assertEquals(expectedMonthlyPayment, viewModel.monthlyPayment)
+    }
+
+    @Test
+    fun `checkDoubleAmountIsValid should return true for valid amount`() {
+        val result = viewModel.checkDoubleAmountIsValid(10000.0)
+
+        assertTrue(result)
+        assertTrue(viewModel.isFormValid)
+    }
+
+    @Test
+    fun `checkDoubleAmountIsValid should return false for invalid amount`() {
+        val result = viewModel.checkDoubleAmountIsValid(0.0)
+
+        assertFalse(result)
+        assertFalse(viewModel.isFormValid)
+    }
+
+    @Test
+    fun `checkIntAmountIsValid should return true for valid amount`() {
+        val result = viewModel.checkIntAmountIsValid(12)
+
+        assertTrue(result)
+        assertTrue(viewModel.isFormValid)
+    }
+
+    @Test
+    fun `checkIntAmountIsValid should return false for invalid amount`() {
+        val result = viewModel.checkIntAmountIsValid(0)
+
+        assertFalse(result)
+        assertFalse(viewModel.isFormValid)
     }
 }
