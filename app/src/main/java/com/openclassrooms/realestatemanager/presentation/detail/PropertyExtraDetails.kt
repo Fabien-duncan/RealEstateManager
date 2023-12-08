@@ -31,7 +31,7 @@ import java.text.SimpleDateFormat
 @Composable
 fun ExtraDetails(
     modifier: Modifier = Modifier,
-    state: DetailSate,
+    state: DetailState,
     isLargeView:Boolean,
     isPortrait: Boolean = false
 ) {

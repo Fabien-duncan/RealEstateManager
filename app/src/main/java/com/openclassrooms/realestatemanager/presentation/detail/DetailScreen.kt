@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,8 +38,6 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanCalculatorViewModel
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanForm
-import com.openclassrooms.realestatemanager.presentation.navigation.CheckConnectionViewModel
-import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
 @Composable
 fun DetailScreen(
@@ -98,7 +95,7 @@ fun DetailScreen(
 @Composable
 private fun DetailScreenView(
     modifier: Modifier,
-    state: DetailSate,
+    state: DetailState,
     isLargeView:Boolean,
     mapImageLink:String,
     onLoanPressed: () -> Unit

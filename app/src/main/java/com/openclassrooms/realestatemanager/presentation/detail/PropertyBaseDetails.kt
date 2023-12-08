@@ -16,7 +16,7 @@ import com.openclassrooms.realestatemanager.R
 
 @Composable
 fun BaseDetails(
-    state: DetailSate,
+    state: DetailState,
     modifier: Modifier = Modifier,
     isLargeView:Boolean
 ){

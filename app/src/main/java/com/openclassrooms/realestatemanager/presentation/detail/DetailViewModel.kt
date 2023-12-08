@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.realestatemanager.BuildConfig
-import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.use_cases.CheckInternetConnectionUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
@@ -22,7 +21,7 @@ class DetailViewModel @AssistedInject constructor(
     private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase,
     @Assisted private val propertyId: Long
 ):ViewModel() {
-    var state by mutableStateOf(DetailSate(null))
+    var state by mutableStateOf(DetailState(null))
         private set
     var mapImageLink by mutableStateOf("")
         private set
@@ -52,7 +51,7 @@ private fun getMapImage(lat:Double?, long:Double?):String{
     }
 }
 
-data class DetailSate(
+data class DetailState(
     val property: PropertyModel? = null
 )
 @Suppress("UNCHECKED_CAST")
