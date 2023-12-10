@@ -34,7 +34,8 @@ class AddEditViewModel @Inject constructor(
     private val addPropertyUseCase: AddPropertyUseCase,
     private val getPropertyByIdUseCase: GetPropertyByIdUseCase,
     private val getLatLngFromAddressUseCase: GetLatLngFromAddressUseCase,
-    private val getCurrencyUseCase: GetCurrencyUseCase
+    private val getCurrencyUseCase: GetCurrencyUseCase,
+    private val fileUtils: FileUtils
 ):ViewModel() {
     var state by mutableStateOf(AddEditState())
         private set
@@ -205,13 +206,11 @@ class AddEditViewModel @Inject constructor(
     fun onImagesAdded(originalImagesUris: List<Uri>, context:Context){
         val photosCopy = (state.copy().photos ?: mutableListOf()).toMutableList()
         originalImagesUris.forEach {
-            val newUri = FileUtils.copyImageToInternalStorage(it, context)
+            val newUri = fileUtils.copyImageToInternalStorage(it, context)
             val newPhoto = PropertyPhotosModel(photoPath = newUri.toString())
 
             photosCopy += newPhoto
         }
-
-        println("list of photos $photosCopy")
 
         state = state.copy(photos = photosCopy)
         setFormIsValid()

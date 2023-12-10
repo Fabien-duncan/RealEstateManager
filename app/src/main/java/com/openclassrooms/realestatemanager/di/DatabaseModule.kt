@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.common.utils.PermissionCheckProvider
 import com.openclassrooms.realestatemanager.common.utils.VersionProvider
 import com.openclassrooms.realestatemanager.data.Connection.ConnectionCheckerRepositoryImpl
@@ -97,6 +98,11 @@ object DatabaseModule {
     @Singleton
     fun provideCalculateLoanUseCase(): CalculateLoanUseCase {
         return CalculateLoanUseCase()
+    }
+    @Provides
+    @Singleton
+    fun provideFilesUtils(): FileUtils{
+        return FileUtils()
     }
     @Provides
     @Singleton

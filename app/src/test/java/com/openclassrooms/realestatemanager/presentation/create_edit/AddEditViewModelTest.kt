@@ -1,17 +1,21 @@
 package com.openclassrooms.realestatemanager.presentation.create_edit
 
+import android.content.Context
 import android.net.Uri
 import com.openclassrooms.realestatemanager.MainCoroutineRule
 import com.openclassrooms.realestatemanager.ProvideTestProperties
+import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.geocoding.LatLongEntity
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
+import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.domain.use_cases.AddPropertyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.CheckInternetConnectionUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetLatLngFromAddressUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
 import com.openclassrooms.realestatemanager.enums.CurrencyType
+import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -28,6 +32,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.io.File
 import java.util.Date
 
 
@@ -42,13 +47,15 @@ class AddEditViewModelTest{
     lateinit var getLatLngFromAddressUseCase: GetLatLngFromAddressUseCase
     @MockK
     lateinit var getCurrencyUseCase: GetCurrencyUseCase
+    @MockK
+    lateinit var fileUtils: FileUtils
 
     lateinit var viewModel: AddEditViewModel
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        viewModel = AddEditViewModel(addPropertyUseCase,getPropertyByIdUseCase,getLatLngFromAddressUseCase,getCurrencyUseCase)
+        viewModel = AddEditViewModel(addPropertyUseCase,getPropertyByIdUseCase,getLatLngFromAddressUseCase,getCurrencyUseCase, fileUtils)
     }
 
     @Test
@@ -213,17 +220,71 @@ class AddEditViewModelTest{
         val state = viewModel.state
         assertEquals(postalCode, state.postalCode.toString())
     }
-    /*@Test
+    @Test
     fun `onPhotoCaptionChanged should update state and form validity`() {
-        val listOfUri = mockk<List<Uri>>()
-        viewModel.onImagesAdded()
+        val mockContext = mockk<Context>()
+        val testUri  = mockk<Uri>(relaxed = true)
+        val listOfTestUris = listOf(testUri)
+        coEvery { testUri.toString() }returns "content://com.example.provider/data/test"
+        coEvery { fileUtils.copyImageToInternalStorage(any(),any())} returns testUri
+        viewModel.onImagesAdded(listOfTestUris, mockContext)
 
         viewModel.onPhotoCaptionChanged("New Caption", 0)
 
-
         val currentState = viewModel.state
         assertEquals("New Caption", currentState.photos?.get(0)?.caption)
-    }*/
+    }
+
+    @Test
+    fun `onImagesAdded should add photos to the state`() {
+        val uriTest1 = mockk<Uri>(relaxed = true)
+        val uriTest2 = mockk<Uri>(relaxed = true)
+        coEvery { uriTest1.toString() }returns "content://com.example.provider/image/1"
+        coEvery { uriTest2.toString() }returns "content://com.example.provider/image/2"
+        val originalImagesUris = listOf(uriTest1, uriTest2)
+        val mockContext = mockk<Context>()
+
+        val uriTest1Return = mockk<Uri>(relaxed = true)
+        val uriTest2Return = mockk<Uri>(relaxed = true)
+        coEvery { uriTest1Return.toString() }returns "content://com.example.provider/internal/1"
+        coEvery { uriTest2Return.toString() }returns "content://com.example.provider/internal/2"
+        coEvery { fileUtils.copyImageToInternalStorage(uriTest1,any())} returns uriTest1Return
+        coEvery { fileUtils.copyImageToInternalStorage(uriTest2,any())} returns uriTest2Return
+
+        viewModel.onImagesAdded(originalImagesUris, mockContext)
+
+        val expectedPhotos = listOf(
+            PropertyPhotosModel(photoPath = "content://com.example.provider/internal/1"),
+            PropertyPhotosModel(photoPath = "content://com.example.provider/internal/2")
+        )
+        assertEquals(expectedPhotos, viewModel.state.photos)
+    }
+
+    @Test
+    fun `onNearbyPlacesChanged should add or remove nearby place`() {
+        val nearbyPlace1 = NearbyPlacesType.SCHOOL
+        val nearbyPlace2 = NearbyPlacesType.PARC
+        setAllRequiredFields()
+
+        viewModel.onNearbyPlacesChanged(nearbyPlace1)
+        viewModel.onNearbyPlacesChanged(nearbyPlace2)
+
+        val expectedNearbyPlaces = listOf(nearbyPlace1, nearbyPlace2)
+        assertEquals(expectedNearbyPlaces, viewModel.state.nearbyPlaces)
+
+        viewModel.onNearbyPlacesChanged(nearbyPlace1)
+
+        assertEquals(listOf(nearbyPlace2), viewModel.state.nearbyPlaces)
+    }
+
+    @Test
+    fun `onIsAddressValidChanged should update isAddressValid`() {
+        val startState = viewModel.isAddressValid
+
+        viewModel.onIsAddressValidChanged()
+
+        assertEquals(!startState, viewModel.isAddressValid)
+    }
 
     @Test
     fun `addOrUpdateProperty should update state and _isAddOrUpdatePropertyFinished`() {

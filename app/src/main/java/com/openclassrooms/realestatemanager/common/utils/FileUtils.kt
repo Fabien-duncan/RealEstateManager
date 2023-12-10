@@ -13,7 +13,7 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 
-object FileUtils {
+class FileUtils {
     fun copyImageToInternalStorage(originalImageUri: Uri, context: Context): Uri {
         val originalFileName = getFileNameFromUri(context.contentResolver, originalImageUri)
         val fileName = "copied_image_$originalFileName"
