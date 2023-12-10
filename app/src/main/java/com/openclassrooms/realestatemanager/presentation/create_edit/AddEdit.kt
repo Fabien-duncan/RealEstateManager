@@ -258,7 +258,7 @@ fun MediaSection(addEditViewModel: AddEditViewModel) {
     )
 
 
-    val addEditProperties = PropertyPhotosModel(id = -1L, photoPath = "", caption = "")//used for creating the button to add add properties
+    val addEditProperties = PropertyPhotosModel(id = -1L, photoPath = "", caption = "")//used for creating the button to add properties
     //combines the list of properties with the add property button
     val photosWithAddButton = if(!state.photos.isNullOrEmpty()) {
         state.photos + addEditProperties
@@ -268,7 +268,12 @@ fun MediaSection(addEditViewModel: AddEditViewModel) {
     LazyRow(modifier = Modifier.padding(4.dp)) {
         itemsIndexed(photosWithAddButton) { index, photo ->
             if (photo.id != -1L){
-                PhotoItem(photo = photo, onPhotoChanged = addEditViewModel::onPhotoCaptionChanged, index = index )
+                PhotoItem(
+                    photo = photo,
+                    onPhotoChanged = addEditViewModel::onPhotoCaptionChanged,
+                    onRemovePhotoClicked = addEditViewModel::onImageRemoved,
+                    index = index
+                )
             }
             else{
                 AddPhotoItem(onAddPhotoClicked = { isImageSelectChoiceVisible = true })

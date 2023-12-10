@@ -215,6 +215,14 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(photos = photosCopy)
         setFormIsValid()
     }
+    fun onImageRemoved(index:Int){
+        val photosCopy = (state.copy().photos ?: mutableListOf()).toMutableList()
+
+        photosCopy.removeAt(index)
+
+        state = state.copy(photos = photosCopy)
+        setFormIsValid()
+    }
     fun onNearbyPlacesChanged(nearbyPlace: NearbyPlacesType){
         var nearbyPlaces = mutableListOf<NearbyPlacesType>()
         state.copy().nearbyPlaces?.map {

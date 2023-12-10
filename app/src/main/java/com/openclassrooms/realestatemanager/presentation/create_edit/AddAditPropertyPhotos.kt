@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -36,6 +38,7 @@ fun PhotoItem(
     modifier: Modifier = Modifier,
     photo: PropertyPhotosModel,
     onPhotoChanged:(String, Int) -> Unit,
+    onRemovePhotoClicked: (Int) -> Unit,
     index: Int
 ){
     val imageUri = Uri.parse(photo.photoPath)
@@ -60,7 +63,17 @@ fun PhotoItem(
                 .fillMaxSize()
                 .padding(0.dp)
         )
-
+        Icon(
+            painter = painterResource(id = R.drawable.delete_icon),
+            contentDescription = "delete photo",
+            modifier = Modifier
+                .padding(4.dp)
+                .align(Alignment.TopEnd)
+                .background(Color.DarkGray.copy(alpha = 0.7f))
+                .clip(MaterialTheme.shapes.extraSmall)
+                .clickable { onRemovePhotoClicked.invoke(index) },
+            tint = Color.White
+        )
 
         OutlinedTextField(
             value ="${TextUtils.capitaliseFirstLetter(photo.caption ?: "")}" ,

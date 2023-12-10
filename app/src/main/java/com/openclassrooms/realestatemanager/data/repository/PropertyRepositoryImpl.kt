@@ -39,7 +39,8 @@ class PropertyRepositoryImpl @Inject constructor(
 
         property.photos?.let {
             val photos = propertyPhotosMapper.mapToRoomEntities(it, propertyId)
-            propertyDao.insert(photos)
+            val photosIds = propertyDao.insert(photos)
+            propertyDao.clearPhotosForProperty(propertyId,photosIds)
         }
 
 
