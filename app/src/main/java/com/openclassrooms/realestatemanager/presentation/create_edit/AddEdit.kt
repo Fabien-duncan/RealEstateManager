@@ -147,12 +147,11 @@ private fun AddEditView(
         LaunchedEffect(isAddOrUpdatePropertyFinished) {
             if (isAddOrUpdatePropertyFinished) {
                 println("Creating Property")
-                addEditViewModel.resetFinishedState()
+                println("state id: ${state.id}")
 
-                if (state.id !=null)onCreatedClicked.invoke(state.id)
+                if (state.id != null)onCreatedClicked.invoke(state.id)
                 else onCreatedClicked.invoke(-1L)
-
-
+                addEditViewModel.resetFinishedState()
             }
         }
     }
