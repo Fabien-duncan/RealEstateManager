@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.presentation.create_edit
 import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -90,7 +91,7 @@ fun AddEditScreen(
         currencyViewModel = currencyViewModel,
         modifier = modifier,
         propertyId = propertyId,
-        isLargeView = isLargeView,
+        isAdd = propertyId == -1L,
         onCreatedClicked = onCreatedClicked,
         addEditViewModel = addEditViewModel
     )
@@ -107,9 +108,10 @@ private fun AddEditView(
     modifier: Modifier,
     propertyId: Long,
     onCreatedClicked:(Long) -> Unit,
-    isLargeView:Boolean,
+    isAdd:Boolean,
     addEditViewModel: AddEditViewModel
 ){
+    val context = LocalContext.current
     val state = addEditViewModel.state
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
@@ -149,9 +151,16 @@ private fun AddEditView(
                 println("Creating Property")
                 println("state id: ${state.id}")
 
-                if (state.id != null)onCreatedClicked.invoke(state.id)
-                else onCreatedClicked.invoke(-1L)
+                if (!isAdd) {
+                    Toast.makeText(context, "You have successfully updated a property!",Toast.LENGTH_SHORT).show()
+                    onCreatedClicked.invoke(state.id)
+                }
+                else {
+                    Toast.makeText(context, "You have successfully created a property!",Toast.LENGTH_SHORT).show()
+                    onCreatedClicked.invoke(state.id)
+                }
                 addEditViewModel.resetFinishedState()
+                addEditViewModel.resetState()
             }
         }
     }
@@ -479,7 +488,7 @@ fun SoldDate(addEditViewModel: AddEditViewModel) {
                         .padding(8.dp)
                         .border(
                             width = 1.dp,
-                            color = Color.Gray,
+                            color = if(state.soldDate == null )MaterialTheme.colorScheme.error else Color.Gray,
                             shape = MaterialTheme.shapes.extraSmall
                         )
                         .clickable {

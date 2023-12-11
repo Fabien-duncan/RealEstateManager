@@ -82,6 +82,8 @@ class AddEditViewModel @Inject constructor(
         }
 
     fun resetState(){
+        isAddressValid = false
+        mapImageLink = ""
         state = state.copy(
             id = -1L,
             price = null,
@@ -105,7 +107,7 @@ class AddEditViewModel @Inject constructor(
             latitude = null,
             longitude = null,
             nearbyPlaces = null,
-            photos = null
+            photos = null,
         )
     }
     fun onTypeChange(type:PropertyType){
@@ -144,7 +146,6 @@ class AddEditViewModel @Inject constructor(
     fun onIsSoldChange() {
         val isSold = state.isSold
         state = state.copy(isSold = !isSold)
-        setFormIsValid()
     }
 
     fun onCreatedDateChange(createDate: Date) {

@@ -187,7 +187,7 @@ fun Navigation(
                     addEditViewModel = addEditViewModel,
                     modifier = modifier.padding(it),
                     onCreatedClicked = { newId->
-                        println("id of editied or create property is: $newId")
+                        println("id of edited or create property is: $newId")
                         homeViewModel.currentId = newId
                         homeViewModel.propertyIndex = propertiesListSize-1
                         homeViewModel.isItemOpened = true
