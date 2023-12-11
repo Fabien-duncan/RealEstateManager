@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
-import com.openclassrooms.realestatemanager.ProvideTestProperties
+import com.openclassrooms.realestatemanager.ProvideTestModelsOrRoomEntities
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -27,7 +27,7 @@ class GetAllPropertiesUseCaseTest {
     }
     @Test
     fun `invoke should return flow of properties`() = runBlocking {
-        val mockPropertiesList = ProvideTestProperties.getTestProperties()
+        val mockPropertiesList = ProvideTestModelsOrRoomEntities.getTestProperties()
         coEvery { mockRepository.getAllPropertiesWithDetails() } returns flowOf(mockPropertiesList)
 
         val resultFlow = getAllPropertiesUseCase()

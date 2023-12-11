@@ -1,12 +1,20 @@
 package com.openclassrooms.realestatemanager;
 
+import android.content.Context;
+
 import junit.framework.TestCase;
+
+import org.junit.runner.manipulation.Ordering;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import io.mockk.impl.annotations.MockK;
+
 public class UtilsTest extends TestCase {
+    @MockK
+    private Context context;
 
     public void testConvertDollarToEuro() {
         assertEquals(812, Utils.convertDollarToEuro(1000));

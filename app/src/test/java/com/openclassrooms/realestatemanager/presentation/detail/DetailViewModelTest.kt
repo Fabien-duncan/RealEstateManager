@@ -1,23 +1,15 @@
 package com.openclassrooms.realestatemanager.presentation.detail
 
 import com.openclassrooms.realestatemanager.MainCoroutineRule
-import com.openclassrooms.realestatemanager.ProvideTestProperties
+import com.openclassrooms.realestatemanager.ProvideTestModelsOrRoomEntities
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.use_cases.CheckInternetConnectionUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrentLocationUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
-import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -39,7 +31,7 @@ class DetailViewModelTest{
     @Before
     fun setup() {
         MockKAnnotations.init(this)
-        property = ProvideTestProperties.getTestProperty()
+        property = ProvideTestModelsOrRoomEntities.getTestPropertyModel()
 
     }
     @Test

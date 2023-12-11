@@ -2,9 +2,8 @@ package com.openclassrooms.realestatemanager.presentation.home
 
 import android.location.Location
 import com.openclassrooms.realestatemanager.MainCoroutineRule
-import com.openclassrooms.realestatemanager.ProvideTestProperties
+import com.openclassrooms.realestatemanager.ProvideTestModelsOrRoomEntities
 import com.openclassrooms.realestatemanager.common.ScreenViewState
-import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.use_cases.GetAllPropertiesUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
@@ -16,15 +15,12 @@ import com.openclassrooms.realestatemanager.presentation.navigation.FilterState
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import io.mockk.verify
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import okhttp3.internal.ignoreIoExceptions
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -51,7 +47,7 @@ class HomeViewModelTest {
     @Before
     fun setup() {
         MockKAnnotations.init(this)
-        properties = ProvideTestProperties.getTestProperties()
+        properties = ProvideTestModelsOrRoomEntities.getTestProperties()
 
     }
 
@@ -108,7 +104,7 @@ class HomeViewModelTest {
         assertEquals(expectedLocation, viewModel.currentLocation)
     }
 
-    @Test
+    @Test()
     fun `getCurrentLocation should not update currentLocation on failure`() = runBlocking {
         coEvery { getAllPropertiesUseCase.invoke() } returns flowOf(properties)
         viewModel = HomeViewModel(

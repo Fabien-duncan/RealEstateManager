@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
-import com.openclassrooms.realestatemanager.ProvideTestProperties
+import com.openclassrooms.realestatemanager.ProvideTestModelsOrRoomEntities
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -27,7 +27,7 @@ class AddPropertyUseCaseTest {
     }
     @Test
     fun `invoke should call insert on the repository`() = runBlocking {
-        val property = ProvideTestProperties.getTestProperty()
+        val property = ProvideTestModelsOrRoomEntities.getTestPropertyModel()
         coEvery { addPropertyUseCase.invoke(property) } returns  property.id
 
         val id = addPropertyUseCase.invoke(property)

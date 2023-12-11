@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
-import com.openclassrooms.realestatemanager.ProvideTestProperties
+import com.openclassrooms.realestatemanager.ProvideTestModelsOrRoomEntities
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -27,7 +27,7 @@ class GetPropertyByIdUseCaseTest{
 
     @Test
     fun `invoke should return property by ID`() = runBlocking {
-        val mockProperty = ProvideTestProperties.getTestProperty()
+        val mockProperty = ProvideTestModelsOrRoomEntities.getTestPropertyModel()
         coEvery {
             mockRepository.getPropertyWithDetailsById(
                 propertyId = any()

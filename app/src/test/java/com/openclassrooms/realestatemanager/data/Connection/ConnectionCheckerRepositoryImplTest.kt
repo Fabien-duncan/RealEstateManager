@@ -33,14 +33,72 @@ class ConnectionCheckerRepositoryImplTes{
     }
 
     @Test
-    fun `isInternetConnected should return true when WiFi is active and sdk greater or equal to 23`() {
+    fun `isInternetConnected should return true when WiFi is active, cellular is not active and sdk greater or equal to 23`() {
         every { versionProvider.getSdkInt()} returns 25
         val networkCapabilities = mockk<NetworkCapabilities>()
         every { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) } returns true
+        every { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns false
 
         val activeNetwork = mockk<Network>()
         every { connectivityManager.activeNetwork } returns activeNetwork
         every { connectivityManager.getNetworkCapabilities(activeNetwork) } returns networkCapabilities
+
+        val result = connectionCheckerRepository.isInternetConnected()
+
+        assertTrue(result)
+    }
+    @Test
+    fun `isInternetConnected should return true when WiFi is not active, cellular is active and sdk greater or equal to 23`() {
+        every { versionProvider.getSdkInt()} returns 25
+        val networkCapabilities = mockk<NetworkCapabilities>()
+        every { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) } returns false
+        every { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns true
+
+        val activeNetwork = mockk<Network>()
+        every { connectivityManager.activeNetwork } returns activeNetwork
+        every { connectivityManager.getNetworkCapabilities(activeNetwork) } returns networkCapabilities
+
+        val result = connectionCheckerRepository.isInternetConnected()
+
+        assertTrue(result)
+    }
+    @Test
+    fun `isInternetConnected should return true when WiFi is active, cellular is active and sdk greater or equal to 23`() {
+        every { versionProvider.getSdkInt()} returns 25
+        val networkCapabilities = mockk<NetworkCapabilities>()
+        every { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) } returns true
+        every { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns true
+
+        val activeNetwork = mockk<Network>()
+        every { connectivityManager.activeNetwork } returns activeNetwork
+        every { connectivityManager.getNetworkCapabilities(activeNetwork) } returns networkCapabilities
+
+        val result = connectionCheckerRepository.isInternetConnected()
+
+        assertTrue(result)
+    }
+    @Test
+    fun `isInternetConnected should return false when WiFi is not active, cellular is not active and sdk greater or equal to 23`() {
+        every { versionProvider.getSdkInt()} returns 25
+        val networkCapabilities = mockk<NetworkCapabilities>()
+        every { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) } returns false
+        every { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns false
+
+        val activeNetwork = mockk<Network>()
+        every { connectivityManager.activeNetwork } returns activeNetwork
+        every { connectivityManager.getNetworkCapabilities(activeNetwork) } returns networkCapabilities
+
+        val result = connectionCheckerRepository.isInternetConnected()
+
+        assertFalse(result)
+    }
+    @Test
+    fun `isInternetConnected should return true when no active network and sdk smaller than 23`() {
+        every { versionProvider.getSdkInt()} returns 22
+        val networkInfo = mockk<NetworkInfo>(relaxed = true)
+        every { connectivityManager.activeNetworkInfo } returns networkInfo
+
+        every { networkInfo.isConnected} returns true
 
         val result = connectionCheckerRepository.isInternetConnected()
 
@@ -59,6 +117,5 @@ class ConnectionCheckerRepositoryImplTes{
 
         assertFalse(result)
     }
-
 
 }

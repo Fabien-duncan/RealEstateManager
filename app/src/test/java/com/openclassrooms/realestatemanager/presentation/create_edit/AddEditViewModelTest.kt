@@ -3,14 +3,11 @@ package com.openclassrooms.realestatemanager.presentation.create_edit
 import android.content.Context
 import android.net.Uri
 import com.openclassrooms.realestatemanager.MainCoroutineRule
-import com.openclassrooms.realestatemanager.ProvideTestProperties
+import com.openclassrooms.realestatemanager.ProvideTestModelsOrRoomEntities
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
-import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.geocoding.LatLongEntity
-import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.domain.use_cases.AddPropertyUseCase
-import com.openclassrooms.realestatemanager.domain.use_cases.CheckInternetConnectionUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetLatLngFromAddressUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPropertyByIdUseCase
@@ -24,15 +21,11 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
-import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.io.File
 import java.util.Date
 
 
@@ -316,7 +309,7 @@ class AddEditViewModelTest{
     fun `getPropertyById should update state and isAddressValid`() = runBlocking {
         val propertyId = 1L
         val currencyType = CurrencyType.Dollar
-        val mockProperty = ProvideTestProperties.getTestProperty()
+        val mockProperty = ProvideTestModelsOrRoomEntities.getTestPropertyModel()
         coEvery { getPropertyByIdUseCase(propertyId) } returns flowOf(mockProperty)
 
         viewModel.getPropertyById(propertyId, currencyType)

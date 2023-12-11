@@ -59,7 +59,8 @@ class PropertyRepositoryImplTest{
         coEvery { mockPropertyDao.insertNearbyPlaces(mockNearbyPlacesRoomEntities) } returns listOf(1L,2L)
         coEvery { mockPropertyDao.insert(mockPropertyRoomEntity) } returns 1L
         coEvery { mockPropertyDao.clearNearbyPlacesForProperty(any(), any()) } returns Unit
-        coEvery { mockPropertyDao.insert(mockPhotos) } returns Unit
+        coEvery { mockPropertyDao.insert(mockPhotos) } returns listOf(1L, 2L, 3L)
+        coEvery { mockPropertyDao.clearPhotosForProperty(any(),any()) } returns Unit
 
         val result = propertyRepository.insert(mockPropertyModel)
 

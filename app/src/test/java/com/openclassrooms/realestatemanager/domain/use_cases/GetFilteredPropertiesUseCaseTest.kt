@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
-import com.openclassrooms.realestatemanager.ProvideTestProperties
+import com.openclassrooms.realestatemanager.ProvideTestModelsOrRoomEntities
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -27,7 +27,7 @@ class GetFilteredPropertiesUseCaseTest{
     @Test
     fun `invoke should return filtered properties`() = runBlocking {
 
-        val mockFilteredPropertiesList = ProvideTestProperties.getTestProperties()
+        val mockFilteredPropertiesList = ProvideTestModelsOrRoomEntities.getTestProperties()
         coEvery {
             mockRepository.getFilteredProperties(
                 agentName = any(),
