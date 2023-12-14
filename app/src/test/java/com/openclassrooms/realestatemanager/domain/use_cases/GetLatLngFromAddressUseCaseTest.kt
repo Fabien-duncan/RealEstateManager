@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
-import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.geocoding.GeocodingRepository
 import com.openclassrooms.realestatemanager.domain.geocoding.LatLongEntity
 import io.mockk.MockKAnnotations
@@ -8,7 +7,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.Before

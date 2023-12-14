@@ -1,8 +1,5 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
-import com.openclassrooms.realestatemanager.Utils
-import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
-import com.openclassrooms.realestatemanager.domain.use_cases.CheckInternetConnectionUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetPriceInCurrentCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.SetCurrencyUseCase
@@ -11,7 +8,6 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Test

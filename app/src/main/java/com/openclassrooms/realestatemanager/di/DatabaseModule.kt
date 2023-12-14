@@ -9,13 +9,10 @@ import com.google.android.gms.location.LocationServices
 import com.openclassrooms.realestatemanager.common.utils.FileUtils
 import com.openclassrooms.realestatemanager.common.utils.PermissionCheckProvider
 import com.openclassrooms.realestatemanager.common.utils.VersionProvider
-import com.openclassrooms.realestatemanager.data.Connection.ConnectionCheckerRepositoryImpl
 import com.openclassrooms.realestatemanager.data.api.GeocodingApiService
-import com.openclassrooms.realestatemanager.data.currency_converter.CurrencyRepositoryImpl
 import com.openclassrooms.realestatemanager.data.local.PropertyDao
 import com.openclassrooms.realestatemanager.data.local.RealEstateDataBase
 import com.openclassrooms.realestatemanager.data.location.DefaultLocationTracker
-import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.location.LocationTracker
 import com.openclassrooms.realestatemanager.domain.mapper.AddressMapper
 import com.openclassrooms.realestatemanager.domain.mapper.NearbyPlacesMapper

@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.data.local.model
 
-import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Relation
 

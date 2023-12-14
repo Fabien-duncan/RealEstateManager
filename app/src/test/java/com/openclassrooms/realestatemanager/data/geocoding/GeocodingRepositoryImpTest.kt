@@ -4,15 +4,12 @@ import com.openclassrooms.realestatemanager.data.api.GeocodingApiService
 import com.openclassrooms.realestatemanager.data.geocoding.response.GeocodingLocation
 import com.openclassrooms.realestatemanager.data.geocoding.response.GeocodingResponse
 import com.openclassrooms.realestatemanager.data.geocoding.response.GeocodingResult
-import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.geocoding.LatLongEntity
-import com.openclassrooms.realestatemanager.domain.use_cases.CheckInternetConnectionUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.runBlocking

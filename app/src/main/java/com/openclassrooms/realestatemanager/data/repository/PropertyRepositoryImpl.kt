@@ -15,6 +15,15 @@ import kotlinx.coroutines.flow.mapNotNull
 import java.util.Date
 import javax.inject.Inject
 
+/**
+ * Implementation of [Repository] for managing property data using Room database.
+ *
+ * @property propertyDao Data Access Object for property entities.
+ * @property propertyMapper Mapper for converting between property models and Room entities.
+ * @property addressMapper Mapper for converting between address models and Room entities.
+ * @property nearbyPlacesMapper Mapper for converting between nearby places models and Room entities.
+ * @property propertyPhotosMapper Mapper for converting between property photos models and Room entities.
+ */
 class PropertyRepositoryImpl @Inject constructor(
     private val propertyDao: PropertyDao,
     private val propertyMapper: PropertyMapper,
@@ -22,12 +31,17 @@ class PropertyRepositoryImpl @Inject constructor(
     private val nearbyPlacesMapper: NearbyPlacesMapper,
     private val propertyPhotosMapper: PropertyPhotosMapper
 ): Repository{
+    /**
+     * Inserts a new property into the database along with its associated address, nearby places, and photos.
+     *
+     * @param property The property model to insert.
+     * @return The ID of the inserted property.
+     */
     override suspend fun insert(property: PropertyModel): Long {
         val propertyRoomEntity = propertyMapper.mapToRoomEntity(property)
         val propertyId = propertyDao.insert(propertyRoomEntity)
 
         val addressRoomEntity = addressMapper.mapToRoomEntity(property.address, propertyId)
-
 
         propertyDao.insert(addressRoomEntity)
 
@@ -43,23 +57,39 @@ class PropertyRepositoryImpl @Inject constructor(
             propertyDao.clearPhotosForProperty(propertyId,photosIds)
         }
 
-
         return propertyId
     }
 
+    /**
+     * Retrieves a property with details by its ID as a [Flow].
+     *
+     * @param propertyId The ID of the property to retrieve.
+     * @return A [Flow] emitting the [PropertyModel] with details for the given ID.
+     */
     override fun getPropertyWithDetailsById(propertyId: Long): Flow<PropertyModel> {
         return propertyDao.getPropertyWithDetailsById(propertyId).mapNotNull { propertyWithAllDetails ->
             propertyMapper.mapToDomainModel(propertyWithAllDetails) }
     }
 
+    /**
+     * Retrieves all properties with details as a [Flow].
+     *
+     * @return A [Flow] emitting a list of [PropertyModel] with details.
+     */
     override fun getAllPropertiesWithDetails(): Flow<List<PropertyModel>> {
         return propertyDao.getAllProperties().map {
-            propertiesWithAllDetails -> propertiesWithAllDetails.mapNotNull { propertyWithAllDetails ->
+            propertiesWithAllDetails -> propertiesWithAllDetails.map { propertyWithAllDetails ->
                 propertyMapper.mapToDomainModel(propertyWithAllDetails)
             }
         }
     }
 
+    /**
+     * Retrieves filtered properties based on specified criteria as a [Flow].
+     *
+     * @param 'all' the parameters are the potential filters
+     * @return A [Flow] emitting a list of [PropertyModel] with details based on the specified criteria.
+     */
     override fun getFilteredProperties(
         agentName: String?,
         propertyType: PropertyType?,
@@ -125,7 +155,7 @@ class PropertyRepositoryImpl @Inject constructor(
                 minNumPictures = minNumPictures,
             )
         }.map {
-            propertiesWithAllDetails -> propertiesWithAllDetails.mapNotNull { propertyWithAllDetails ->
+            propertiesWithAllDetails -> propertiesWithAllDetails.map { propertyWithAllDetails ->
                     propertyMapper.mapToDomainModel(propertyWithAllDetails)
             }
         }

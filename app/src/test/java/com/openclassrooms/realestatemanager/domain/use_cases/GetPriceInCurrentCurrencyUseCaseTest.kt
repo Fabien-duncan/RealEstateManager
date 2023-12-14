@@ -1,13 +1,10 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
-import com.openclassrooms.realestatemanager.domain.Connection.ConnectionCheckerRepository
 import com.openclassrooms.realestatemanager.domain.currency_converter.CurrencyRepository
-import com.openclassrooms.realestatemanager.enums.CurrencyType
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Test

@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.enums
 
-enum class NearbyPlacesType(val textValue: String? = null) {
+enum class NearbyPlacesType(private val textValue: String? = null) {
     SCHOOL,
     PARC,
     SUPERMARKET,

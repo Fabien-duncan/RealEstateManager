@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.domain.model
 
-import com.openclassrooms.realestatemanager.data.local.model.Address
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
 import java.util.Date

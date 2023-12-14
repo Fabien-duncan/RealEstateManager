@@ -1,21 +1,34 @@
 package com.openclassrooms.realestatemanager.data.location
 
 import android.app.Application
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
-import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.openclassrooms.realestatemanager.common.utils.PermissionCheckProvider
 import com.openclassrooms.realestatemanager.domain.location.LocationTracker
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 
+/**
+ * Default implementation of [LocationTracker] that uses the Fused Location Provider
+ * to retrieve the last known location.
+ *
+ * @property fusedLocationProviderClient FusedLocationProviderClient for accessing location services.
+ * @property application The application context.
+ * @property permissionCheckProvider PermissionCheckProvider for checking and requesting location permissions.
+ */
 class DefaultLocationTracker (
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val application: Application,
     private val permissionCheckProvider: PermissionCheckProvider
 ) : LocationTracker {
+    /**
+     * Retrieves the current device location asynchronously.
+     *
+     * @return [Location] object representing the current device location, or null if location
+     * access is not granted or if the location retrieval fails.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getCurrentLocation(): Location? {
         val hasAccessFineLocationPermission = permissionCheckProvider.checkSelfPermission(
             application,
@@ -36,20 +49,20 @@ class DefaultLocationTracker (
             fusedLocationProviderClient.lastLocation.apply {
                 if (isComplete) {
                     if (isSuccessful) {
-                        cont.resume(result) {} // Resume coroutine with location result
+                        cont.resume(result) {}
                     } else {
-                        cont.resume(null) {} // Resume coroutine with null location result
+                        cont.resume(null) {}
                     }
                     return@suspendCancellableCoroutine
                 }
                 addOnSuccessListener {
-                    cont.resume(it) {}  // Resume coroutine with location result
+                    cont.resume(it) {}
                 }
                 addOnFailureListener {
-                    cont.resume(null) {} // Resume coroutine with null location result
+                    cont.resume(null) {}
                 }
                 addOnCanceledListener {
-                    cont.cancel() // Cancel the coroutine
+                    cont.cancel()
                 }
             }
         }

@@ -1,8 +1,6 @@
 package com.openclassrooms.realestatemanager;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 
 import java.text.DateFormat;

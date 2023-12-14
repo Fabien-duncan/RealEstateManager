@@ -5,7 +5,7 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 
 class PropertyPhotosMapper {
     fun mapToRoomEntities(propertyPhotos:List<PropertyPhotosModel>, propertyId: Long):List<PropertyPhotos> {
-        var photos = mutableListOf<PropertyPhotos>()
+        val photos = mutableListOf<PropertyPhotos>()
 
         propertyPhotos.forEach {
             photos.add(mapToRoomEntity(it, propertyId))
@@ -19,8 +19,8 @@ class PropertyPhotosMapper {
         photoPath = propertyPhoto.photoPath,
         caption = propertyPhoto.caption
     )
-    fun mapToListOfDomainModels(propertyPhotos: List<PropertyPhotos>):List<PropertyPhotosModel>? {
-        var photos = mutableListOf<PropertyPhotosModel>()
+    fun mapToListOfDomainModels(propertyPhotos: List<PropertyPhotos>): List<PropertyPhotosModel> {
+        val photos = mutableListOf<PropertyPhotosModel>()
 
         propertyPhotos.forEach{
             photos.add(mapToDomainModel(it))

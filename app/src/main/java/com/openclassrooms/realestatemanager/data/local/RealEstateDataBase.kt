@@ -9,19 +9,23 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.openclassrooms.realestatemanager.data.local.converters.DateConverter
 import com.openclassrooms.realestatemanager.data.local.converters.NearbyPlacesTypeConverter
 import com.openclassrooms.realestatemanager.data.local.converters.PropertyTypeConverter
-import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.Address
+import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.data.local.model.PropertyPhotos
 import com.openclassrooms.realestatemanager.data.local.model.PropertyWithAllDetails
-import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 import com.openclassrooms.realestatemanager.enums.PropertyType
-import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.Date
 
+/**
+ * Room Database class for managing real estate property data.
+ *
+ * @property propertyDao Data Access Object for property-related database operations.
+ */
 @TypeConverters(NearbyPlacesTypeConverter::class, PropertyTypeConverter::class, DateConverter::class)
 @Database(
     entities = [Property::class, Address::class, PropertyNearbyPlaces::class, PropertyPhotos::class],
@@ -31,9 +35,18 @@ import java.util.Date
 abstract class RealEstateDataBase:RoomDatabase() {
     abstract val propertyDao: PropertyDao
 
+    /**
+     * A companion object to provide a singleton instance of the database.
+     */
     companion object {
         private var instance: RealEstateDataBase? = null
 
+        /**
+         * Retrieves the singleton instance of the database, creating it if necessary.
+         *
+         * @param ctx The application context.
+         * @return The singleton instance of [RealEstateDataBase].
+         */
         @Synchronized
         fun getInstance(ctx: Context): RealEstateDataBase {
             if (instance == null)
@@ -49,6 +62,9 @@ abstract class RealEstateDataBase:RoomDatabase() {
 
         }
 
+        /**
+         * Callback used to populate the database when it is created.
+         */
         private val roomCallback = object : Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
@@ -56,8 +72,13 @@ abstract class RealEstateDataBase:RoomDatabase() {
             }
         }
 
+        /**
+         * Populates the database with test data on creation.
+         *
+         * @param db The [RealEstateDataBase] instance to be populated.
+         */
+        @OptIn(DelicateCoroutinesApi::class)
         private fun populateDatabase(db: RealEstateDataBase) {
-            val noteDao = db.propertyDao
             GlobalScope.launch {
                 val testProperties = getAllPropertiesWithAllDetails()
                 testProperties.forEach{ property ->

@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
-import com.openclassrooms.realestatemanager.data.local.model.Property
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.domain.repository.Repository
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
@@ -51,12 +50,6 @@ class GetFilteredPropertiesUseCase @Inject constructor(
         minSoldDate = minSoldDate,
         maxSoldDate = maxSoldDate,
         minNumPictures = minNumPictures,
-        nearbyPlaceTypes =
-            if (nearbyPlaceTypes != null) {
-                if (nearbyPlaceTypes.isNotEmpty())nearbyPlaceTypes
-                else null
-            }
-            else null
-
+        nearbyPlaceTypes = nearbyPlaceTypes?.ifEmpty { null }
     )
 }
