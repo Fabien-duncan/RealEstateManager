@@ -49,7 +49,8 @@ fun HomePropertyList(
 }
 @Composable
 fun MissingProperties(
-    modifier: Modifier
+    modifier: Modifier,
+    message:String = "missing properties"
 ){
     Column(
         modifier = modifier.fillMaxSize(),
@@ -58,10 +59,10 @@ fun MissingProperties(
     ) {
         Image(
             painter = painterResource(id = R.drawable.missing_properties),
-            contentDescription = "missing properties",
+            contentDescription = message,
             contentScale = ContentScale.FillWidth
         )
-        Text(text = "There are no properties", modifier = modifier)
+        Text(text = message, modifier = modifier)
 
     }
 }

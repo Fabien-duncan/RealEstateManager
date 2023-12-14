@@ -68,6 +68,7 @@ import com.openclassrooms.realestatemanager.presentation.detail.DetailScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeScreen
 import com.openclassrooms.realestatemanager.presentation.home.HomeState
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
+import com.openclassrooms.realestatemanager.presentation.home.MissingProperties
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanCalculatorViewModel
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanForm
 
@@ -134,7 +135,7 @@ fun Navigation(
                     modifier = modifier.padding(it),
                     onItemClicked = {
                         homeViewModel.propertyIndex = it
-                        homeViewModel.currentId = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[homeViewModel.propertyIndex].id
+                        homeViewModel.currentId = if((state.properties as ScreenViewState.Success<List<PropertyModel>>).data.isEmpty())-1L else (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[homeViewModel.propertyIndex].id
                         homeViewModel.isItemOpened = true
                     },
                     isLargeScreen = false,
@@ -164,7 +165,7 @@ fun Navigation(
                     state = state,
                     onItemClicked = {
                         homeViewModel.propertyIndex = it
-                        homeViewModel.currentId = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[homeViewModel.propertyIndex].id
+                        homeViewModel.currentId = if((state.properties as ScreenViewState.Success<List<PropertyModel>>).data.isEmpty())-1L else (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[homeViewModel.propertyIndex].id
                     },
                     assistedFactory = assistedFactory,
                     modifier = modifier.padding(it),
@@ -201,7 +202,8 @@ fun Navigation(
         }
 
         if (showBottomSheet){
-            val properties = (state.properties as ScreenViewState.Success<List<PropertyModel>>).data
+            println("property Id is: ${homeViewModel.currentId}")
+            val properties = if(homeViewModel.currentId == -1L) listOf<PropertyModel>() else (state.properties as ScreenViewState.Success<List<PropertyModel>>).data
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false }) {
 
@@ -332,11 +334,7 @@ fun LaunchDetailScreenFromState(
 
         }
         is ScreenViewState.Error -> {
-            Text(
-                text = state.properties.message ?: "Unknown Error",
-                color = MaterialTheme.colorScheme.error,
-                modifier = modifier
-            )
+            MissingProperties(modifier = modifier, message = "No property")
         }
     }
 }

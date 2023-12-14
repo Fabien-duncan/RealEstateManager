@@ -5,8 +5,17 @@ import android.graphics.Bitmap
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-
+/**
+ * Utility object for working with images and icons in the application.
+ */
 object ImageUtil {
+    /**
+     * Converts a vector drawable to a BitmapDescriptor for use in Google Maps markers.
+     *
+     * @param context The application context.
+     * @param vectorResId The resource ID of the vector drawable.
+     * @return A BitmapDescriptor representing the vector drawable as a bitmap.
+     */
     fun bitmapDescriptorFromVector(
         context: Context,
         vectorResId: Int

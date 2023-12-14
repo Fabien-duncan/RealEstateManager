@@ -86,10 +86,9 @@ fun HomeScreen(
 
         is ScreenViewState.Error -> {
             println("error: $state.properties.message")
-            Text(
-                text = state.properties.message ?: "Unknown Error",
-                color = MaterialTheme.colorScheme.error
-            )
+
+            MissingProperties(modifier = modifier)
+
         }
         else -> {}
     }

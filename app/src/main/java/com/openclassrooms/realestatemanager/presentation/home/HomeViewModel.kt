@@ -61,6 +61,7 @@ class HomeViewModel @Inject constructor(
             }
             .catch {
                 _state.value = HomeState(properties = ScreenViewState.Error(it.message))
+                currentId = -1L
             }
             .launchIn(viewModelScope)
     }
@@ -113,6 +114,8 @@ class HomeViewModel @Inject constructor(
             }
             .catch {
                 _state.value = HomeState(properties = ScreenViewState.Error(it.message))
+                propertyIndex = 0
+                currentId = -1
             }
             .launchIn(viewModelScope)
     }
