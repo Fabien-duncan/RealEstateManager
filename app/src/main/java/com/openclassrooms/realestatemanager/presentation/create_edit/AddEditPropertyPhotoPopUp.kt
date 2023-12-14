@@ -21,6 +21,9 @@ import androidx.compose.ui.window.Popup
 import androidx.core.content.ContextCompat
 import com.openclassrooms.realestatemanager.R
 
+/**
+ * Composable that deals with the image selection for a property
+ */
 @Composable
 fun PhotoSelectPopup(
     changeIsImageSelectedChoice: () -> Unit,
@@ -57,7 +60,6 @@ fun PhotoSelectPopup(
 
                     if (permissionCheckResult == PackageManager.PERMISSION_GRANTED)
                     {
-                        println("Launching camera ")
                         takePicture.launch(uri)
                     }
                     else

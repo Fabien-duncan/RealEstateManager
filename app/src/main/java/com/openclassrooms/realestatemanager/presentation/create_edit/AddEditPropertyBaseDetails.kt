@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,9 +18,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.openclassrooms.realestatemanager.R
 
+/**
+ * Composable that deals with the base details of a property, such :
+ * surface, rooms, bedrooms, bathrooms.
+ * It will addapt to the size of the screen: Large/small
+ */
 @Composable
 fun BaseDetails(
-    //state: DetailSate,
     modifier: Modifier = Modifier,
     onAreaChanged: (String?) -> Unit,
     onRoomsChanged: (String?) -> Unit,
@@ -32,8 +35,7 @@ fun BaseDetails(
 ){
 
     if(isLargeView){
-        Column(
-        ) {
+        Column {
             BaseDetailCard(
                 painter = painterResource(id = R.drawable.area_image),
                 title = "surface in m²",
@@ -69,7 +71,7 @@ fun BaseDetails(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            var modifier = modifier
+            val cardModifier = modifier
                 .weight(1f)
             Row(
                 modifier = Modifier
@@ -79,7 +81,7 @@ fun BaseDetails(
                 BaseDetailCard(
                     painter = painterResource(id = R.drawable.area_image),
                     title = "surface in m²",
-                    modifier = modifier,
+                    modifier = cardModifier,
                     onValueChanged = onAreaChanged,
                     value = state.area
 
@@ -87,7 +89,7 @@ fun BaseDetails(
                 BaseDetailCard(
                     painter = painterResource(id = R.drawable.number_bathrooms_image),
                     title = "No. bathrooms",
-                    modifier = modifier,
+                    modifier = cardModifier,
                     onValueChanged = onBathroomsChanged,
                     value = state.bathrooms
                 )
@@ -99,14 +101,14 @@ fun BaseDetails(
                 BaseDetailCard(
                     painter = painterResource(id = R.drawable.number_rooms_image),
                     title = "No. rooms",
-                    modifier = modifier,
+                    modifier = cardModifier,
                     onValueChanged = onRoomsChanged,
                     value = state.rooms
                 )
                 BaseDetailCard(
                     painter = painterResource(id = R.drawable.number_bedrooms_image),
                     title = "No. bedrooms",
-                    modifier = modifier,
+                    modifier = cardModifier,
                     onValueChanged = onBedroomsChanged,
                     value = state.bedrooms
                 )
@@ -114,7 +116,10 @@ fun BaseDetails(
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
+/**
+ * Composable that deals with the layout of each base detail
+ */
 @Composable
 private fun BaseDetailCard(
     painter: Painter,

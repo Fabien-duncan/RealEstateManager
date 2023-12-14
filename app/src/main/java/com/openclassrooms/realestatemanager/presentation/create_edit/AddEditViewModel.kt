@@ -29,6 +29,16 @@ import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Add/Edit property screen. Handles the logic for adding or updating a property,
+ * as well as retrieving property details and location information when in the 'edit' mode.
+ *
+ * @param addPropertyUseCase Use case for adding a new property.
+ * @param getPropertyByIdUseCase Use case for retrieving property details by ID.
+ * @param getLatLngFromAddressUseCase Use case for getting latitude and longitude from an address.
+ * @param getCurrencyUseCase Use case for getting the current currency type.
+ * @param fileUtils Utility class for file operations.
+ */
 @HiltViewModel
 class AddEditViewModel @Inject constructor(
     private val addPropertyUseCase: AddPropertyUseCase,
@@ -37,7 +47,7 @@ class AddEditViewModel @Inject constructor(
     private val getCurrencyUseCase: GetCurrencyUseCase,
     private val fileUtils: FileUtils
 ):ViewModel() {
-    var state by mutableStateOf(AddEditState())
+    var state by mutableStateOf(AddEditState()) //used to hold the state of the new or edited Property
         private set
     var isAddressValid by mutableStateOf(false)
     private val _isAddOrUpdatePropertyFinished = mutableStateOf(false)
@@ -80,7 +90,9 @@ class AddEditViewModel @Inject constructor(
                 photos = photos
             )
         }
-
+    /**
+     * Resets the state of the ViewModel to default values.
+     */
     fun resetState(){
         isAddressValid = false
         mapImageLink = ""
@@ -110,6 +122,9 @@ class AddEditViewModel @Inject constructor(
             photos = null,
         )
     }
+    //----------------------------------------------------------------------------------------------//
+    // The Following methods are for handling the change of each property in the form in the VIew   //
+    //----------------------------------------------------------------------------------------------//
     fun onTypeChange(type:PropertyType){
         state = state.copy(type = type)
         setFormIsValid()
@@ -146,11 +161,6 @@ class AddEditViewModel @Inject constructor(
     fun onIsSoldChange() {
         val isSold = state.isSold
         state = state.copy(isSold = !isSold)
-    }
-
-    fun onCreatedDateChange(createDate: Date) {
-        state = state.copy(createdDate = createDate)
-        setFormIsValid()
     }
 
     fun onSoldDateChange(soldDate: Date) {
@@ -198,7 +208,7 @@ class AddEditViewModel @Inject constructor(
         setFormIsValid()
     }
     fun onPhotoCaptionChanged(caption: String, item:Int) {
-        var photos = state.photos?.toMutableList()
+        val photos = state.photos?.toMutableList()
         photos?.set(item, photos[item].copy(caption = caption))
 
         state = state.copy(photos = photos)
@@ -225,11 +235,11 @@ class AddEditViewModel @Inject constructor(
         setFormIsValid()
     }
     fun onNearbyPlacesChanged(nearbyPlace: NearbyPlacesType){
-        var nearbyPlaces = mutableListOf<NearbyPlacesType>()
+        val nearbyPlaces = mutableListOf<NearbyPlacesType>()
         state.copy().nearbyPlaces?.map {
             nearbyPlaces.add(it)
         }
-        if (nearbyPlaces != null && nearbyPlaces.contains(nearbyPlace)){
+        if (nearbyPlaces.contains(nearbyPlace)){
             nearbyPlaces.remove(nearbyPlace)
         }else{
             nearbyPlaces.add(nearbyPlace)
@@ -242,6 +252,9 @@ class AddEditViewModel @Inject constructor(
         setFormIsValid()
     }
 
+    /**
+     * Adds or updates the property based on the current state. Launches a coroutine in IO dispatcher.
+     */
     fun addOrUpdateProperty() = viewModelScope.launch(Dispatchers.IO) {
         if (isAddressValid && position.latitude != null && position.longitude != null){
             state = state.copy(latitude = position.latitude, longitude = position.longitude)
@@ -255,6 +268,9 @@ class AddEditViewModel @Inject constructor(
         state = state.copy(id = id)
         _isAddOrUpdatePropertyFinished.value = true
     }
+    /**
+     * Retrieves latitude and longitude from the provided address. Launches a coroutine.
+     */
     fun getLatLongFromAddress(){
         viewModelScope.launch{
             val key = BuildConfig.GMP_key
@@ -267,6 +283,9 @@ class AddEditViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Retrieves a property by Id
+     */
     fun getPropertyById(propertyId:Long, currencyType: CurrencyType) = viewModelScope.launch {
         if (state.id != propertyId){
             getPropertyByIdUseCase(propertyId).collectLatest { property ->
@@ -277,22 +296,22 @@ class AddEditViewModel @Inject constructor(
                         CurrencyType.Euro -> Utils.convertDollarToEuro(property.price)
                     },
                     type = property.type,
-                    area = property.area!!,
-                    rooms = property.rooms!!,
-                    bedrooms = property.bedrooms!!,
-                    bathrooms = property.bathrooms!!,
-                    description = property.description!!,
+                    area = property.area,
+                    rooms = property.rooms,
+                    bedrooms = property.bedrooms,
+                    bathrooms = property.bathrooms,
+                    description = property.description,
                     isSold = property.isSold,
                     createdDate = property.createdDate,
                     soldDate = property.soldDate,
                     agentName = property.agentName,
-                    number = property.address.number!!,
-                    street = property.address.street!!,
+                    number = property.address.number,
+                    street = property.address.street,
                     extra = property.address.extra,
-                    city = property.address.city!!,
-                    state = property.address.state!!,
-                    country = property.address.country!!,
-                    postalCode = property.address.postalCode!!,
+                    city = property.address.city,
+                    state = property.address.state,
+                    country = property.address.country,
+                    postalCode = property.address.postalCode,
                     latitude = property.address.latitude,
                     longitude = property.address.longitude,
                     nearbyPlaces = property.nearbyPlaces,
@@ -340,6 +359,10 @@ class AddEditViewModel @Inject constructor(
     }
 }
 
+/**
+ * Class used for holding the state of the property while it is being created or edited
+ * All attributes are null by default, except the id which is -1L
+ */
 data class AddEditState(
     val id:Long = -1L,
     val type: PropertyType? = null,

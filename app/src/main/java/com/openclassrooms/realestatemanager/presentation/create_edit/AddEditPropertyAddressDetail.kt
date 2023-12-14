@@ -31,6 +31,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.presentation.navigation.CheckConnectionViewModel
 
+/**
+ * Composable to fill out the address details of a property
+ */
 @Composable
 fun AddressDetail(
     state: AddEditState,
@@ -76,7 +79,6 @@ fun AddressDetail(
                     onValueChange = {
                         onStateChanged.invoke(it)
                     },
-                    //label = { Text(text = "type") },
                     placeholder = { Text(text = "state") },
                     modifier = Modifier.padding(4.dp),
                     singleLine = true,
@@ -86,7 +88,6 @@ fun AddressDetail(
                     onValueChange = {
                         onPostCodeChanged.invoke(it)
                     },
-                    //label = { Text(text = "type") },
                     placeholder = { Text(text = "post code") },
                     modifier = Modifier.padding(4.dp),
                     singleLine = true,
@@ -99,7 +100,6 @@ fun AddressDetail(
                 onValueChange = {
                     onStreetChanged.invoke(it)
                 },
-                //label = { Text(text = "type") },
                 placeholder = { Text(text = "street") },
                 modifier = Modifier.padding(4.dp),
                 singleLine = true,
@@ -109,7 +109,6 @@ fun AddressDetail(
                 onValueChange = {
                     onCityChanged.invoke(it)
                 },
-                //label = { Text(text = "type") },
                 placeholder = { Text(text = "city") },
                 modifier = Modifier.padding(4.dp),
                 singleLine = true,
@@ -119,7 +118,6 @@ fun AddressDetail(
                 onValueChange = {
                     onCountryChanged.invoke(it)
                 },
-                //label = { Text(text = "type") },
                 placeholder = { Text(text = "country") },
                 modifier = Modifier.padding(4.dp),
                 singleLine = true,
@@ -147,6 +145,11 @@ fun AddressDetail(
     }
 
 }
+
+/**
+ * Composable that handles the display of the map image of a property if the address is found
+ * The user can then chose to validate it if it is the correct location
+ */
 @Composable
 fun AddressMapImage(
     isLargeView:Boolean,

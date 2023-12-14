@@ -19,6 +19,10 @@ import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
 
+/**
+ * The composable that deals with the selection of nearby places
+ * It uses the [NearbyPlacesType] toi generate checkboxes
+ */
 @Composable
 fun NearbyAmenities(
     isPortrait: Boolean = false,
@@ -46,6 +50,10 @@ fun NearbyAmenities(
         }
     }
 }
+
+/**
+ * Composable that deals with the nearby places checkBoxes
+ */
 @Composable
 private fun NearbyCheckBox(
     nearbyPlacesType: NearbyPlacesType,
