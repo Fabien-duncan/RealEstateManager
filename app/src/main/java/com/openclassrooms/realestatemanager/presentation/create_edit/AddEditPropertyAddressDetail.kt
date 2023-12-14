@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
@@ -32,12 +31,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.presentation.navigation.CheckConnectionViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddressDetail(
     state: AddEditState,
-    isLargeView:Boolean,
-    onCheckAddressClicked:() -> Unit,
+    onCheckAddressClicked: () -> Unit,
     onNumberChanged: (String?) -> Unit,
     onStreetChanged: (String) -> Unit,
     onExtraChanged: (String) -> Unit,
@@ -45,7 +42,6 @@ fun AddressDetail(
     onStateChanged: (String) -> Unit,
     onCountryChanged: (String) -> Unit,
     onPostCodeChanged: (String) -> Unit,
-
     ){
     val checkConnectionViewModel: CheckConnectionViewModel = viewModel()
     Row(
@@ -56,7 +52,7 @@ fun AddressDetail(
     ) {
 
         Column(modifier = Modifier.weight(1f)) {
-            Column() {
+            Column {
                 OutlinedTextField(
                     value = ("${ state.number ?: "" }"),
                     onValueChange = {

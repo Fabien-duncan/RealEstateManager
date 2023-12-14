@@ -1,14 +1,15 @@
 package com.openclassrooms.realestatemanager.presentation.create_edit
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -26,14 +26,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -47,12 +42,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,12 +52,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
 import androidx.core.content.FileProvider
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.CurrencyType
-import com.openclassrooms.realestatemanager.enums.PropertyType
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 import com.openclassrooms.realestatemanager.presentation.property_type_picker.PropertyTypePicker
 import java.io.File
@@ -73,18 +63,18 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Objects
 
+/**
+ * The composable the manages the add/edit screen
+ */
 @Composable
 fun AddEditScreen(
     currencyViewModel: CurrencyViewModel,
     modifier: Modifier = Modifier,
     propertyId: Long = -1L,
-    isLargeView:Boolean,
     addEditViewModel: AddEditViewModel,
     onCreatedClicked:(Long) -> Unit,
     onBackPressed:() -> Unit
 ) {
-    println("in addEdit Screen and the property id is $propertyId")
-    //val addEditViewModel: AddEditViewModel = viewModel()
     if (propertyId > 0) addEditViewModel.getPropertyById(propertyId, currencyViewModel.currentCurrency)
 
     AddEditView(
@@ -101,7 +91,10 @@ fun AddEditScreen(
         onBackPressed.invoke()
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
+/**
+ * The composable that calls all the required composables to be ablke to add or edti a Property
+ */
 @Composable
 private fun AddEditView(
     currencyViewModel: CurrencyViewModel,
@@ -146,11 +139,10 @@ private fun AddEditView(
 
         ValidationAndSaveButton(addEditViewModel = addEditViewModel, propertyId = propertyId)
 
+
+        //used to listen to when the property has finished being added to the db or updated
         LaunchedEffect(isAddOrUpdatePropertyFinished) {
             if (isAddOrUpdatePropertyFinished) {
-                println("Creating Property")
-                println("state id: ${state.id}")
-
                 if (!isAdd) {
                     Toast.makeText(context, "You have successfully updated a property!",Toast.LENGTH_SHORT).show()
                     onCreatedClicked.invoke(state.id)
@@ -165,6 +157,9 @@ private fun AddEditView(
         }
     }
 }
+/**
+ * Composable for filling in the price and agent name of a property
+ */
 @Composable
 fun PriceAndAgentSection(
     currencyViewModel: CurrencyViewModel,
@@ -213,15 +208,19 @@ fun PriceAndAgentSection(
                 )
             },
             singleLine = true,
-
         )
     }
 }
+
+/**
+ * Composable used for selecting the photos of a property
+ */
 @Composable
 fun MediaSection(addEditViewModel: AddEditViewModel) {
     val state = addEditViewModel.state
     val context = LocalContext.current
     var isImageSelectChoiceVisible by remember { mutableStateOf(false) }
+    //Used to selected on or multiple pictures
     val photosPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = {uris ->
@@ -234,15 +233,16 @@ fun MediaSection(addEditViewModel: AddEditViewModel) {
         context.packageName + ".provider",
         tempFile
     )
+
+    //used for taking a picturte
     val takePicture = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
     ){
         if (it) {
             addEditViewModel.onImagesAdded(originalImagesUris = listOf(uri), context =  context)
-            println("launch camera: Uri is $uri")
         }
         else{
-            println("failed to get uri")
+            Log.d("Add edit screen","failed to get uri")
         }
     }
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -251,10 +251,8 @@ fun MediaSection(addEditViewModel: AddEditViewModel) {
         if (isGranted) {
             // Permission is granted, launch the camera intent
             takePicture.launch(uri)
-            println("camera Image Uri = $uri")
         } else {
             // Handle the case where permission is not granted
-            println("Permission Denied ")
         }
     }
 
@@ -301,11 +299,12 @@ fun MediaSection(addEditViewModel: AddEditViewModel) {
     }
 }
 
+/**
+ * Composable for selectin the trype of a property and filling out the description
+ */
 @Composable
 fun DescriptionTypePickerSection(addEditViewModel: AddEditViewModel) {
-    var state = addEditViewModel.state
-
-    println("property Type : ${state.type}")
+    val state = addEditViewModel.state
 
     Column(
         modifier = Modifier
@@ -332,8 +331,6 @@ fun DescriptionTypePickerSection(addEditViewModel: AddEditViewModel) {
         )
     }
 
-    println("property description : ${state.description}")
-
     OutlinedTextField(
         value = state.description ?: "",
         onValueChange = {
@@ -346,6 +343,10 @@ fun DescriptionTypePickerSection(addEditViewModel: AddEditViewModel) {
     )
 }
 
+/**
+ * Composable used for entering the address details of a property
+ * it takes into account what type of device is being used and orientation
+ */
 @Composable
 fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
     val state = addEditViewModel.state
@@ -353,7 +354,6 @@ fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
             Column(modifier = Modifier.weight(0.5f)){
                 BaseDetails(
-                    //state = state,
                     modifier = Modifier
                         .padding(8.dp),
                     isLargeView = true,
@@ -385,8 +385,6 @@ fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
                     modifier = Modifier.fillMaxWidth()
                 )
                 AddressDetail(
-                    //address = it.address,
-                    isLargeView = true,
                     onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
                     onNumberChanged = addEditViewModel::onNumberChange,
                     onStreetChanged = addEditViewModel::onStreetChange,
@@ -410,7 +408,6 @@ fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
     }
     else{
         BaseDetails(
-            //state = state,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
@@ -431,8 +428,6 @@ fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
         )
 
         AddressDetail(
-            //address = it.address,
-            isLargeView = false,
             onCheckAddressClicked = addEditViewModel::getLatLongFromAddress,
             onNumberChanged = addEditViewModel::onNumberChange,
             onStreetChanged = addEditViewModel::onStreetChange,
@@ -451,11 +446,16 @@ fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
         )
     }
 }
+
+/**
+ * Composable used to change the sold satatus of a property and enter the date in which the property was sold
+ */
+@SuppressLint("SimpleDateFormat")
 @Composable
 fun SoldDate(addEditViewModel: AddEditViewModel) {
     val state = addEditViewModel.state
     val dateFormat = SimpleDateFormat("dd/MM/yy")
-    var openDialog = remember { mutableStateOf(false) }
+    val openDialog = remember { mutableStateOf(false) }
     if(state.id > 0){
         Divider(
             color = Color.Gray,
@@ -513,6 +513,9 @@ fun SoldDate(addEditViewModel: AddEditViewModel) {
     }
 }
 
+/**
+ * Composable used for the save button. It makes sure the form is valid before enabling the button
+ */
 @Composable
 fun ValidationAndSaveButton(
     addEditViewModel: AddEditViewModel,
@@ -543,15 +546,22 @@ fun ValidationAndSaveButton(
         }
     }
 }
+
+/**
+ * Creates a new image file in the external cache directory of the application, using a timestamp
+ * to generate a unique file name. The file is in JPEG format with a ".jpg" extension.
+ *
+ * @return A [File] object representing the newly created image file.
+ */
+@SuppressLint("SimpleDateFormat")
 fun Context.createImageFile(): File {
     val timeStamp = SimpleDateFormat("yyyy_MM_dd_HH:mm:ss").format(Date())
     val imageFileName = "JPEG_" + timeStamp + "_"
-    val image = File.createTempFile(
+
+    return File.createTempFile(
         imageFileName,
         ".jpg",
         externalCacheDir
     )
-
-    return image
 }
 

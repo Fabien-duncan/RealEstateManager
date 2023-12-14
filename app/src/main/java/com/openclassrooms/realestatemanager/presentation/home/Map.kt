@@ -302,7 +302,6 @@ fun MissingPermissionScreen(
                         .weight(1F)
                         .padding(8.dp),
                     onClick = {
-                        println("changing ispermissionIgnored to ${!isPermissionIgnored}")
                         onPermissionIgnoredClicked.invoke()
                     }) {
                     Text("Go to map anyway")

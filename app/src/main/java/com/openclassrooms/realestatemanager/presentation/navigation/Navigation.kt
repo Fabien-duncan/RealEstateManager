@@ -184,7 +184,6 @@ fun Navigation(
                 AddEditScreen(
                     currencyViewModel = currencyViewModel,
                     propertyId = if(homeViewModel.isEditOpened) homeViewModel.currentId else -1L,
-                    isLargeView = isExpanded,
                     addEditViewModel = addEditViewModel,
                     modifier = modifier.padding(it),
                     onCreatedClicked = { newId->
