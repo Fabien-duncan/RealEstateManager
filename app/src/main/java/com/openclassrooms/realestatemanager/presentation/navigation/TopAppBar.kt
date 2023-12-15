@@ -35,6 +35,9 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.enums.ScreenType
 
+/**
+ * Composable that manages the top bar for navigation
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(

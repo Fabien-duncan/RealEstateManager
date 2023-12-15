@@ -24,7 +24,7 @@ class DefaultLocationTrackerTest{
     @MockK
     lateinit var mockPermissionCheckProvider: PermissionCheckProvider
 
-    lateinit var defaultLocationTracker: DefaultLocationTracker
+    private lateinit var defaultLocationTracker: DefaultLocationTracker
 
     @Before
     fun setUp() {

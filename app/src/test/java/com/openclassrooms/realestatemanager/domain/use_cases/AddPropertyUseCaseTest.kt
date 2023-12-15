@@ -18,7 +18,7 @@ class AddPropertyUseCaseTest {
     @MockK
     lateinit var mockRepository: Repository
 
-    lateinit var addPropertyUseCase: AddPropertyUseCase
+    private lateinit var addPropertyUseCase: AddPropertyUseCase
 
     @Before
     fun setUp() {

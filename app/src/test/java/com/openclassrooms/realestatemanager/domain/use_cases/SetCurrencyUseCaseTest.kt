@@ -12,7 +12,7 @@ class SetCurrencyUseCaseTest{
     @MockK
     lateinit var mockRepository: CurrencyRepository
 
-    lateinit var setCurrencyUseCase: SetCurrencyUseCase
+    private lateinit var setCurrencyUseCase: SetCurrencyUseCase
 
     @Before
     fun setUp() {

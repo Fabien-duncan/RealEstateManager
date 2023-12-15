@@ -34,7 +34,7 @@ class PropertyRepositoryImplTest{
     @MockK
     lateinit var mockPropertyPhotosMapper: PropertyPhotosMapper
 
-    lateinit var  propertyRepository: PropertyRepositoryImpl
+    private lateinit var  propertyRepository: PropertyRepositoryImpl
 
     @Before
     fun setUp() {

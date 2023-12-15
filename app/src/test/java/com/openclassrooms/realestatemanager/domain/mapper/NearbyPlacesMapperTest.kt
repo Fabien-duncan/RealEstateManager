@@ -2,7 +2,6 @@ package com.openclassrooms.realestatemanager.domain.mapper
 
 import com.openclassrooms.realestatemanager.data.local.model.PropertyNearbyPlaces
 import com.openclassrooms.realestatemanager.enums.NearbyPlacesType
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 

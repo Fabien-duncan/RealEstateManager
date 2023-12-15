@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.openclassrooms.realestatemanager.enums.CurrencyType
 
+/**
+ * Composable for displaying the currency selection pop up
+ */
 @Composable
 fun CurrencyPopup(
     currencyViewModel: CurrencyViewModel,

@@ -1,8 +1,6 @@
 package com.openclassrooms.realestatemanager.common.utils
 
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 
 class NumberUtilsTest{

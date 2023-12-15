@@ -20,7 +20,7 @@ class GeocodingRepositoryImpTest{
     @MockK
     lateinit var mockGeocoderApi: GeocodingApiService
 
-    lateinit var geocodingRepositoryImp: GeocodingRepositoryImp
+    private lateinit var geocodingRepositoryImp: GeocodingRepositoryImp
 
     @Before
     fun setUp() {

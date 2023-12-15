@@ -24,9 +24,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.toSize
 import com.openclassrooms.realestatemanager.enums.PropertyType
-import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditViewModel
-import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 
+/**
+ * Composable for selecting the Property Type. this is used byt the add/Edit view and the Filter form
+ */
 @Composable
 fun PropertyTypePicker(
     onChangedTypePicker: (PropertyType?) -> Unit,
@@ -61,7 +62,6 @@ fun PropertyTypePicker(
         onDismissRequest = { isTypePickerExpanded = false },
         modifier = Modifier
             .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-            /*.border(border = BorderStroke(width = 1.dp, color = Color.DarkGray))*/
             .background(Color.LightGray)
     ) {
         PropertyType.values().forEach { type ->

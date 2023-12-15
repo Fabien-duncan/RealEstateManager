@@ -43,7 +43,7 @@ class AddEditViewModelTest{
     @MockK
     lateinit var fileUtils: FileUtils
 
-    lateinit var viewModel: AddEditViewModel
+    private lateinit var viewModel: AddEditViewModel
 
     @Before
     fun setUp() {

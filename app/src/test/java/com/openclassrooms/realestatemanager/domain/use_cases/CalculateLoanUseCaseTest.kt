@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.domain.use_cases
 
 import com.openclassrooms.realestatemanager.domain.model.LoanModel
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 

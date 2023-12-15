@@ -36,14 +36,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.common.utils.DateUtils
 import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.presentation.create_edit.DatePicker
 import com.openclassrooms.realestatemanager.presentation.create_edit.NearbyAmenities
 import com.openclassrooms.realestatemanager.presentation.home.HomeViewModel
 import com.openclassrooms.realestatemanager.presentation.property_type_picker.PropertyTypePicker
-import java.text.SimpleDateFormat
 import java.util.Date
 
+/**
+ * Composable used to create the Bottom sheet Filter in order to allow the user to filter Properties
+ */
 @Composable
 fun BottomSheetFilter(
     filterViewModel: FilterViewModel,
@@ -146,8 +149,8 @@ fun BottomSheetFilter(
                 onMaxValueChanged = {},
             )
             MinMaxDatePicker(
-                mindate = filterViewModel.state.minCreationDate,
-                maxdate = filterViewModel.state.maxCreationDate,
+                minDate = filterViewModel.state.minCreationDate,
+                maxDate = filterViewModel.state.maxCreationDate,
                 onMinDateChanged = {filterViewModel.onMinCreatedDateChanged(it)},
                 onMaxDateChanged = {filterViewModel.onMaxCreatedDateChanged(it)},
                 dateTitle = "Created Date",
@@ -156,8 +159,8 @@ fun BottomSheetFilter(
                     filterViewModel.onMaxCreatedDateChanged(null)
                 }
             )
-            var isSold = remember { mutableStateOf(filterViewModel.state.isSold ?: false)}
-            var isAvailable  = remember { mutableStateOf(if (filterViewModel.state.isSold == null) false else !filterViewModel.state.isSold!!) }
+            val isSold = remember { mutableStateOf(filterViewModel.state.isSold ?: false)}
+            val isAvailable  = remember { mutableStateOf(if (filterViewModel.state.isSold == null) false else !filterViewModel.state.isSold!!) }
             val updatesStateIsSold = {
                 if (isAvailable.value == isSold.value) filterViewModel.onIsSoldChanged(null)
                 else filterViewModel.onIsSoldChanged(isSold.value)
@@ -186,8 +189,8 @@ fun BottomSheetFilter(
             }
             if (isSold.value){
                 MinMaxDatePicker(
-                    mindate = filterViewModel.state.minSoldDate,
-                    maxdate = filterViewModel.state.maxSoldDate,
+                    minDate = filterViewModel.state.minSoldDate,
+                    maxDate = filterViewModel.state.maxSoldDate,
                     onMinDateChanged = { filterViewModel.onMinSoldDateChanged(it) },
                     onMaxDateChanged = { filterViewModel.onMaxSoldDateChanged(it) },
                     dateTitle = "Sold Date",
@@ -248,6 +251,10 @@ fun BottomSheetFilter(
         }
     }
 }
+
+/**
+ * Composable for creating the filter input for a person
+ */
 @Composable
 private fun PersonFilter(
     filterViewModel: FilterViewModel
@@ -272,6 +279,9 @@ private fun PersonFilter(
     }
 }
 
+/**
+ * Composable used for all the filter Inputs that have a minimum and maximum option with a Integer value
+ */
 @Composable
 private fun MinMaxFilter(
     min:String,
@@ -317,18 +327,22 @@ private fun MinMaxFilter(
         }
     }
 }
+
+/**
+ * Composable for creating the minimum and maximum date pickers for both created and sold date
+ * This composable then uses the [DatePicker] composable
+ */
 @Composable
 private fun MinMaxDatePicker(
-    mindate: Date?,
-    maxdate: Date?,
+    minDate: Date?,
+    maxDate: Date?,
     onMinDateChanged: (Date) -> Unit,
     onMaxDateChanged: (Date) -> Unit,
     onClearClicked:() -> Unit,
     dateTitle:String
 ){
-    val dateFormat = SimpleDateFormat("dd/MM/yy")
-    var openDialog = remember { mutableStateOf(false) }
-    var isMin = remember { mutableStateOf(true)}
+    val openDialog = remember { mutableStateOf(false) }
+    val isMin = remember { mutableStateOf(true)}
 
     Text(
         text = dateTitle,
@@ -362,7 +376,7 @@ private fun MinMaxDatePicker(
         ) {
             Text(
                 fontStyle = FontStyle.Normal,
-                text = if (mindate != null) dateFormat.format(mindate) else "Date min",
+                text = if (minDate != null) DateUtils.formatDate(minDate) else "Date min",
                 modifier = Modifier
                     .padding(start = 12.dp)
 
@@ -387,7 +401,7 @@ private fun MinMaxDatePicker(
         ) {
             Text(
                 fontStyle = FontStyle.Normal,
-                text = if (maxdate != null) dateFormat.format(maxdate) else "Date max",
+                text = if (maxDate != null) DateUtils.formatDate(maxDate) else "Date max",
                 modifier = Modifier
                     .padding(start = 12.dp)
 

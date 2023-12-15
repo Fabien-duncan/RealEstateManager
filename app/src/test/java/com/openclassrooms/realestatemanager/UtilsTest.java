@@ -1,20 +1,11 @@
 package com.openclassrooms.realestatemanager;
 
-import android.content.Context;
-
 import junit.framework.TestCase;
-
-import org.junit.runner.manipulation.Ordering;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
-import io.mockk.impl.annotations.MockK;
 
 public class UtilsTest extends TestCase {
-    @MockK
-    private Context context;
 
     public void testConvertDollarToEuro() {
         assertEquals(812, Utils.convertDollarToEuro(1000));
@@ -31,9 +22,5 @@ public class UtilsTest extends TestCase {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         assertEquals(today.format(formatter), Utils.getTodayDate());
-    }
-
-    public void testIsInternetAvailable() {
-
     }
 }

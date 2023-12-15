@@ -20,7 +20,6 @@ import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import okhttp3.internal.ignoreIoExceptions
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -104,7 +103,7 @@ class HomeViewModelTest {
         assertEquals(expectedLocation, viewModel.currentLocation)
     }
 
-    @Test()
+    @Test
     fun `getCurrentLocation should not update currentLocation on failure`() = runBlocking {
         coEvery { getAllPropertiesUseCase.invoke() } returns flowOf(properties)
         viewModel = HomeViewModel(

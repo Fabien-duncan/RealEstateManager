@@ -1,24 +1,21 @@
 package com;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiManager;
 import android.provider.Settings;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-
-import com.openclassrooms.realestatemanager.Utils;
-
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.Until;
 
-import org.junit.Before;
+import com.openclassrooms.realestatemanager.Utils;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -28,21 +25,21 @@ public class InternetAvailabilityTest {
     @Test
     public void testIsInternetAvailable() throws Exception  {
         setAirplaneMode(false);
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         boolean isInternetAvailable = Utils.isInternetAvailable(context);
 
-        assertEquals(true, isInternetAvailable);
+        assertTrue(isInternetAvailable);
     }
     @Test
     public void testIsInternetNotAvailable() throws Exception  {
         setAirplaneMode(true);
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         boolean isInternetAvailable = Utils.isInternetAvailable(context);
 
 
-        assertEquals(false, isInternetAvailable);
+        assertFalse(isInternetAvailable);
     }
 
     private void setAirplaneMode(boolean enable)

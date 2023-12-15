@@ -7,7 +7,7 @@ import org.junit.Test
 import java.util.Date
 
 class FilterViewModelTest{
-    lateinit var viewModel: FilterViewModel
+    private lateinit var viewModel: FilterViewModel
 
     @Before
     fun setUp() {

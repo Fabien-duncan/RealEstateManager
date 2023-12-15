@@ -12,18 +12,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,10 +29,12 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
+/**
+ * Composable that deals with the display of the Loan Pop up form
+ */
 @Composable
 fun LoanForm(
     loanCalculatorViewModel: LoanCalculatorViewModel,
-    modifier: Modifier = Modifier,
     loanAmount: Double = 0.0,
 ){
     val currencyViewModel: CurrencyViewModel = viewModel()
@@ -102,7 +96,10 @@ fun LoanForm(
         )
     }
 }
-@OptIn(ExperimentalComposeUiApi::class)
+
+/**
+ * Composable for the different Inputs of the Loan
+ */
 @Composable
 fun LoanInput(
     label: String,
@@ -120,7 +117,7 @@ fun LoanInput(
             .padding(16.dp)
     ) {
         OutlinedTextField(
-            value = if(value.equals("null")) "" else value,
+            value = if(value == "null") "" else value,
             onValueChange = {
                 onValueChange(it)
             },
@@ -146,6 +143,10 @@ fun LoanInput(
         )
     }
 }
+
+/**
+ * Composable for the Loan button to calculate the loan
+ */
 @Composable
 fun LoanButtons(
     loanCalculatorViewModel: LoanCalculatorViewModel,
@@ -180,6 +181,10 @@ fun LoanButtons(
         )
     }
 }
+
+/**
+ * Composable for displaying the output of the loan
+ */
 @Composable
 fun LoanOutput(
     modifier: Modifier,

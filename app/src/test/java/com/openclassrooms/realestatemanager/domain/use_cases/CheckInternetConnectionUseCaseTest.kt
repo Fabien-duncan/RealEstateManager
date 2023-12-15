@@ -14,7 +14,7 @@ class CheckInternetConnectionUseCaseTest {
     @MockK
     lateinit var mockRepository: ConnectionCheckerRepository
 
-    lateinit var checkInternetConnectionUseCase: CheckInternetConnectionUseCase
+    private lateinit var checkInternetConnectionUseCase: CheckInternetConnectionUseCase
 
     @Before
     fun setUp() {

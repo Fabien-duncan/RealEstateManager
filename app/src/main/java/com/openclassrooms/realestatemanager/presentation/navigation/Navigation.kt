@@ -1,64 +1,31 @@
 package com.openclassrooms.realestatemanager.presentation.navigation
 
 import android.content.res.Configuration
-import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
-import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.enums.WindowSizeType
 import com.openclassrooms.realestatemanager.presentation.create_edit.AddEditScreen
@@ -72,6 +39,9 @@ import com.openclassrooms.realestatemanager.presentation.home.MissingProperties
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanCalculatorViewModel
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanForm
 
+/**
+ * Composable used to manage the navigation between all the different screens
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Navigation(
@@ -90,7 +60,7 @@ fun Navigation(
     val state by homeViewModel.state.collectAsState()
     val isExpanded = windowSize == WindowSizeType.Expanded
     val currentCurrency = currencyViewModel.currentCurrency
-    var homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = homeViewModel.isItemOpened, isAddOpened = homeViewModel.isAddOpened || homeViewModel.isEditOpened)
+    val homeScreenType = getScreenType(isExpanded = isExpanded, isDetailOpened = homeViewModel.isItemOpened, isAddOpened = homeViewModel.isAddOpened || homeViewModel.isEditOpened)
 
     var showBottomSheet by remember { mutableStateOf(false) }
 
@@ -127,12 +97,12 @@ fun Navigation(
 
             )
         }
-    ) {
+    ) { paddingValues ->
         when (homeScreenType) {
             ScreenType.List -> {
                 HomeScreen(
                     state = state,
-                    modifier = modifier.padding(it),
+                    modifier = modifier.padding(paddingValues),
                     onItemClicked = {
                         homeViewModel.propertyIndex = it
                         homeViewModel.currentId = if((state.properties as ScreenViewState.Success<List<PropertyModel>>).data.isEmpty())-1L else (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[homeViewModel.propertyIndex].id
@@ -149,7 +119,7 @@ fun Navigation(
                 LaunchDetailScreenFromState(
                     loanCalculatorViewModel = loanCalculatorViewModel,
                     state = state,
-                    modifier = modifier.padding(it),
+                    modifier = modifier.padding(paddingValues),
                     assistedFactory = assistedFactory,
                     isLargeView = false,
                     propertyId = homeViewModel.currentId,
@@ -159,7 +129,6 @@ fun Navigation(
             }
 
             ScreenType.ListWithDetail -> {
-                println("tablet mode index is ${homeViewModel.propertyIndex}")
                 ListAndDetailScreen(
                     loanCalculatorViewModel = loanCalculatorViewModel,
                     state = state,
@@ -168,7 +137,7 @@ fun Navigation(
                         homeViewModel.currentId = if((state.properties as ScreenViewState.Success<List<PropertyModel>>).data.isEmpty())-1L else (state.properties as ScreenViewState.Success<List<PropertyModel>>).data[homeViewModel.propertyIndex].id
                     },
                     assistedFactory = assistedFactory,
-                    modifier = modifier.padding(it),
+                    modifier = modifier.padding(paddingValues),
                     index = homeViewModel.propertyIndex,
                     id = homeViewModel.currentId,
                     viewModel = homeViewModel,
@@ -185,9 +154,8 @@ fun Navigation(
                     currencyViewModel = currencyViewModel,
                     propertyId = if(homeViewModel.isEditOpened) homeViewModel.currentId else -1L,
                     addEditViewModel = addEditViewModel,
-                    modifier = modifier.padding(it),
+                    modifier = modifier.padding(paddingValues),
                     onCreatedClicked = { newId->
-                        println("id of edited or create property is: $newId")
                         homeViewModel.currentId = newId
                         homeViewModel.propertyIndex = propertiesListSize-1
                         homeViewModel.isItemOpened = true
@@ -201,8 +169,7 @@ fun Navigation(
         }
 
         if (showBottomSheet){
-            println("property Id is: ${homeViewModel.currentId}")
-            val properties = if(homeViewModel.currentId == -1L) listOf<PropertyModel>() else (state.properties as ScreenViewState.Success<List<PropertyModel>>).data
+            val properties = if(homeViewModel.currentId == -1L) listOf() else (state.properties as ScreenViewState.Success<List<PropertyModel>>).data
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false }) {
 
@@ -232,6 +199,9 @@ fun Navigation(
 
 }
 
+/**
+ * Composable to launch the List and detail screen for a table screen
+ */
 @Composable
 private fun ListAndDetailScreen(
     loanCalculatorViewModel:LoanCalculatorViewModel,
@@ -283,6 +253,9 @@ private fun ListAndDetailScreen(
 
 }
 
+/**
+ * Composable for retrieving the screen type in order to adapt the UI for the user
+ */
 @Composable
 fun getScreenType(
     isExpanded:Boolean,
@@ -307,6 +280,10 @@ fun getScreenType(
     }
 }
 
+/**
+ * Composable for launching the Detail screen depending on the state
+ * an error screen is launched if no property are retrieved
+ */
 @Composable
 fun LaunchDetailScreenFromState(
     loanCalculatorViewModel: LoanCalculatorViewModel,

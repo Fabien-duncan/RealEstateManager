@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.openclassrooms.realestatemanager.data.Connection
 
 import android.net.ConnectivityManager

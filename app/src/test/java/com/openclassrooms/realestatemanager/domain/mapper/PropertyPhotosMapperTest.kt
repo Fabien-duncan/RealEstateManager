@@ -25,7 +25,7 @@ class PropertyPhotosMapperTest{
 
         val result = propertyPhotosMapper.mapToListOfDomainModels(propertyPhotosList)
 
-        assertEquals(propertyPhotosList.size, result?.size)
-        assertEquals(propertyPhotosList[1].photoPath, result?.get(1)?.photoPath)
+        assertEquals(propertyPhotosList.size, result.size)
+        assertEquals(propertyPhotosList[1].photoPath, result[1].photoPath)
     }
 }

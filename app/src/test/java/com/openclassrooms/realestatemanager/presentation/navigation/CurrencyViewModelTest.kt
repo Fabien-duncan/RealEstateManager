@@ -20,7 +20,7 @@ class CurrencyViewModelTest{
     @MockK
     lateinit var getPriceInCurrentCurrencyUseCase: GetPriceInCurrentCurrencyUseCase
 
-    lateinit var viewModel: CurrencyViewModel
+    private lateinit var viewModel: CurrencyViewModel
 
     @Before
     fun setUp() {

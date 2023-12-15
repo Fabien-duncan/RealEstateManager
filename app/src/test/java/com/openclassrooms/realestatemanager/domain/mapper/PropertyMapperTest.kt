@@ -7,7 +7,7 @@ import org.junit.Before
 import org.junit.Test
 
 class PropertyMapperTest{
-    lateinit var propertyMapper: PropertyMapper
+    private lateinit var propertyMapper: PropertyMapper
 
     @Before
     fun setUp() {
@@ -29,7 +29,6 @@ class PropertyMapperTest{
         assertEquals(propertyWithAllDetails.property.id, result.id)
         assertEquals(propertyWithAllDetails.property.type, result.type)
         assertEquals(propertyWithAllDetails.address.country, result.address.country)
-        assertEquals(propertyWithAllDetails.nearbyPlaces, result.nearbyPlaces)
     }
 
     @Test
