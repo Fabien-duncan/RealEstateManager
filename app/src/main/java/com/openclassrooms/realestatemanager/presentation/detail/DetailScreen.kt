@@ -39,6 +39,9 @@ import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanCalculatorViewModel
 import com.openclassrooms.realestatemanager.presentation.loan_simulator.LoanForm
 
+/**
+ * A composable that sets up the detail screen
+ */
 @Composable
 fun DetailScreen(
     loanCalculatorViewModel:LoanCalculatorViewModel,
@@ -92,6 +95,9 @@ fun DetailScreen(
 
 }
 
+/**
+ * The composable responsible for calling all the elements that are part of the detail screen
+ */
 @Composable
 private fun DetailScreenView(
     modifier: Modifier,
@@ -101,7 +107,7 @@ private fun DetailScreenView(
     onLoanPressed: () -> Unit
 ){
     val scrollState = rememberScrollState()
-    var photos = state.property?.photos
+    val photos = state.property?.photos
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
@@ -135,9 +141,9 @@ private fun DetailScreenView(
             }
         }
         if (photos != null) {
-            if(!photos.isEmpty()) {
+            if(photos.isNotEmpty()) {
                 LazyRow(modifier = Modifier.padding(4.dp)) {
-                    itemsIndexed(photos) { index, photo ->
+                    itemsIndexed(photos) { _, photo ->
                         PhotoItem(photo = photo)
                     }
                 }
@@ -177,9 +183,6 @@ private fun DetailScreenView(
                 state.property?.let {
                     AddressDetail(
                         address = it.address,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .weight(1f),
                         isLargeView = true,
                         mapImageLink = mapImageLink
                     )
@@ -198,9 +201,6 @@ private fun DetailScreenView(
             state.property?.let {
                 AddressDetail(
                     address = it.address,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .background(Color.Green),
                     isLargeView = false,
                     mapImageLink = mapImageLink
                 )
@@ -208,7 +208,6 @@ private fun DetailScreenView(
         }
         ExtraDetails(
             state = state,
-            modifier = Modifier,
             isLargeView = isLargeView,
             isPortrait = isPortrait
         )

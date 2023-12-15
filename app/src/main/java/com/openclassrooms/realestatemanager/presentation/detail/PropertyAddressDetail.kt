@@ -27,9 +27,11 @@ import coil.compose.AsyncImage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.domain.model.AddressModel
 
+/**
+ * Composable that deals with all the details that are linked to the address.
+ */
 @Composable
 fun AddressDetail(
-    modifier: Modifier = Modifier,
     address: AddressModel,
     isLargeView:Boolean,
     mapImageLink: String,

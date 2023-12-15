@@ -25,17 +25,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.common.utils.DateUtils
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
-import java.text.SimpleDateFormat
 
+/**
+ * Composable that deals with extra details such as the nearby places, agent name and creation and sold date (if sold)
+ */
 @Composable
 fun ExtraDetails(
-    modifier: Modifier = Modifier,
     state: DetailState,
     isLargeView:Boolean,
     isPortrait: Boolean = false
 ) {
-    val dateFormat = SimpleDateFormat("dd/MM/yy")
     val numberOfColumns = if (isLargeView && !isPortrait) 5 else 3
 
     Text(
@@ -89,25 +90,25 @@ fun ExtraDetails(
                 )
                 state.property?.let { Text(text = it.agentName) }
             }
-            Row() {
+            Row {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = "Name of Agent")
                 if (isLargeView) {
                     Text(text = " Creation: ", fontWeight = FontWeight.Bold)
-                    state.property?.let { Text(text = dateFormat.format(it.createdDate)) }
+                    state.property?.let { Text(text = DateUtils.formatDate(it.createdDate)) }
                     state.property?.soldDate?.let {
                         Text(text = " Sold: ", fontWeight = FontWeight.Bold)
-                        Text(text = dateFormat.format(it) )
+                        Text(text = DateUtils.formatDate(it) )
                     }
                 }else{
                     Column {
                         Row {
                             Text(text = " Creation: ", fontWeight = FontWeight.Bold)
-                            state.property?.let { Text(text = dateFormat.format(it.createdDate)) }
+                            state.property?.let { Text(text = DateUtils.formatDate(it.createdDate)) }
                         }
                         Row {
                             state.property?.soldDate?.let {
                                 Text(text = " Sold: ", fontWeight = FontWeight.Bold)
-                                Text(text = dateFormat.format(it) )
+                                Text(text = DateUtils.formatDate(it) )
                             }
                         }
                     }

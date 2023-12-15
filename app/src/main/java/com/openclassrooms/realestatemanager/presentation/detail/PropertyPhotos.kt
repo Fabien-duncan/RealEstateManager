@@ -26,9 +26,12 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 
+/**
+ * Composable used displaying the photos if the property has any, otherwise it displays an missing photo image
+ * with a warning message
+ */
 @Composable
 fun PhotoItem(
-    modifier: Modifier = Modifier,
     photo: PropertyPhotosModel
 ){
     val imageUri = Uri.parse(photo.photoPath)
@@ -71,6 +74,11 @@ fun PhotoItem(
         }
     }
 }
+
+/**
+ * Composable for the missing photo photo, called when a property has no photo.
+ * Has an image and a text warning.
+ */
 @Composable
 fun EmptyPhotoList(){
     Box(
@@ -81,7 +89,7 @@ fun EmptyPhotoList(){
             .clip(MaterialTheme.shapes.extraSmall)
             .background(MaterialTheme.colorScheme.secondary)
     ){
-        Column() {
+        Column{
             Image(
                 painter = painterResource(id = R.drawable.missing_image),
                 contentDescription = "No Image",

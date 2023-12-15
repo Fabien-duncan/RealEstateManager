@@ -14,6 +14,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.openclassrooms.realestatemanager.R
 
+/**
+ * Composable for displaying the base details of a Property (surface area, number of rooms, bedrooms and bathrooms)
+ * The display will adapt to the width of the screen by using the parameter isLargeView
+ */
 @Composable
 fun BaseDetails(
     state: DetailState,
@@ -55,7 +59,7 @@ fun BaseDetails(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            var modifier = modifier
+            val detailCardModifier = modifier
                 .weight(1f)
             Row(
                 modifier = Modifier
@@ -66,13 +70,13 @@ fun BaseDetails(
                     painter = painterResource(id = R.drawable.area_image),
                     title = "surface",
                     value = "${state.property?.area} m²",
-                    modifier = modifier
+                    modifier = detailCardModifier
                 )
                 BaseDetailCard(
                     painter = painterResource(id = R.drawable.number_bathrooms_image),
                     title = "No. bathrooms",
                     value = state.property?.bathrooms.toString(),
-                    modifier = modifier
+                    modifier = detailCardModifier
                 )
             }
             Row(
@@ -83,18 +87,22 @@ fun BaseDetails(
                     painter = painterResource(id = R.drawable.number_rooms_image),
                     title = "No. rooms",
                     value = state.property?.rooms.toString(),
-                    modifier = modifier
+                    modifier = detailCardModifier
                 )
                 BaseDetailCard(
                     painter = painterResource(id = R.drawable.number_bedrooms_image),
                     title = "No. bedrooms",
                     value = state.property?.bedrooms.toString(),
-                    modifier = modifier
+                    modifier = detailCardModifier
                 )
             }
         }
     }
 }
+
+/**
+ * Composable to handle the display of each detail
+ */
 @Composable
 private fun BaseDetailCard(
     painter: Painter,

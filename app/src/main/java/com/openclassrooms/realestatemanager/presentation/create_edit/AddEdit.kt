@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.common.utils.DateUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyPhotosModel
 import com.openclassrooms.realestatemanager.enums.CurrencyType
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
@@ -234,7 +235,7 @@ fun MediaSection(addEditViewModel: AddEditViewModel) {
         tempFile
     )
 
-    //used for taking a picturte
+    //used for taking a picture
     val takePicture = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
     ){
@@ -450,11 +451,9 @@ fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
 /**
  * Composable used to change the sold satatus of a property and enter the date in which the property was sold
  */
-@SuppressLint("SimpleDateFormat")
 @Composable
 fun SoldDate(addEditViewModel: AddEditViewModel) {
     val state = addEditViewModel.state
-    val dateFormat = SimpleDateFormat("dd/MM/yy")
     val openDialog = remember { mutableStateOf(false) }
     if(state.id > 0){
         Divider(
@@ -498,7 +497,7 @@ fun SoldDate(addEditViewModel: AddEditViewModel) {
                 ) {
                     Text(
                         fontStyle = FontStyle.Normal,
-                        text = if(state.soldDate != null )dateFormat.format(state.soldDate) else "Select date",
+                        text = if(state.soldDate != null ) DateUtils.formatDate(state.soldDate) else "Select date",
                         modifier = Modifier
                             .padding(start = 12.dp)
 
