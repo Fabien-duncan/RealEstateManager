@@ -1,15 +1,6 @@
 package com.openclassrooms.realestatemanager.presentation.home
 
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.media.audiofx.BassBoost
-import android.net.Uri
-import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,13 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -59,7 +47,12 @@ import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.presentation.navigation.CheckConnectionViewModel
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+/**
+ * Composable used for managing the display of the map
+ * It will first check the permissions are granted
+ * If they aren't a warning screen will be displayed with possible solutions
+ */
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MapView(
     state:HomeState,
@@ -69,7 +62,6 @@ fun MapView(
     currencyViewModel: CurrencyViewModel,
     onGoToAppSettingsClicked: () -> Unit,
 ){
-    val context = LocalContext.current
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -82,7 +74,7 @@ fun MapView(
             viewModel.getCurrentLocation()
         }
     }
-    var isPermissionIgnored = remember { mutableStateOf(false) }
+    val isPermissionIgnored = remember { mutableStateOf(false) }
 
     when {
        locationPermissions.allPermissionsGranted-> {
@@ -132,7 +124,6 @@ fun MapView(
             }
             else{
                 MissingPermissionScreen(
-                    context = context,
                     onGoToAppSettingsClicked = onGoToAppSettingsClicked,
                     onPermissionIgnoredClicked = { isPermissionIgnored.value = true }
                 )
@@ -140,6 +131,10 @@ fun MapView(
         }
     }
 }
+
+/**
+ * Composable for displaying the map with the Propeties
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapWithProperties(
@@ -165,7 +160,7 @@ fun MapWithProperties(
         mutableStateOf<PropertyModel?>(null)
     }
     var selectedPropertyIndex by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     val checkConnectionViewModel: CheckConnectionViewModel = viewModel()
 
@@ -188,8 +183,8 @@ fun MapWithProperties(
                 val lng = property.address.longitude
                 if (lat != null && lng != null) {
                     val location = LatLng(lat, lng)
-                    HouseMarkers(location = location, property = property) { property ->
-                        selectedProperty = property
+                    HouseMarkers(location = location, property = property) { innerProperty ->
+                        selectedProperty = innerProperty
                         showBottomSheet = true
                         selectedPropertyIndex = index
                     }
@@ -218,6 +213,9 @@ fun MapWithProperties(
     }
 }
 
+/**
+ * Composable for the house markers that appear on the map
+ */
 @Composable
 fun HouseMarkers(
     location: LatLng,
@@ -235,6 +233,9 @@ fun HouseMarkers(
     )
 }
 
+/**
+ * Composable for the warning screen when there is no internet
+ */
 @Composable
 fun MissingInternetConnection(
 
@@ -255,13 +256,15 @@ fun MissingInternetConnection(
     }
 }
 
+/**
+ * Composable for when the permissions are not granted.
+ * It informs the user of why there are needed and what can be done.
+ */
 @Composable
 fun MissingPermissionScreen(
-    context: Context,
     onGoToAppSettingsClicked: () -> Unit,
     onPermissionIgnoredClicked: () -> Unit
 ){
-    var isPermissionIgnored = remember {false}
         Box(
             Modifier
                 .fillMaxSize()

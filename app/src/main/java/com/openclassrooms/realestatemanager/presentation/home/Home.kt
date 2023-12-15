@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -18,7 +16,10 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Composable used for dealing with the display of the main screen.
+ * It will display a List view or the map view
+ */
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -32,20 +33,17 @@ fun HomeScreen(
 ){
     when(state.properties){
         is ScreenViewState.Loading -> {
-            println("data loading")
             CircularProgressIndicator()
         }
 
         is ScreenViewState.Success -> {
             val properties = state.properties.data
-            //var isMapView by remember { mutableStateOf(false) }
             Scaffold(
                 floatingActionButton = {
 
                     FloatingActionButton(
                         onClick = { viewModel.isMapView = !viewModel.isMapView },
                         containerColor = MaterialTheme.colorScheme.secondary,
-                        /*modifier = Modifier.padding(bottom = 24.dp)*/
                     ) {
                         if (viewModel.isMapView) {
                             Icon(
@@ -85,12 +83,8 @@ fun HomeScreen(
         }
 
         is ScreenViewState.Error -> {
-            println("error: $state.properties.message")
-
             MissingProperties(modifier = modifier)
-
         }
-        else -> {}
     }
 }
 

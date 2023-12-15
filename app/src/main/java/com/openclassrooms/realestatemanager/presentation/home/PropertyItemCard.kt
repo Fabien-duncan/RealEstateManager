@@ -36,6 +36,10 @@ import com.openclassrooms.realestatemanager.common.utils.TextUtils
 import com.openclassrooms.realestatemanager.domain.model.PropertyModel
 import com.openclassrooms.realestatemanager.presentation.navigation.CurrencyViewModel
 
+/**
+ * Composable that deals with displaying the property Item for the map and the list view.
+ * It adapts to the screen size and orientation
+ */
 @Composable
 fun PropertyItemCard(
     currencyViewModel: CurrencyViewModel,

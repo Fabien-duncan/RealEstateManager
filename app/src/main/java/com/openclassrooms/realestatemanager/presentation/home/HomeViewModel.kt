@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +16,6 @@ import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrencyUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetCurrentLocationUseCase
 import com.openclassrooms.realestatemanager.domain.use_cases.GetFilteredPropertiesUseCase
 import com.openclassrooms.realestatemanager.enums.CurrencyType
-import com.openclassrooms.realestatemanager.enums.ScreenType
 import com.openclassrooms.realestatemanager.presentation.navigation.FilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +27,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel class for the Home screen, managing property data for display.
+ *
+ * @property getAllPropertiesUseCase Use case for retrieving all available properties.
+ * @property getFilteredPropertiesUseCase Use case for retrieving filtered properties based on criteria.
+ * @property getCurrentLocationUseCase Use case for obtaining the current device location.
+ * @property getCurrencyUseCase Use case for determining the current currency type.
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getAllPropertiesUseCase: GetAllPropertiesUseCase,
@@ -36,10 +42,14 @@ class HomeViewModel @Inject constructor(
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     private val getCurrencyUseCase: GetCurrencyUseCase,
 ):ViewModel(){
+    // MutableStateFlow representing the state of the Home screen.
     private val _state:MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
     val state:StateFlow<HomeState> = _state.asStateFlow()
-    var isMapView by mutableStateOf(false)
 
+    //*****************************************************************************************************//
+    // mutable states to remember the current page open used for when back is pressed or screen is rotated //
+    //*****************************************************************************************************//
+    var isMapView by mutableStateOf(false)
     var isItemOpened by  mutableStateOf(false)
     var isAddOpened by mutableStateOf(false)
     var isEditOpened by mutableStateOf(false)
@@ -48,10 +58,16 @@ class HomeViewModel @Inject constructor(
     var propertyIndex by mutableIntStateOf(0)
     var currentLocation by mutableStateOf<Location?>(null)
 
+    /**
+     * Initializes the ViewModel by fetching all available properties.
+     */
     init {
         getAllProperty()
     }
 
+    /**
+     * Fetches all available properties, updating the _state accordingly.
+     */
     fun getAllProperty(){
         getAllPropertiesUseCase()
             .onEach {
@@ -65,11 +81,20 @@ class HomeViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
+    /**
+     * Fetches the current device location and updates the currentLocation state.
+     */
     fun getCurrentLocation(){
         viewModelScope.launch {
             currentLocation = getCurrentLocationUseCase.invoke()
         }
     }
+
+    /**
+     * Fetches properties based on the provided filter criteria and updates the _state.
+     *
+     * @param filterState Filter criteria for property retrieval.
+     */
     fun getFilteredProperties(
         filterState: FilterState
     ){
