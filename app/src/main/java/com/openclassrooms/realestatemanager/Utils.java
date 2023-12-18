@@ -13,7 +13,6 @@ import java.util.Date;
  */
 
 public class Utils {
-
     /**
      * Conversion of a Property price (Dollars to Euros)
      *
@@ -32,7 +31,6 @@ public class Utils {
     public static int convertEuroToDollar(int euros) {
         return (int) Math.round(euros / 0.812);
     }
-
     /**
      * Conversion of today's date into a more suitable format
      *
@@ -42,7 +40,6 @@ public class Utils {
         @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.format(new Date());
     }
-
     /**
      * Checking network connectivity
      * NOTE: DO NOT DELETE, TO BE SHOWN DURING THE DEFENSE

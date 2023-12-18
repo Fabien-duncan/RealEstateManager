@@ -94,6 +94,7 @@ class AddEditViewModel @Inject constructor(
      * Resets the state of the ViewModel to default values.
      */
     fun resetState(){
+        isFormValid = false
         isAddressValid = false
         mapImageLink = ""
         state = state.copy(

@@ -72,8 +72,8 @@ class HomeViewModel @Inject constructor(
         getAllPropertiesUseCase()
             .onEach {
                 _state.value = HomeState(properties = ScreenViewState.Success(it))
-                currentId = it[0].id
-                propertyIndex = 0
+                //currentId = it[0].id
+                //propertyIndex = 0
             }
             .catch {
                 _state.value = HomeState(properties = ScreenViewState.Error(it.message))

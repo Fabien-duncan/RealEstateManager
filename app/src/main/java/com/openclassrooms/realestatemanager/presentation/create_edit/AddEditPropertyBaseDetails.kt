@@ -41,7 +41,7 @@ fun BaseDetails(
                 title = "surface in m²",
                 modifier = modifier,
                 onValueChanged = onAreaChanged,
-                value = state.rooms
+                value = state.area
             )
             BaseDetailCard(
                 painter = painterResource(id = R.drawable.number_rooms_image),

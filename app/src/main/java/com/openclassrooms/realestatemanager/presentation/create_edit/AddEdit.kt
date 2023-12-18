@@ -73,7 +73,7 @@ fun AddEditScreen(
     modifier: Modifier = Modifier,
     propertyId: Long = -1L,
     addEditViewModel: AddEditViewModel,
-    onCreatedClicked:(Long) -> Unit,
+    onCreatedClicked:(Long, Boolean) -> Unit,
     onBackPressed:() -> Unit
 ) {
     if (propertyId > 0) addEditViewModel.getPropertyById(propertyId, currencyViewModel.currentCurrency)
@@ -101,7 +101,7 @@ private fun AddEditView(
     currencyViewModel: CurrencyViewModel,
     modifier: Modifier,
     propertyId: Long,
-    onCreatedClicked:(Long) -> Unit,
+    onCreatedClicked:(Long, Boolean) -> Unit,
     isAdd:Boolean,
     addEditViewModel: AddEditViewModel
 ){
@@ -146,11 +146,13 @@ private fun AddEditView(
             if (isAddOrUpdatePropertyFinished) {
                 if (!isAdd) {
                     Toast.makeText(context, "You have successfully updated a property!",Toast.LENGTH_SHORT).show()
-                    onCreatedClicked.invoke(state.id)
+                    println("property id = ${state.id}")
+                    onCreatedClicked.invoke(state.id, false)
                 }
                 else {
                     Toast.makeText(context, "You have successfully created a property!",Toast.LENGTH_SHORT).show()
-                    onCreatedClicked.invoke(state.id)
+                    println("property id = ${state.id}")
+                    onCreatedClicked.invoke(state.id, true)
                 }
                 addEditViewModel.resetFinishedState()
                 addEditViewModel.resetState()

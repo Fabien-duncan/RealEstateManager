@@ -155,9 +155,9 @@ fun Navigation(
                     propertyId = if(homeViewModel.isEditOpened) homeViewModel.currentId else -1L,
                     addEditViewModel = addEditViewModel,
                     modifier = modifier.padding(paddingValues),
-                    onCreatedClicked = { newId->
+                    onCreatedClicked = { newId, isNew ->
                         homeViewModel.currentId = newId
-                        homeViewModel.propertyIndex = propertiesListSize-1
+                        if(isNew)homeViewModel.propertyIndex = propertiesListSize-1
                         homeViewModel.isItemOpened = true
                         homeViewModel.isAddOpened = false
                         homeViewModel.isEditOpened = false

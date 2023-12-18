@@ -239,6 +239,8 @@ fun BottomSheetFilter(
             Button(
                 onClick = {
                     homeViewModel.getAllProperty()
+                    homeViewModel.currentId = 1L
+                    homeViewModel.propertyIndex = 0
                     onCloseSheet.invoke()
                     filterViewModel.clearFilterState()
                 },
