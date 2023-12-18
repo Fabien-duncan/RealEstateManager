@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -132,7 +134,8 @@ private fun BaseDetailCard(
         modifier = modifier.padding(top = 8.dp),
     ) {
         Row {
-            Image(painter = painter, contentDescription = title, modifier = Modifier.padding(top=14.dp))
+            Image(painter = painter, contentDescription = title, modifier = Modifier.padding(top=14.dp), colorFilter = ColorFilter.tint(
+                MaterialTheme.colorScheme.onPrimary))
             Column(modifier = Modifier.padding(horizontal = 4.dp)) {
                 OutlinedTextField(
                     value = ("${ value ?: "" }"),

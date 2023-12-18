@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -189,10 +190,12 @@ fun PriceAndAgentSection(
                         CurrencyType.Dollar -> painterResource(id = R.drawable.dollar_image)
                         CurrencyType.Euro -> painterResource(id = R.drawable.euro_image)
                     },
-                    contentDescription = "dollar"
+                    contentDescription = "dollar",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
                 )
             },
             singleLine = true,
+            isError = state.price == null,
         )
         OutlinedTextField(
             value = state.agentName ?: "",
@@ -207,10 +210,12 @@ fun PriceAndAgentSection(
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.drawable.agent_24),
-                    contentDescription = "Agent"
+                    contentDescription = "Agent",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
                 )
             },
             singleLine = true,
+            isError = state.agentName == null,
         )
     }
 }
@@ -263,7 +268,7 @@ fun MediaSection(addEditViewModel: AddEditViewModel) {
         text = "Media",
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
-        color = Color.DarkGray,
+        color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.padding(8.dp)
     )
 
@@ -342,7 +347,8 @@ fun DescriptionTypePickerSection(addEditViewModel: AddEditViewModel) {
         placeholder = { Text(text = "Enter the description") },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        isError = state.description == null,
     )
 }
 
@@ -376,7 +382,7 @@ fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
                     text = "Address",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.DarkGray,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth(),
@@ -426,7 +432,7 @@ fun AddressSection(addEditViewModel: AddEditViewModel, isPortrait:Boolean) {
             text = "Address",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.padding(8.dp)
         )
 

@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -43,16 +44,16 @@ fun AddressDetail(
         .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         Column(modifier = Modifier.weight(0.7f)) {
             Row {
-                Image(painter = painterResource(id = R.drawable.address_image), contentDescription = "address")
+                Image(painter = painterResource(id = R.drawable.address_image), contentDescription = "address", colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
                 Text(text = "Location")
             }
             Column(Modifier.padding(start = 24.dp)) {
-                Text(text = "${address.number} ${address.street}", fontSize = 16.sp, color = Color.DarkGray)
-                if (address.extra != null ) Text(text = address.extra, fontSize = 16.sp, color = Color.DarkGray)
-                Text(text = address.city, fontSize = 16.sp, color = Color.DarkGray)
-                Text(text = address.state, fontSize = 16.sp, color = Color.DarkGray)
-                Text(text = address.postalCode, fontSize = 16.sp, color = Color.DarkGray)
-                Text(text = address.country, fontSize = 16.sp, color = Color.DarkGray)
+                Text(text = "${address.number} ${address.street}", fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
+                if (address.extra != null ) Text(text = address.extra, fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = address.city, fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = address.state, fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = address.postalCode, fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = address.country, fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
             }
         }
 

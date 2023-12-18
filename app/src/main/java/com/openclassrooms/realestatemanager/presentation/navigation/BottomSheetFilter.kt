@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -66,7 +67,7 @@ fun BottomSheetFilter(
                 text = "Filter Options",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
             )
             PersonFilter(filterViewModel = filterViewModel)
@@ -265,6 +266,7 @@ private fun PersonFilter(
         Image(
             painter = painterResource(id = R.drawable.agent_24),
             contentDescription = "Agent",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
         )
         OutlinedTextField(
             value = filterViewModel.state.agentName ?: "",
@@ -297,7 +299,8 @@ private fun MinMaxFilter(
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 8.dp)) {
         Image(
             painter = image,
-            contentDescription = "dollar"
+            contentDescription = "dollar",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
         )
         OutlinedTextField(
             value = "${ minValue ?: "" }",
@@ -350,7 +353,7 @@ private fun MinMaxDatePicker(
         text = dateTitle,
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
-        color = Color.DarkGray,
+        color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.padding(8.dp)
     )
 

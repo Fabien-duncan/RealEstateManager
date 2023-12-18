@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,14 +56,15 @@ fun PropertyTypePicker(
                 icon, "selection arrow",
                 Modifier.clickable { isTypePickerExpanded = !isTypePickerExpanded },
             )
-        }
+        },
+        isError = propertyType?.name == null,
     )
     DropdownMenu(
         expanded = isTypePickerExpanded,
         onDismissRequest = { isTypePickerExpanded = false },
         modifier = Modifier
             .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-            .background(Color.LightGray)
+            .background(MaterialTheme.colorScheme.secondary)
     ) {
         PropertyType.values().forEach { type ->
             DropdownMenuItem(

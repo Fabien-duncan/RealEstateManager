@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,7 +44,7 @@ fun ExtraDetails(
         text = "Nearby Amenities",
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
-        color = Color.DarkGray,
+        color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.padding(8.dp)
     )
 
@@ -62,14 +63,14 @@ fun ExtraDetails(
     }else{
         Text(
             text = "There are no Amenities added to this property yet!!",
-            color = Color.Red,
+            color = MaterialTheme.colorScheme.error,
             fontStyle = FontStyle.Italic,
             modifier = Modifier.padding(8.dp),
             textAlign = TextAlign.Center
         )
     }
 
-    Column(modifier = Modifier.background(color = Color.LightGray)) {
+    Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)) {
         Divider(
             color = Color.Gray,
             thickness = 1.dp,

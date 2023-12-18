@@ -63,7 +63,7 @@ fun PropertyItemCard(
         moneyColor = Color.White
 
     } else{
-        selectedModifier = Modifier.background(Color.White)
+        selectedModifier = Modifier.background(MaterialTheme.colorScheme.background)
         moneyColor = MaterialTheme.colorScheme.tertiary
     }
 

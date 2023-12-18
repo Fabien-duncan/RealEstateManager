@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.common.ScreenViewState
@@ -48,6 +49,7 @@ fun HomeScreen(
                         if (viewModel.isMapView) {
                             Icon(
                                 imageVector = Icons.Default.List ,
+                                tint = Color.White,
                                 contentDescription = "List View"
                             )
                         }else{

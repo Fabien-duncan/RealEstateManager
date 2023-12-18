@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -113,7 +114,8 @@ fun AddPhotoItem(
             contentDescription = "click to add photos",
             modifier = Modifier
                 .fillMaxSize()
-                .padding(0.dp)
+                .padding(0.dp),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
         )
     }
 }

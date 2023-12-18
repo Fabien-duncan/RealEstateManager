@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +34,7 @@ fun NearbyAmenities(
         text = "Nearby Amenities",
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
-        color = Color.DarkGray,
+        color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.padding(8.dp)
     )
 

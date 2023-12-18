@@ -122,7 +122,7 @@ private fun DetailScreenView(
                 text = "Media",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(8.dp).weight(1f)
             )
             Button(
@@ -157,7 +157,7 @@ private fun DetailScreenView(
                 text = "${TextUtils.capitaliseFirstLetter(state.property.type.name)} Description",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(8.dp)
             )
             Text(
@@ -167,7 +167,7 @@ private fun DetailScreenView(
                     //.heightIn(max = 150.dp)
                     .padding(8.dp)
                     /*.verticalScroll(scrollState)*/,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         }
         if (!isPortrait){

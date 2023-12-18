@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +56,7 @@ fun LoanForm(
             text = "Loan Simulator",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.padding(8.dp)
         )
         LoanInput(
@@ -136,7 +137,8 @@ fun LoanInput(
                             CurrencyType.Dollar -> painterResource(id = R.drawable.dollar_image)
                             CurrencyType.Euro -> painterResource(id = R.drawable.euro_image)
                         },
-                        contentDescription = "dollar"
+                        contentDescription = "dollar",
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
                     )
                 }
             }

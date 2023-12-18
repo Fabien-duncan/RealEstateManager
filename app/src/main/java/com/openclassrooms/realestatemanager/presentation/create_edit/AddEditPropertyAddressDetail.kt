@@ -64,6 +64,7 @@ fun AddressDetail(
                     placeholder = { Text(text = "number") },
                     modifier = Modifier.padding(4.dp),
                     singleLine = true,
+                    isError = state.number == null
                 )
                 OutlinedTextField(
                     value = state.extra ?: "",
@@ -82,6 +83,7 @@ fun AddressDetail(
                     placeholder = { Text(text = "state") },
                     modifier = Modifier.padding(4.dp),
                     singleLine = true,
+                    isError = state.state == null,
                 )
                 OutlinedTextField(
                     value = state.postalCode ?: "",
@@ -91,6 +93,7 @@ fun AddressDetail(
                     placeholder = { Text(text = "post code") },
                     modifier = Modifier.padding(4.dp),
                     singleLine = true,
+                    isError = state.postalCode == null,
                 )
             }
         }
@@ -103,6 +106,7 @@ fun AddressDetail(
                 placeholder = { Text(text = "street") },
                 modifier = Modifier.padding(4.dp),
                 singleLine = true,
+                isError = state.street == null,
             )
             OutlinedTextField(
                 value = state.city ?: "",
@@ -112,6 +116,7 @@ fun AddressDetail(
                 placeholder = { Text(text = "city") },
                 modifier = Modifier.padding(4.dp),
                 singleLine = true,
+                isError = state.city == null,
             )
             OutlinedTextField(
                 value = state.country ?: "",
@@ -121,6 +126,7 @@ fun AddressDetail(
                 placeholder = { Text(text = "country") },
                 modifier = Modifier.padding(4.dp),
                 singleLine = true,
+                isError = state.country == null,
             )
         }
     }

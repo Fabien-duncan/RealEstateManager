@@ -207,6 +207,7 @@ fun MapWithProperties(
                         modifier = Modifier.padding(bottom = 16.dp)
                     ) {
                         onItemClicked.invoke(selectedPropertyIndex)
+                        showBottomSheet = false
                     }
                 }
         }
