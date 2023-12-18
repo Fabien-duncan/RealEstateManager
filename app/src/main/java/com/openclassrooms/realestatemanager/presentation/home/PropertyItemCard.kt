@@ -98,7 +98,7 @@ fun PropertyItemCard(
                     AsyncImage(
                         model = imageUri,
                         contentDescription = "A photo of the property",
-                        contentScale = ContentScale.FillBounds
+                        contentScale = ContentScale.FillHeight
                     )
                 }else{
                     Image(

@@ -93,7 +93,7 @@ fun ExtraDetails(
             }
             Row {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = "Name of Agent")
-                if (isLargeView) {
+                if (isLargeView && !isPortrait) {
                     Text(text = " Creation: ", fontWeight = FontWeight.Bold)
                     state.property?.let { Text(text = DateUtils.formatDate(it.createdDate)) }
                     state.property?.soldDate?.let {

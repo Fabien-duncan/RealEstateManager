@@ -62,15 +62,15 @@ fun Activity.rememberWindowSize(): Size {
  */
 @Composable
 fun getWindowSizeClass(windowSizeDpSize: DpSize) = when{
-
     windowSizeDpSize.width < 0.dp -> {
         throw IllegalArgumentException("Dp values can not be null!!!!")
     }
     windowSizeDpSize.width < 600.dp -> {
-        WindowSizeType.Compact
+        WindowSizeType.Medium
     }
     windowSizeDpSize.width < 840.dp -> {
-        WindowSizeType.Medium
+        if (windowSizeDpSize.height > 840.dp) WindowSizeType.Expanded
+        else WindowSizeType.Medium
     }
     else -> {
         WindowSizeType.Expanded
