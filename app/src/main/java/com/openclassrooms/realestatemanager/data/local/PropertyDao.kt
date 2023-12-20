@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.data.local
 
+import android.database.Cursor
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -152,4 +153,15 @@ interface PropertyDao {
         minNumPictures: Int? = null,
         nearbyPlaceTypes: List<NearbyPlacesType>? = null,
     ): Flow<List<PropertyWithAllDetails>>
+
+    @Query("SELECT * FROM properties")
+    fun getAllPropertiesAsCursor(): Cursor
+    @Query("SELECT * FROM properties WHERE id = :propertyId")
+    fun getPropertyByIdAsCursor(propertyId: Long): Cursor
+    @Query("SELECT * FROM addresses")
+    fun getAllAddressesAsCursor(): Cursor
+    @Query("SELECT * FROM property_nearby_places")
+    fun getAllNearbyPlacesAsCursor(): Cursor
+    @Query("SELECT * FROM property_photos")
+    fun getAllPhotosAsCursor(): Cursor
 }
