@@ -162,6 +162,7 @@ class AddEditViewModel @Inject constructor(
     fun onIsSoldChange() {
         val isSold = state.isSold
         state = state.copy(isSold = !isSold)
+        if(!state.isSold) setFormIsValid()
     }
 
     fun onSoldDateChange(soldDate: Date) {

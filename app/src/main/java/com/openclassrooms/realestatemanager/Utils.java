@@ -36,8 +36,9 @@ public class Utils {
      *
      * @return The formatted string representing today's date
      */
+    @SuppressLint("SimpleDateFormat")
     public static String getTodayDate() {
-        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.format(new Date());
     }
     /**

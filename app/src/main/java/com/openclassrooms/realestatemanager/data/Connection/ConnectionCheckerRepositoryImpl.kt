@@ -36,7 +36,7 @@ class ConnectionCheckerRepositoryImpl @Inject constructor(
                 else -> false
             }
         }
-        //for later sdk versions
+        //for older sdk versions
         else {
             @Suppress("DEPRECATION") val networkInfo =
                 connectivityManager.activeNetworkInfo ?: return false

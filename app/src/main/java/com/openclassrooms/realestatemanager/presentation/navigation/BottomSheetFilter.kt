@@ -83,7 +83,8 @@ fun BottomSheetFilter(
                     onChangedTypePicker = { propertyType -> filterViewModel.onTypeChange(propertyType)
                     },
                     propertyType = filterViewModel.state.propertyType,
-                    hasNoTypeChoice = true
+                    hasNoTypeChoice = true,
+                    needsEmptyCheck = false
                 )
             }
 
@@ -202,7 +203,6 @@ fun BottomSheetFilter(
                 )
             }
 
-            //var nearbyPlaces = remember { mutableStateOf<List<NearbyPlacesType>>(mutableListOf()) }
             NearbyAmenities(
                 isPortrait = true, nearbyPlaces = filterViewModel.state.nearbyPlaces,
                 onNearbyPlaceChanged = {

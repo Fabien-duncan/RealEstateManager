@@ -33,7 +33,8 @@ import com.openclassrooms.realestatemanager.enums.PropertyType
 fun PropertyTypePicker(
     onChangedTypePicker: (PropertyType?) -> Unit,
     propertyType: PropertyType?,
-    hasNoTypeChoice:Boolean
+    hasNoTypeChoice:Boolean,
+    needsEmptyCheck:Boolean = true
 ){
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     var isTypePickerExpanded by remember { mutableStateOf(false) }
@@ -57,7 +58,7 @@ fun PropertyTypePicker(
                 Modifier.clickable { isTypePickerExpanded = !isTypePickerExpanded },
             )
         },
-        isError = propertyType?.name == null,
+        isError = if(needsEmptyCheck)propertyType?.name == null else false,
     )
     DropdownMenu(
         expanded = isTypePickerExpanded,

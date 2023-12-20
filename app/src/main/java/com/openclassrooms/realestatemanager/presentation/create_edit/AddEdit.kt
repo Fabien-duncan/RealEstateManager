@@ -147,12 +147,10 @@ private fun AddEditView(
             if (isAddOrUpdatePropertyFinished) {
                 if (!isAdd) {
                     Toast.makeText(context, "You have successfully updated a property!",Toast.LENGTH_SHORT).show()
-                    println("property id = ${state.id}")
                     onCreatedClicked.invoke(state.id, false)
                 }
                 else {
                     Toast.makeText(context, "You have successfully created a property!",Toast.LENGTH_SHORT).show()
-                    println("property id = ${state.id}")
                     onCreatedClicked.invoke(state.id, true)
                 }
                 addEditViewModel.resetFinishedState()
